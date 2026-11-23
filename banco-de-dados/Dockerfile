@@ -1,8 +1,2 @@
-
-FROM mongo:latest
-
-
-COPY ./init-mongo.js /docker-entrypoint-initdb.d/
-
-
-EXPOSE 27017
+FROM mongo:8.0
+COPY init-mongo.js /docker-entrypoint-initdb.d/10-todo.js

@@ -1,40 +1,61 @@
-version: '3.8'
-
 services:
   frontend:
-    build:
-      context: ./frontend  # Diretório do frontend
-    ports:
-      - "80:80"  # Expõe a porta 80 do contêiner para a porta 80 do host
-    networks:
-      - todo-net
+    build: ./frontend
+    image: todo-frontend:local
+    ports: ["127.0.0.1:${HTTP_PORT:-8080}:80"]
     depends_on:
-      - backend  # Garante que o backend esteja rodando antes de subir o frontend
-
+      backend: {condition: service_healthy}
+    restart: unless-stopped
+    mem_limit: 96m
+    networks: [app]
+    logging: &logging
+      driver: json-file
+      options: {max-size: "5m", max-file: "2"}
   backend:
-    build:
-      context: ./backend  # Diretório do backend
-    ports:
-      - "5000:5000"  # Expõe a porta 5000 do contêiner para a porta 5000 do host
-    networks:
-      - todo-net
-    depends_on:
-      - mongo  # Garante que o MongoDB esteja rodando antes de iniciar o backend
-
-  mongo:
-    build:
-      context: ./banco-de-dados  # Diretório do backend
-    container_name: mongo-todo
-    ports:
-      - "27017:27017"
-    networks:
-      - todo-net
+    build: ./backend
+    image: todo-backend:local
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=rootpassword
-      - MONGO_INITDB_DATABASE=todo-app
-
-
+      MONGODB_URI_FILE: /run/secrets/mongodb_uri
+      APP_VERSION: ${APP_VERSION:-local}
+    secrets: [mongodb_uri]
+    depends_on:
+      mongo: {condition: service_healthy}
+    restart: unless-stopped
+    mem_limit: 224m
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:5000/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 4s
+      retries: 12
+    networks: [app, database]
+    logging: *logging
+  mongo:
+    build: ./banco-de-dados
+    image: todo-mongo:local
+    command: ["mongod", "--wiredTigerCacheSizeGB", "0.256", "--bind_ip_all"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: administrator
+      MONGO_INITDB_ROOT_PASSWORD_FILE: /run/secrets/mongo_root_password
+      MONGO_INITDB_DATABASE: todo-app
+    secrets: [mongo_root_password, mongo_app_password, mongo_tools_config]
+    volumes: [mongo-data:/data/db]
+    restart: unless-stopped
+    mem_limit: 512m
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    networks: [database]
+    logging: *logging
+volumes:
+  mongo-data:
 networks:
-  todo-net:
-    driver: bridge
+  app:
+  database:
+    internal: true
+secrets:
+  mongo_root_password: {file: ./.local/secrets/mongo_root_password}
+  mongo_app_password: {file: ./.local/secrets/mongo_app_password}
+  mongodb_uri: {file: ./.local/secrets/mongodb_uri}
+  mongo_tools_config: {file: ./.local/secrets/mongo_tools_config}

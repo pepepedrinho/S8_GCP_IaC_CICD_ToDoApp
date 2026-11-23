@@ -1,18 +1,8 @@
 {
-  "name": "backend",
+  "name": "todo-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.20.3",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "mongoose": "^8.12.1"
-  }
+  "private": true,
+  "scripts": {"start": "node index.js", "test": "node --test"},
+  "engines": {"node": ">=24 <25"},
+  "dependencies": {"express": "5.3.0", "mongoose": "9.12.3"}
 }

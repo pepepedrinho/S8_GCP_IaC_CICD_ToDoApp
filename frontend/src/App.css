@@ -64,3 +64,7 @@ li button:hover {
 span {
   cursor: pointer;
 }
+.task { background: transparent; color: #172b22; text-align: left; flex: 1; }
+.task:hover { background: #e6f0e9; }
+button:disabled { opacity: .6; cursor: wait; }
+[role="alert"] { color: #a01010; }

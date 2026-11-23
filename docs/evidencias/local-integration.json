@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "database": "real MongoDB",
+  "checks": [
+    "restart preserves document and state",
+    "database recreation preserves named volume",
+    "application update preserves data",
+    "application configuration rollback preserves data",
+    "database outage yields readiness 503 and liveness 200",
+    "database recovery"
+  ],
+  "cloud_test": false
+}

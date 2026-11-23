@@ -1,0 +1,13 @@
+{
+  "url": "http://localhost:8080",
+  "https_verified": false,
+  "checks": [
+    "frontend and database readiness",
+    "create",
+    "list",
+    "complete",
+    "reopen",
+    "delete and reload"
+  ],
+  "passed": true
+}

@@ -1,20 +1,10 @@
-# Etapa 1: Construção da aplicação
-FROM node:18-alpine
-
-# Definindo o diretório de trabalho dentro do container
+FROM node:24-alpine
+ENV NODE_ENV=production NODE_OPTIONS=--max-old-space-size=160
 WORKDIR /app
-
-# Copiando o package.json e o package-lock.json para instalar as dependências
 COPY package*.json ./
-
-# Instalando as dependências do projeto
-RUN npm install
-
-# Copiando o restante do conteúdo do projeto para o container
-COPY . .
-
-# Expondo a porta que o backend vai usar (5000)
+RUN npm ci --omit=dev && npm cache clean --force
+COPY --chown=node:node index.js ./
+COPY --chown=node:node src ./src
+USER node
 EXPOSE 5000
-
-# Comando para rodar a aplicação
 CMD ["node", "index.js"]
