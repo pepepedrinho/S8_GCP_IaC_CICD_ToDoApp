@@ -1,0 +1,202 @@
+{
+  "all_recorded_runs_passed": true,
+  "gcp_apply_executed": false,
+  "latest_published_commit": "fa626deacdc5d0fffab1b82cdfcbeb64d720a456",
+  "published_image_manifests": [
+    "ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp-backend:fa626deacdc5d0fffab1b82cdfcbeb64d720a456@sha256:61fcf850959d668041a9d1ca1ee3f7ba3e95b96d8e62282d151b6200a51afec3",
+    "ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp-frontend:fa626deacdc5d0fffab1b82cdfcbeb64d720a456@sha256:b7a6e52b8e15a5a3c6f7b8afe8f98147cf64d70f57ab907a5a2189d009a2558b"
+  ],
+  "latest_integration_backup_log_events": [
+    {
+      "event": "isolated_restore_validated",
+      "data_sha256": "d22d12ec4de3fd53c95c07a40cbfb1983a9f775df4d749e1d936866e989196da",
+      "production_overwritten": false
+    },
+    {
+      "event": "backup_validated",
+      "retention_days": 7
+    }
+  ],
+  "runs": [
+    {
+      "conclusion": "success",
+      "databaseId": 45223842140,
+      "event": "push",
+      "headSha": "80331924ca7063d5d44d3e7feb535f6db47fd4a8",
+      "jobs": [
+        {
+          "name": "infrastructure",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140/job/137864932143"
+        },
+        {
+          "name": "integration",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140/job/137864932352"
+        },
+        {
+          "name": "application (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140/job/137864932363"
+        },
+        {
+          "name": "application (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140/job/137864932455"
+        },
+        {
+          "name": "images / publish (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140/job/137866283739"
+        },
+        {
+          "name": "images / publish (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140/job/137866283834"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45223842140",
+      "workflowName": "Validate"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 45224221283,
+      "event": "push",
+      "headSha": "d36d84b76f676d5f688697cb573c23a23922019f",
+      "jobs": [
+        {
+          "name": "infrastructure",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283/job/137866268860"
+        },
+        {
+          "name": "application (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283/job/137866269445"
+        },
+        {
+          "name": "integration",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283/job/137866269452"
+        },
+        {
+          "name": "application (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283/job/137866270184"
+        },
+        {
+          "name": "images / publish (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283/job/137867544959"
+        },
+        {
+          "name": "images / publish (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283/job/137867545004"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224221283",
+      "workflowName": "Validate"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 45224566245,
+      "event": "push",
+      "headSha": "d5f0c127186ac8f7e1c7bc2fe12846770812eb8e",
+      "jobs": [
+        {
+          "name": "application (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245/job/137867481499"
+        },
+        {
+          "name": "integration",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245/job/137867481918"
+        },
+        {
+          "name": "infrastructure",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245/job/137867482182"
+        },
+        {
+          "name": "application (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245/job/137867482185"
+        },
+        {
+          "name": "images / publish (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245/job/137868825243"
+        },
+        {
+          "name": "images / publish (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245/job/137868825276"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224566245",
+      "workflowName": "Validate"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 45225218488,
+      "event": "push",
+      "headSha": "fa626deacdc5d0fffab1b82cdfcbeb64d720a456",
+      "jobs": [
+        {
+          "name": "application (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488/job/137869762004"
+        },
+        {
+          "name": "application (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488/job/137869762444"
+        },
+        {
+          "name": "integration",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488/job/137869762646"
+        },
+        {
+          "name": "infrastructure",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488/job/137869762710"
+        },
+        {
+          "name": "images / publish (frontend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488/job/137871118977"
+        },
+        {
+          "name": "images / publish (backend)",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488/job/137871119125"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488",
+      "workflowName": "Validate"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 45224629842,
+      "event": "workflow_dispatch",
+      "headSha": "d5f0c127186ac8f7e1c7bc2fe12846770812eb8e",
+      "jobs": [
+        {
+          "name": "terraform",
+          "conclusion": "success",
+          "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224629842/job/137867718005"
+        }
+      ],
+      "status": "completed",
+      "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45224629842",
+      "workflowName": "Infrastructure"
+    }
+  ]
+}

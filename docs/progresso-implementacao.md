@@ -19,10 +19,10 @@ Atualizado em 23/11/2026. Projeto acadêmico sem evento real.
 | Aplicação | Validada localmente | CRUD, readiness, recriação do banco, reinício e atualização preservam dados |
 | Terraform | Schema validado | Provider 7.46.2 aceitou scheduling.max_run_duration 21600 + STOP; bootstrap plan executado |
 | Ansible | Lint validado | 0 falhas/avisos no perfil production; execução remota/idempotência pendentes |
-| Actions/GHCR | Implementados; publicação/CI em andamento | Actionlint e ShellCheck passaram; push só valida/publica imagens; provisionamento exige dispatch explícito |
+| Actions/GHCR | CI e publicação verificadas | Execuções completas passaram; imagens frontend/backend no GHCR por SHA. Dispatch Terraform validate passou sem GCP |
 | Backup/restore/rollback | Validados localmente | Hash restaurado confere; produção não sobrescrita; duas imagens reais, rollback e recuperação de imagem defeituosa passaram |
 | HTTPS/GCP | Bloqueado por aprovação de segurança | Faturamento vinculado; bootstrap restrito aguarda resposta explícita após rejeição automática |
-| Desligamento final | Obrigatório | Se houver VMs, confirmar ambas TERMINATED |
+| Desligamento final | Local concluído; nenhuma VM criada | Contêineres locais Exited(0), volumes/backups preservados; Compute e Storage APIs permanecem desabilitadas |
 
 Não há execução de nuvem declarada concluída. Resultados serão registrados após testes.
 
@@ -43,4 +43,6 @@ O faturamento foi autorizado e vinculado somente ao projeto novo. APIs de contro
 
 A aprovação automática rejeitou o bootstrap por alterar IAM, OIDC, contas de serviço, buckets, APIs e orçamento de forma persistente. A implementação foi reduzida a papel customizado de Compute, IAP condicional e prefixo de estado isolado; nova análise ainda exigiu aprovação direta do usuário desse escopo exato. A pergunta permanece pendente. Não houve tentativa de contornar a rejeição.
 
-Próxima etapa independente: publicar a branch no fork e acompanhar a CI/GHCR, corrigindo falhas reais. Após autorização do bootstrap, replanejar/aplicar, cadastrar variáveis/secrets, validar plano principal, provisionar/configurar, medir e2-micro, testar HTTPS/isolamento/idempotência/backup/persistência e confirmar ambas VMs TERMINATED. Não executar destroy automaticamente.
+Branch publicada no fork. CI completa e GHCR passaram, incluindo testes Node/React, auditorias, Terraform/Ansible, integração com Mongo real, persistência, rollback de imagem e backup/restore isolado. Dispatch manual `Infrastructure → validate` passou na branch de implementação; autenticação GCP e apply foram pulados. Variáveis e secrets do fork cadastrados, sem imprimir valores nem criar identidades GCP. Contêineres locais parados e evidência final salva.
+
+Após autorização do bootstrap: replanejar/aplicar, conferir outputs com as variáveis já cadastradas, validar plano principal, provisionar/configurar, medir e2-micro, testar HTTPS/isolamento/idempotência/backup/persistência e confirmar ambas VMs TERMINATED. Não executar destroy automaticamente. A aprovação ainda está pendente; não haverá execução após o fim desta sessão.

@@ -1,0 +1,52 @@
+{
+  "run_url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488",
+  "smoke": {
+    "url": "http://127.0.0.1:8080",
+    "https_verified": false,
+    "checks": [
+      "frontend and database readiness",
+      "create",
+      "list",
+      "complete",
+      "reopen",
+      "delete and reload"
+    ],
+    "passed": true
+  },
+  "persistence": {
+    "passed": true,
+    "database": "real MongoDB",
+    "checks": [
+      "restart preserves document and state",
+      "database recreation preserves named volume",
+      "application update preserves data",
+      "application configuration rollback preserves data",
+      "database outage yields readiness 503 and liveness 200",
+      "database recovery"
+    ],
+    "cloud_test": false
+  },
+  "rollback": {
+    "passed": true,
+    "cloud_test": false,
+    "healthy_image_a": "sha256:f3acf8063f259417d5af523ca43ffa0a0d83aaa125e6825cdc8c3855aa7a1648",
+    "healthy_image_b": "sha256:ece1ffbcbd515bd4be507560b42e691c4cd5740518a0170f61eeab84b31fcd98",
+    "checks": [
+      "different image IDs deployed",
+      "manual rollback restored image A",
+      "failed deployment returned nonzero and restored healthy image A"
+    ],
+    "limit": "Same application source, distinct image configs; no schema migration tested."
+  },
+  "backup_log_events": [
+    {
+      "event": "isolated_restore_validated",
+      "data_sha256": "d22d12ec4de3fd53c95c07a40cbfb1983a9f775df4d749e1d936866e989196da",
+      "production_overwritten": false
+    },
+    {
+      "event": "backup_validated",
+      "retention_days": 7
+    }
+  ]
+}

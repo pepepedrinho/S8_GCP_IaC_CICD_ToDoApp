@@ -2,7 +2,7 @@
 
 Projeto acadêmico baseado no [código do professor](https://github.com/LaercioMLB/todo-app). Cadastrar, listar, concluir, reabrir e excluir tarefas continuam sendo as únicas funções de negócio. A lista é compartilhada, sem login. O cenário de feira está no [escopo original](docs/escopo.md); o usuário confirmou que esta entrega é um trabalho de faculdade, sem evento real.
 
-**Estado da entrega:** aplicação, persistência, backup, restauração isolada e rollback testados localmente. Infraestrutura e playbooks implementados; implantação GCP depende da aprovação adicional descrita em [segurança do bootstrap](docs/seguranca-bootstrap.md). Nenhuma URL pública foi emitida. Consulte a [matriz de aceite](docs/matriz-aceite.md), o [progresso](docs/progresso-implementacao.md) e o [relatório](docs/relatorio-entrega.md) para distinguir código implementado de operação comprovada.
+**Estado da entrega:** aplicação, persistência, backup, restauração isolada e rollback testados localmente e pela [CI real](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488), com imagens publicadas no GHCR. Infraestrutura e playbooks implementados; implantação GCP depende da aprovação adicional descrita em [segurança do bootstrap](docs/seguranca-bootstrap.md). Nenhuma URL pública foi emitida. Consulte a [matriz de aceite](docs/matriz-aceite.md), o [progresso](docs/progresso-implementacao.md) e o [relatório](docs/relatorio-entrega.md) para distinguir código implementado de operação comprovada.
 
 ## Arquitetura
 

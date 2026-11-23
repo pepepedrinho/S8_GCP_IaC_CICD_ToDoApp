@@ -16,3 +16,7 @@ Projeto único permitido: `triodelicia-mensal4-2026`. A aplicação inicial do b
 O papel customizado continua permitindo criar/remover a topologia Compute deste projeto e administrar o sistema operacional das duas VMs via IAP. Isso é necessário para Terraform/Ansible e deve ser considerado ao aprovar. OIDC/credenciais ficam restritos ao fork; alguém com escrita numa branch confiável pode alterar workflows, portanto controlar acesso ao repositório continua necessário.
 
 A validação local e o plano não comprovam aplicação do IAM, emissão de credenciais OIDC, acesso remoto ou execução na GCP. Esses resultados serão registrados apenas após aprovação e execução reais.
+
+Uma segunda avaliação do escopo reduzido também foi rejeitada: a aprovação automática exigiu autorização direta do usuário para as alterações persistentes de IAM, OIDC, contas de serviço, buckets, APIs e orçamento. A pergunta de aprovação foi apresentada; não houve resposta até o fechamento deste registro. Nenhum apply foi executado nem foi usada outra rota para realizar essas mudanças.
+
+As variáveis/secrets do fork foram configuradas separadamente, dentro da autorização para configurar pipelines. Os valores de provider/conta apontam para as identidades planejadas; sua presença no GitHub não cria recursos nem comprova autenticação GCP.

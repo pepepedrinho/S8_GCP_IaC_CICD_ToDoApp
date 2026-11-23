@@ -1,0 +1,41 @@
+{
+  "data_volume_preserved": true,
+  "measurement_limit": "Docker Desktop local machine, not e2-micro capacity validation",
+  "cloud_test": false,
+  "containers": [
+    {
+      "Names": "todo-implementation-backend-1",
+      "State": "exited",
+      "Status": "Exited (0) 1 second ago"
+    },
+    {
+      "Names": "todo-implementation-mongo-1",
+      "State": "exited",
+      "Status": "Exited (0) 1 second ago"
+    },
+    {
+      "Names": "todo-implementation-frontend-1",
+      "State": "exited",
+      "Status": "Exited (0) 1 second ago"
+    }
+  ],
+  "backup_archive_preserved": true,
+  "all_stopped": true,
+  "local_memory_before_stop": [
+    {
+      "Name": "todo-implementation-backend-1",
+      "MemUsage": "37.68MiB / 224MiB",
+      "CPUPerc": "0.24%"
+    },
+    {
+      "Name": "todo-implementation-mongo-1",
+      "MemUsage": "212.1MiB / 512MiB",
+      "CPUPerc": "2.30%"
+    },
+    {
+      "Name": "todo-implementation-frontend-1",
+      "MemUsage": "6.355MiB / 96MiB",
+      "CPUPerc": "0.00%"
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "url": "http://127.0.0.1:8080",
+  "https_verified": false,
+  "checks": [
+    "frontend and database readiness",
+    "create",
+    "list",
+    "complete",
+    "reopen",
+    "delete and reload"
+  ],
+  "load": {
+    "concurrency": 10,
+    "requests": 100,
+    "errors": 0,
+    "p95_seconds": 0.03887000001850538,
+    "mean_seconds": 0.021586441001854837
+  },
+  "passed": true
+}
