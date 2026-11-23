@@ -1,0 +1,14 @@
+{
+  "repository": "pepepedrinho/S8_GCP_IaC_CICD_ToDoApp",
+  "secrets_present": [
+    "MONGO_APP_PASSWORD",
+    "MONGO_ROOT_PASSWORD"
+  ],
+  "variables_present": [
+    "GCP_SERVICE_ACCOUNT",
+    "GCP_WIF_PROVIDER"
+  ],
+  "secret_values_logged": false,
+  "gcp_identity_checked": false,
+  "note": "Only GitHub settings configured; verify GCP identities through the separately approved bootstrap."
+}
