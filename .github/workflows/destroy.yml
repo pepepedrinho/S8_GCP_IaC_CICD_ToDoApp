@@ -1,0 +1,53 @@
+name: Decommission infrastructure
+on:
+  push:
+    branches: [feat/infra-terraform-ansible-actions]
+    paths: [.github/workflows/destroy.yml]
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: Enter DESTROY-TODO; final backup is mandatory before removal
+        type: string
+        required: true
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: todo-gcp-mutations
+  cancel-in-progress: false
+jobs:
+  destroy:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      CONFIRMATION: ${{ inputs.confirmation }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: test "$CONFIRMATION" = DESTROY-TODO
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.17.2
+          terraform_wrapper: false
+      - name: Final backup and isolated recovery validation
+        run: |
+          python scripts/cloud.py start
+          python scripts/cloud.py backup
+      - name: Review and execute resource removal
+        run: |
+          terraform -chdir=infra/terraform/main init -input=false -backend-config=bucket=triodelicia-mensal4-2026-todo-state -backend-config=prefix=todo/main
+          terraform -chdir=infra/terraform/main plan -destroy -input=false -out=destroy.tfplan
+          terraform -chdir=infra/terraform/main show -json destroy.tfplan > .local-destroy-plan.json
+          python scripts/check-plan.py .local-destroy-plan.json --destroy
+          terraform -chdir=infra/terraform/main apply -input=false destroy.tfplan
+          gcloud compute instances list --project=triodelicia-mensal4-2026
+          gcloud compute disks list --project=triodelicia-mensal4-2026
+          gcloud compute addresses list --project=triodelicia-mensal4-2026
+          echo 'State and validated backups are protected in separate bootstrap resources.' >> "$GITHUB_STEP_SUMMARY"
+      - if: failure()
+        run: python scripts/cloud.py stop

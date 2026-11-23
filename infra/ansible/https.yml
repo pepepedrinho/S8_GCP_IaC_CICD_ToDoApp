@@ -1,0 +1,51 @@
+---
+- name: Refresh ingress after a new ephemeral public IP
+  hosts: app
+  become: true
+  tasks:
+    - name: Inspect current domain certificate
+      ansible.builtin.stat:
+        path: "/etc/letsencrypt/live/{{ todo_domain }}/fullchain.pem"
+      register: existing_certificate
+    - name: Configure ACME HTTP bootstrap only for a new hostname
+      ansible.builtin.template:
+        src: roles/application/templates/nginx.conf.j2
+        dest: /etc/nginx/sites-available/todo
+        mode: '0644'
+      when: not existing_certificate.stat.exists
+      notify: Reload nginx
+    - name: Apply HTTP bootstrap
+      ansible.builtin.meta: flush_handlers
+    - name: Obtain certificate for current IP hostname
+      ansible.builtin.command:
+        argv:
+          - certbot
+          - certonly
+          - --webroot
+          - -w
+          - /opt/todo/webroot
+          - -d
+          - "{{ todo_domain }}"
+          - --email
+          - "{{ todo_certificate_email }}"
+          - --agree-tos
+          - --non-interactive
+          - --keep-until-expiring
+      register: certificate
+      changed_when: "'Successfully received certificate' in certificate.stdout"
+    - name: Configure TLS for current hostname
+      ansible.builtin.template:
+        src: roles/application/templates/nginx-tls.conf.j2
+        dest: /etc/nginx/sites-available/todo
+        mode: '0644'
+      notify: Reload nginx
+  handlers:
+    - name: Validate Nginx
+      listen: Reload nginx
+      ansible.builtin.command: nginx -t
+      changed_when: false
+    - name: Reload Nginx service
+      listen: Reload nginx
+      ansible.builtin.systemd_service:
+        name: nginx
+        state: reloaded

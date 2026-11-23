@@ -1,0 +1,142 @@
+---
+- name: Configure Ubuntu package access through application host
+  ansible.builtin.copy:
+    dest: /etc/apt/apt.conf.d/80todo-relay
+    mode: '0644'
+    content: |
+      Acquire::http::Proxy "http://{{ todo_app_private_ip }}:3128";
+      Acquire::https::Proxy "http://{{ todo_app_private_ip }}:3128";
+- name: Install Docker on private host
+  ansible.builtin.apt:
+    name: [docker.io, docker-compose-v2]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+- name: Start Docker
+  ansible.builtin.systemd_service:
+    name: docker
+    enabled: true
+    state: started
+- name: Inspect persistent disk filesystem
+  ansible.builtin.command: blkid -s TYPE -o value /dev/disk/by-id/google-todo-mongo-data
+  register: database_host_disk_type
+  changed_when: false
+  failed_when: database_host_disk_type.rc not in [0, 2]
+- name: Refuse unexpected filesystems
+  ansible.builtin.assert:
+    that: database_host_disk_type.rc == 2 or database_host_disk_type.stdout == 'ext4'
+- name: Format only a new unformatted disk
+  ansible.builtin.command: mkfs.ext4 -m 0 /dev/disk/by-id/google-todo-mongo-data
+  when: database_host_disk_type.rc == 2
+  changed_when: true
+- name: Create persistent mount point
+  ansible.builtin.file:
+    path: /srv/todo-data
+    state: directory
+    mode: '0755'
+- name: Keep data disk mounted across restarts
+  ansible.posix.mount:
+    src: /dev/disk/by-id/google-todo-mongo-data
+    path: /srv/todo-data
+    fstype: ext4
+    opts: defaults,nofail
+    state: mounted
+- name: Create database directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0700'
+  loop: ["{{ todo_root }}", "{{ todo_root }}/secrets", "{{ todo_root }}/bin", "{{ todo_root }}/backups", /srv/todo-data/mongo]
+- name: Assign data directory to Mongo user
+  ansible.builtin.file:
+    path: /srv/todo-data/mongo
+    owner: '999'
+    group: '999'
+    mode: '0700'
+- name: Transfer Mongo image over SSH
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar"
+    dest: "{{ todo_root }}/mongo.tar"
+    mode: '0600'
+  register: database_host_mongo_archive
+- name: Import Mongo image without registry access # noqa: no-handler
+  ansible.builtin.command: "docker load -i {{ todo_root }}/mongo.tar"
+  when: database_host_mongo_archive.changed
+  changed_when: true
+- name: Install protected Mongo credentials
+  ansible.builtin.copy:
+    content: "{{ item.value }}"
+    dest: "{{ todo_root }}/secrets/{{ item.name }}"
+    owner: '999'
+    group: '999'
+    mode: '0400'
+  no_log: true
+  loop:
+    - {name: mongo_root_password, value: "{{ mongo_root_password }}"}
+    - {name: mongo_app_password, value: "{{ mongo_app_password }}"}
+- name: Install database initialization script
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../banco-de-dados/init-mongo.js"
+    dest: "{{ todo_root }}/init-mongo.js"
+    mode: '0444'
+- name: Configure database tools without password arguments
+  ansible.builtin.copy:
+    content: "{{ {'password': mongo_root_password} | to_json }}"
+    dest: "{{ todo_root }}/secrets/mongo_tools_config"
+    owner: '999'
+    group: '999'
+    mode: '0400'
+  no_log: true
+- name: Install database Compose definition
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ todo_root }}/compose.yml"
+    mode: '0600'
+- name: Start authenticated database
+  ansible.builtin.command: docker compose -f /opt/todo/compose.yml up -d --wait --wait-timeout 120
+  register: database_host_up
+  changed_when: "'Started' in database_host_up.stderr or 'Created' in database_host_up.stderr or 'Recreated' in database_host_up.stderr"
+- name: Install operations scripts
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../scripts/{{ item }}"
+    dest: "{{ todo_root }}/bin/{{ item }}"
+    mode: '0700'
+  loop: [backup.sh, restore-isolated.sh, verify-backup.py, gcs.py]
+- name: Configure backup storage
+  ansible.builtin.copy:
+    dest: "{{ todo_root }}/backup.env"
+    mode: '0600'
+    content: |
+      BACKUP_BUCKET={{ todo_backup_bucket }}
+      TODO_ROOT={{ todo_root }}
+- name: Install backup service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/todo-backup.service
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Validated Mongo backup to private GCS
+      After=docker.service
+      Requires=docker.service
+      [Service]
+      Type=oneshot
+      ExecStart=/opt/todo/bin/backup.sh
+- name: Install persistent backup timer
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/todo-backup.timer
+    mode: '0644'
+    content: |
+      [Unit]
+      Description=Daily Mongo backup while host is available
+      [Timer]
+      OnCalendar=*-*-* 03:00:00
+      Persistent=true
+      RandomizedDelaySec=120
+      [Install]
+      WantedBy=timers.target
+- name: Enable backup timer
+  ansible.builtin.systemd_service:
+    name: todo-backup.timer
+    state: started
+    enabled: true
+    daemon_reload: true

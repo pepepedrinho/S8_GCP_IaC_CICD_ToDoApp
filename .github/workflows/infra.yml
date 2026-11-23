@@ -1,0 +1,59 @@
+name: Infrastructure
+on:
+  push:
+    branches: [feat/infra-terraform-ansible-actions]
+    paths: [.github/workflows/infra.yml]
+  workflow_dispatch:
+    inputs:
+      action:
+        type: choice
+        options: [plan, apply]
+        default: plan
+      confirmation:
+        description: Enter PROVISION to create/start the approved resources
+        type: string
+        required: false
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: todo-gcp-mutations
+  cancel-in-progress: false
+jobs:
+  terraform:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      TF_IN_AUTOMATION: 'true'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.17.2
+          terraform_wrapper: false
+      - run: |
+          terraform -chdir=infra/terraform/main init -input=false -backend-config=bucket=triodelicia-mensal4-2026-todo-state -backend-config=prefix=todo/main
+          terraform -chdir=infra/terraform/main plan -input=false -out=tfplan
+          terraform -chdir=infra/terraform/main show -json tfplan > .local-plan.json
+          python scripts/check-plan.py .local-plan.json
+      - if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          test "$CONFIRMATION" = PROVISION
+          terraform -chdir=infra/terraform/main apply -input=false tfplan
+          python scripts/cloud.py status
+      - if: failure() && inputs.action == 'apply'
+        run: python scripts/cloud.py stop
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: infrastructure-evidence
+          path: docs/evidencias/cloud-*.json
+          retention-days: 7

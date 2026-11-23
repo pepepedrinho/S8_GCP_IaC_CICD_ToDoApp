@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "cloud_test": false,
+  "healthy_image_a": "sha256:cde85e2fcbf5b43a6b2213544d9d9d4501be10ad46764c99149a7df1160ad313",
+  "healthy_image_b": "sha256:8f573a388d992565ab7862ce54e74613be84c1d178e6a4cc8ab7df827285ab4a",
+  "checks": [
+    "different image IDs deployed",
+    "manual rollback restored image A",
+    "failed deployment returned nonzero and restored healthy image A"
+  ],
+  "limit": "Same application source, distinct image configs; no schema migration tested."
+}

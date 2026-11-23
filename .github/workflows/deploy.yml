@@ -1,0 +1,78 @@
+name: Configure and deploy
+on:
+  push:
+    branches: [feat/infra-terraform-ansible-actions]
+    paths: [.github/workflows/deploy.yml]
+  workflow_dispatch:
+    inputs:
+      image_commit:
+        description: Full commit SHA already published by Validate
+        type: string
+        required: true
+permissions:
+  contents: read
+  packages: read
+  id-token: write
+concurrency:
+  group: todo-gcp-mutations
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      IMAGE_COMMIT: ${{ inputs.image_commit }}
+      MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
+      MONGO_APP_PASSWORD: ${{ secrets.MONGO_APP_PASSWORD }}
+      ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install ansible-core==2.19.4
+      - run: ansible-galaxy collection install -r infra/ansible/requirements.yml
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Validate inputs and prepare SSH and secrets
+        run: |
+          [[ "$IMAGE_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+          test ${#MONGO_ROOT_PASSWORD} -ge 24
+          test ${#MONGO_APP_PASSWORD} -ge 24
+          python scripts/cloud.py prepare
+      - name: Transfer images; registry credentials stay only on runner
+        run: |
+          prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
+          docker pull "$prefix-frontend:$IMAGE_COMMIT"
+          docker pull "$prefix-backend:$IMAGE_COMMIT"
+          docker save -o .local/application.tar "$prefix-frontend:$IMAGE_COMMIT" "$prefix-backend:$IMAGE_COMMIT"
+          gcloud compute scp .local/application.tar todo-app:/tmp/todo-application.tar --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --quiet
+          gcloud compute ssh todo-app --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --command='sudo mkdir -p /opt/todo/artifacts && sudo mv /tmp/todo-application.tar /opt/todo/artifacts/application.tar' --quiet
+      - name: Configure both hosts and deploy identified images
+        run: |
+          prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
+          ansible-playbook -i .local/inventory.yml infra/ansible/site.yml -e @.local/cloud-secrets.json -e @.local/runtime.json -e "todo_version=$IMAGE_COMMIT" -e "todo_frontend_image=$prefix-frontend:$IMAGE_COMMIT" -e "todo_backend_image=$prefix-backend:$IMAGE_COMMIT"
+      - name: Validate public HTTPS and backup recovery
+        run: |
+          url=$(python -c 'import json; print("https://"+json.load(open(".local/runtime.json"))["todo_domain"])')
+          python scripts/smoke.py "$url" --load --evidence docs/evidencias/gcp-smoke.json
+          python scripts/cloud.py backup
+          python scripts/cloud.py status
+      - name: Stop both VMs after the unattended deployment tests
+        if: always()
+        run: python scripts/cloud.py stop
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-evidence
+          path: docs/evidencias/*.json
+          retention-days: 14

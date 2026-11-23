@@ -1,0 +1,68 @@
+name: Operate
+on:
+  push:
+    branches: [feat/infra-terraform-ansible-actions]
+    paths: [.github/workflows/operate.yml]
+  workflow_dispatch:
+    inputs:
+      operation:
+        type: choice
+        options: [start, stop, health, logs, backup, restore, rollback]
+        required: true
+      backup_object:
+        description: For restore only, todo/todo-YYYYMMDDTHHMMSSZ.archive.gz
+        type: string
+        required: false
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: todo-gcp-mutations
+  cancel-in-progress: false
+jobs:
+  operate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPERATION: ${{ inputs.operation }}
+      BACKUP_OBJECT: ${{ inputs.backup_object }}
+      ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+      - uses: google-github-actions/setup-gcloud@v3
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install ansible-core==2.19.4
+      - name: Execute selected operation
+        run: |
+          case "$OPERATION" in
+            start)
+              python scripts/cloud.py start
+              ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
+              ;;
+            stop|logs|backup|rollback) python scripts/cloud.py "$OPERATION" ;;
+            restore) python scripts/cloud.py restore --object "$BACKUP_OBJECT" ;;
+            health) python scripts/cloud.py status ;;
+            *) exit 2 ;;
+          esac
+      - name: Verify public readiness and report URL
+        if: inputs.operation == 'start' || inputs.operation == 'health' || inputs.operation == 'rollback'
+        run: |
+          python scripts/cloud.py status
+          url=$(python -c 'import json; print(json.load(open("docs/evidencias/cloud-status.json"))["url"])')
+          python scripts/smoke.py "$url" --evidence docs/evidencias/reactivation-smoke.json
+          echo "Application: $url" >> "$GITHUB_STEP_SUMMARY"
+      - if: failure() && inputs.operation == 'start'
+        run: python scripts/cloud.py stop
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: operations-evidence
+          path: docs/evidencias/*.json
+          retention-days: 14

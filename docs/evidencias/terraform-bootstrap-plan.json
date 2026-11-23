@@ -1,0 +1,3207 @@
+{
+  "format_version": "1.2",
+  "terraform_version": "1.17.2",
+  "variables": {
+    "billing_account_id": {
+      "value": "[REDACTED_BILLING_ACCOUNT]"
+    },
+    "project_id": {
+      "value": "triodelicia-mensal4-2026"
+    },
+    "repository": {
+      "value": "pepepedrinho/S8_GCP_IaC_CICD_ToDoApp"
+    },
+    "repository_id": {
+      "value": "1468894543"
+    },
+    "repository_owner_id": {
+      "value": "55161713"
+    }
+  },
+  "planned_values": {
+    "outputs": {
+      "automation_service_account": {
+        "sensitive": false,
+        "type": "string",
+        "value": "todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com"
+      },
+      "backup_bucket": {
+        "sensitive": false,
+        "type": "string",
+        "value": "triodelicia-mensal4-2026-todo-backups"
+      },
+      "state_bucket": {
+        "sensitive": false,
+        "type": "string",
+        "value": "triodelicia-mensal4-2026-todo-state"
+      },
+      "wif_provider": {
+        "sensitive": false
+      }
+    },
+    "root_module": {
+      "resources": [
+        {
+          "address": "google_billing_budget.initial_tests",
+          "mode": "managed",
+          "type": "google_billing_budget",
+          "name": "initial_tests",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 1,
+          "values": {
+            "all_updates_rule": [],
+            "amount": [
+              {
+                "last_period_amount": null,
+                "specified_amount": [
+                  {
+                    "currency_code": "BRL",
+                    "nanos": null,
+                    "units": "5"
+                  }
+                ]
+              }
+            ],
+            "billing_account": "[REDACTED_BILLING_ACCOUNT]",
+            "budget_filter": [
+              {
+                "calendar_period": null,
+                "credit_types": null,
+                "credit_types_treatment": "INCLUDE_ALL_CREDITS",
+                "custom_period": [],
+                "projects": [
+                  "projects/271680307280"
+                ],
+                "resource_ancestors": null,
+                "subaccounts": null
+              }
+            ],
+            "display_name": "ToDo academic initial tests - BRL5 alert",
+            "ownership_scope": null,
+            "threshold_rules": [
+              {
+                "spend_basis": "CURRENT_SPEND",
+                "threshold_percent": 0.5
+              },
+              {
+                "spend_basis": "CURRENT_SPEND",
+                "threshold_percent": 0.9
+              },
+              {
+                "spend_basis": "CURRENT_SPEND",
+                "threshold_percent": 1
+              }
+            ],
+            "timeouts": null
+          },
+          "sensitive_values": {
+            "all_updates_rule": [],
+            "amount": [
+              {
+                "specified_amount": [
+                  {}
+                ]
+              }
+            ],
+            "billing_account": true,
+            "budget_filter": [
+              {
+                "custom_period": [],
+                "labels": {},
+                "projects": [
+                  false
+                ],
+                "services": []
+              }
+            ],
+            "threshold_rules": [
+              {},
+              {},
+              {}
+            ]
+          }
+        },
+        {
+          "address": "google_iam_workload_identity_pool.github",
+          "mode": "managed",
+          "type": "google_iam_workload_identity_pool",
+          "name": "github",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "attestation_rules": [],
+            "deletion_policy": "DELETE",
+            "description": null,
+            "disabled": null,
+            "display_name": "ToDo trusted GitHub",
+            "inline_certificate_issuance_config": [],
+            "inline_trust_config": [],
+            "project": "triodelicia-mensal4-2026",
+            "timeouts": null,
+            "workload_identity_pool_id": "todo-github"
+          },
+          "sensitive_values": {
+            "attestation_rules": [],
+            "inline_certificate_issuance_config": [],
+            "inline_trust_config": []
+          },
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "workload_identity_pool_id": null
+          }
+        },
+        {
+          "address": "google_iam_workload_identity_pool_provider.github",
+          "mode": "managed",
+          "type": "google_iam_workload_identity_pool_provider",
+          "name": "github",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "attribute_condition": "assertion.repository_id == '1468894543' && assertion.repository_owner_id == '55161713' && (assertion.ref == 'refs/heads/main' || assertion.ref == 'refs/heads/feat/infra-terraform-ansible-actions')",
+            "attribute_mapping": {
+              "attribute.repository_id": "assertion.repository_id",
+              "attribute.repository_owner_id": "assertion.repository_owner_id",
+              "google.subject": "assertion.sub"
+            },
+            "aws": [],
+            "deletion_policy": "DELETE",
+            "description": null,
+            "disabled": null,
+            "display_name": null,
+            "oidc": [
+              {
+                "allowed_audiences": null,
+                "issuer_uri": "https://token.actions.githubusercontent.com",
+                "jwks_json": null
+              }
+            ],
+            "project": "triodelicia-mensal4-2026",
+            "saml": [],
+            "timeouts": null,
+            "workload_identity_pool_id": "todo-github",
+            "workload_identity_pool_provider_id": "github",
+            "x509": []
+          },
+          "sensitive_values": {
+            "attribute_mapping": {},
+            "aws": [],
+            "oidc": [
+              {}
+            ],
+            "saml": [],
+            "x509": []
+          },
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "workload_identity_pool_id": null,
+            "workload_identity_pool_provider_id": null
+          }
+        },
+        {
+          "address": "google_project_iam_custom_role.automation",
+          "mode": "managed",
+          "type": "google_project_iam_custom_role",
+          "name": "automation",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "description": "Only Compute resources used by this repository; no IAM, billing, APIs or bucket administration.",
+            "permissions": [
+              "compute.disks.create",
+              "compute.disks.delete",
+              "compute.disks.get",
+              "compute.disks.list",
+              "compute.disks.setLabels",
+              "compute.disks.use",
+              "compute.firewalls.create",
+              "compute.firewalls.delete",
+              "compute.firewalls.get",
+              "compute.firewalls.list",
+              "compute.firewalls.update",
+              "compute.globalOperations.get",
+              "compute.images.get",
+              "compute.images.useReadOnly",
+              "compute.instances.attachDisk",
+              "compute.instances.create",
+              "compute.instances.delete",
+              "compute.instances.detachDisk",
+              "compute.instances.get",
+              "compute.instances.list",
+              "compute.instances.osAdminLogin",
+              "compute.instances.osLogin",
+              "compute.instances.setLabels",
+              "compute.instances.setMetadata",
+              "compute.instances.setScheduling",
+              "compute.instances.setServiceAccount",
+              "compute.instances.setTags",
+              "compute.instances.start",
+              "compute.instances.stop",
+              "compute.instances.update",
+              "compute.machineTypes.get",
+              "compute.networks.create",
+              "compute.networks.delete",
+              "compute.networks.get",
+              "compute.networks.list",
+              "compute.networks.updatePolicy",
+              "compute.projects.get",
+              "compute.regionOperations.get",
+              "compute.regions.get",
+              "compute.subnetworks.create",
+              "compute.subnetworks.delete",
+              "compute.subnetworks.get",
+              "compute.subnetworks.list",
+              "compute.subnetworks.use",
+              "compute.subnetworks.useExternalIp",
+              "compute.zoneOperations.get",
+              "compute.zones.get",
+              "compute.zones.list",
+              "serviceusage.services.use"
+            ],
+            "project": "triodelicia-mensal4-2026",
+            "role_id": "todoInfrastructure",
+            "stage": "GA",
+            "title": "ToDo approved infrastructure lifecycle"
+          },
+          "sensitive_values": {
+            "permissions": [
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false,
+              false
+            ]
+          },
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "role_id": null
+          }
+        },
+        {
+          "address": "google_project_iam_member.automation",
+          "mode": "managed",
+          "type": "google_project_iam_member",
+          "name": "automation",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "condition": [],
+            "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "project": "triodelicia-mensal4-2026"
+          },
+          "sensitive_values": {
+            "condition": []
+          }
+        },
+        {
+          "address": "google_project_iam_member.iap",
+          "mode": "managed",
+          "type": "google_project_iam_member",
+          "name": "iap",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "condition": [
+              {
+                "description": null,
+                "expression": "destination.port == 22 && (destination.ip == '10.42.0.10' || destination.ip == '10.42.0.20')",
+                "title": "only-todo-private-ssh"
+              }
+            ],
+            "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "project": "triodelicia-mensal4-2026",
+            "role": "roles/iap.tunnelResourceAccessor"
+          },
+          "sensitive_values": {
+            "condition": [
+              {}
+            ]
+          }
+        },
+        {
+          "address": "google_project_service.required[\"billingbudgets.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "billingbudgets.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "billingbudgets.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"cloudbilling.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "cloudbilling.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "cloudbilling.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"cloudresourcemanager.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "cloudresourcemanager.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "cloudresourcemanager.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"compute.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "compute.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "compute.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"iam.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "iam.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "iam.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"iamcredentials.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "iamcredentials.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "iamcredentials.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"iap.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "iap.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "iap.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"oslogin.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "oslogin.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "oslogin.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"serviceusage.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "serviceusage.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "serviceusage.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"storage.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "storage.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "storage.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_project_service.required[\"sts.googleapis.com\"]",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "index": "sts.googleapis.com",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "deletion_policy": "DELETE",
+            "disable_dependent_services": null,
+            "disable_on_destroy": false,
+            "project": "triodelicia-mensal4-2026",
+            "service": "sts.googleapis.com",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "project": null,
+            "service": null
+          }
+        },
+        {
+          "address": "google_service_account.automation",
+          "mode": "managed",
+          "type": "google_service_account",
+          "name": "automation",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "account_id": "todo-automation",
+            "create_ignore_already_exists": null,
+            "deletion_policy": "DELETE",
+            "description": null,
+            "disabled": false,
+            "display_name": "ToDo trusted GitHub workflows",
+            "email": "todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "project": "triodelicia-mensal4-2026",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "email": null,
+            "project": null
+          }
+        },
+        {
+          "address": "google_service_account.runtime[\"app\"]",
+          "mode": "managed",
+          "type": "google_service_account",
+          "name": "runtime",
+          "index": "app",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "account_id": "todo-app",
+            "create_ignore_already_exists": null,
+            "deletion_policy": "DELETE",
+            "description": null,
+            "disabled": false,
+            "display_name": "ToDo app runtime",
+            "email": "todo-app@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "member": "serviceAccount:todo-app@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "project": "triodelicia-mensal4-2026",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "email": null,
+            "project": null
+          }
+        },
+        {
+          "address": "google_service_account.runtime[\"db\"]",
+          "mode": "managed",
+          "type": "google_service_account",
+          "name": "runtime",
+          "index": "db",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "account_id": "todo-db",
+            "create_ignore_already_exists": null,
+            "deletion_policy": "DELETE",
+            "description": null,
+            "disabled": false,
+            "display_name": "ToDo db runtime",
+            "email": "todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "member": "serviceAccount:todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "project": "triodelicia-mensal4-2026",
+            "timeouts": null
+          },
+          "sensitive_values": {},
+          "identity_schema_version": 1,
+          "identity": {
+            "email": null,
+            "project": null
+          }
+        },
+        {
+          "address": "google_service_account_iam_member.attach_runtime[\"app\"]",
+          "mode": "managed",
+          "type": "google_service_account_iam_member",
+          "name": "attach_runtime",
+          "index": "app",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "condition": [],
+            "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "role": "roles/iam.serviceAccountUser"
+          },
+          "sensitive_values": {
+            "condition": []
+          }
+        },
+        {
+          "address": "google_service_account_iam_member.attach_runtime[\"db\"]",
+          "mode": "managed",
+          "type": "google_service_account_iam_member",
+          "name": "attach_runtime",
+          "index": "db",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "condition": [],
+            "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "role": "roles/iam.serviceAccountUser"
+          },
+          "sensitive_values": {
+            "condition": []
+          }
+        },
+        {
+          "address": "google_service_account_iam_member.federation",
+          "mode": "managed",
+          "type": "google_service_account_iam_member",
+          "name": "federation",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "condition": [],
+            "role": "roles/iam.workloadIdentityUser"
+          },
+          "sensitive_values": {
+            "condition": []
+          }
+        },
+        {
+          "address": "google_storage_bucket.protected[\"backups\"]",
+          "mode": "managed",
+          "type": "google_storage_bucket",
+          "name": "protected",
+          "index": "backups",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 4,
+          "values": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "default_event_based_hold": null,
+            "deletion_policy": "DELETE",
+            "effective_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "enable_object_retention": null,
+            "encryption": [],
+            "force_destroy": false,
+            "hierarchical_namespace": [],
+            "ip_filter": [],
+            "labels": null,
+            "lifecycle_rule": [
+              {
+                "action": [
+                  {
+                    "storage_class": "",
+                    "type": "Delete"
+                  }
+                ],
+                "condition": [
+                  {
+                    "age": 7,
+                    "created_before": "",
+                    "custom_time_before": "",
+                    "days_since_custom_time": null,
+                    "days_since_noncurrent_time": null,
+                    "matches_prefix": [],
+                    "matches_storage_class": [],
+                    "matches_suffix": [],
+                    "noncurrent_time_before": "",
+                    "num_newer_versions": null,
+                    "send_age_if_zero": null,
+                    "send_days_since_custom_time_if_zero": null,
+                    "send_days_since_noncurrent_time_if_zero": null,
+                    "send_num_newer_versions_if_zero": null,
+                    "size_above_bytes": null,
+                    "size_below_bytes": null,
+                    "with_state": "ANY"
+                  }
+                ]
+              }
+            ],
+            "location": "US-CENTRAL1",
+            "logging": [],
+            "name": "triodelicia-mensal4-2026-todo-backups",
+            "public_access_prevention": "enforced",
+            "requester_pays": null,
+            "retention_policy": [
+              {
+                "is_locked": false,
+                "retention_period": "604800"
+              }
+            ],
+            "soft_delete_policy": [
+              {
+                "retention_duration_seconds": 0
+              }
+            ],
+            "storage_class": "STANDARD",
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "timeouts": null,
+            "uniform_bucket_level_access": true,
+            "versioning": [
+              {
+                "enabled": false
+              }
+            ]
+          },
+          "sensitive_values": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "effective_labels": {},
+            "encryption": [],
+            "hierarchical_namespace": [],
+            "ip_filter": [],
+            "lifecycle_rule": [
+              {
+                "action": [
+                  {}
+                ],
+                "condition": [
+                  {
+                    "matches_prefix": [],
+                    "matches_storage_class": [],
+                    "matches_suffix": []
+                  }
+                ]
+              }
+            ],
+            "logging": [],
+            "retention_policy": [
+              {}
+            ],
+            "soft_delete_policy": [
+              {}
+            ],
+            "terraform_labels": {},
+            "versioning": [
+              {}
+            ],
+            "website": []
+          },
+          "identity_schema_version": 1,
+          "identity": {
+            "name": null,
+            "project": null
+          }
+        },
+        {
+          "address": "google_storage_bucket.protected[\"state\"]",
+          "mode": "managed",
+          "type": "google_storage_bucket",
+          "name": "protected",
+          "index": "state",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 4,
+          "values": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "default_event_based_hold": null,
+            "deletion_policy": "DELETE",
+            "effective_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "enable_object_retention": null,
+            "encryption": [],
+            "force_destroy": false,
+            "hierarchical_namespace": [],
+            "ip_filter": [],
+            "labels": null,
+            "lifecycle_rule": [
+              {
+                "action": [
+                  {
+                    "storage_class": "",
+                    "type": "Delete"
+                  }
+                ],
+                "condition": [
+                  {
+                    "age": 30,
+                    "created_before": "",
+                    "custom_time_before": "",
+                    "days_since_custom_time": null,
+                    "days_since_noncurrent_time": null,
+                    "matches_prefix": [],
+                    "matches_storage_class": [],
+                    "matches_suffix": [],
+                    "noncurrent_time_before": "",
+                    "num_newer_versions": null,
+                    "send_age_if_zero": null,
+                    "send_days_since_custom_time_if_zero": null,
+                    "send_days_since_noncurrent_time_if_zero": null,
+                    "send_num_newer_versions_if_zero": null,
+                    "size_above_bytes": null,
+                    "size_below_bytes": null,
+                    "with_state": "ARCHIVED"
+                  }
+                ]
+              }
+            ],
+            "location": "US-CENTRAL1",
+            "logging": [],
+            "name": "triodelicia-mensal4-2026-todo-state",
+            "public_access_prevention": "enforced",
+            "requester_pays": null,
+            "retention_policy": [],
+            "soft_delete_policy": [
+              {
+                "retention_duration_seconds": 0
+              }
+            ],
+            "storage_class": "STANDARD",
+            "terraform_labels": {
+              "goog-terraform-provisioned": "true"
+            },
+            "timeouts": null,
+            "uniform_bucket_level_access": true,
+            "versioning": [
+              {
+                "enabled": true
+              }
+            ]
+          },
+          "sensitive_values": {
+            "autoclass": [],
+            "cors": [],
+            "custom_placement_config": [],
+            "effective_labels": {},
+            "encryption": [],
+            "hierarchical_namespace": [],
+            "ip_filter": [],
+            "lifecycle_rule": [
+              {
+                "action": [
+                  {}
+                ],
+                "condition": [
+                  {
+                    "matches_prefix": [],
+                    "matches_storage_class": [],
+                    "matches_suffix": []
+                  }
+                ]
+              }
+            ],
+            "logging": [],
+            "retention_policy": [],
+            "soft_delete_policy": [
+              {}
+            ],
+            "terraform_labels": {},
+            "versioning": [
+              {}
+            ],
+            "website": []
+          },
+          "identity_schema_version": 1,
+          "identity": {
+            "name": null,
+            "project": null
+          }
+        },
+        {
+          "address": "google_storage_bucket_iam_member.backup",
+          "mode": "managed",
+          "type": "google_storage_bucket_iam_member",
+          "name": "backup",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "bucket": "triodelicia-mensal4-2026-todo-backups",
+            "condition": [],
+            "member": "serviceAccount:todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "role": "roles/storage.objectUser",
+            "timeouts": null
+          },
+          "sensitive_values": {
+            "condition": []
+          }
+        },
+        {
+          "address": "google_storage_bucket_iam_member.state",
+          "mode": "managed",
+          "type": "google_storage_bucket_iam_member",
+          "name": "state",
+          "provider_name": "registry.terraform.io/hashicorp/google",
+          "schema_version": 0,
+          "values": {
+            "bucket": "triodelicia-mensal4-2026-todo-state",
+            "condition": [
+              {
+                "description": null,
+                "expression": "resource.type == 'storage.googleapis.com/Bucket' || resource.name.startsWith('projects/_/buckets/triodelicia-mensal4-2026-todo-state/objects/todo/main/')",
+                "title": "only-main-state-and-locks"
+              }
+            ],
+            "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+            "role": "roles/storage.objectAdmin",
+            "timeouts": null
+          },
+          "sensitive_values": {
+            "condition": [
+              {}
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "resource_changes": [
+    {
+      "address": "google_billing_budget.initial_tests",
+      "mode": "managed",
+      "type": "google_billing_budget",
+      "name": "initial_tests",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "all_updates_rule": [],
+          "amount": [
+            {
+              "last_period_amount": null,
+              "specified_amount": [
+                {
+                  "currency_code": "BRL",
+                  "nanos": null,
+                  "units": "5"
+                }
+              ]
+            }
+          ],
+          "billing_account": "[REDACTED_BILLING_ACCOUNT]",
+          "budget_filter": [
+            {
+              "calendar_period": null,
+              "credit_types": null,
+              "credit_types_treatment": "INCLUDE_ALL_CREDITS",
+              "custom_period": [],
+              "projects": [
+                "projects/271680307280"
+              ],
+              "resource_ancestors": null,
+              "subaccounts": null
+            }
+          ],
+          "display_name": "ToDo academic initial tests - BRL5 alert",
+          "ownership_scope": null,
+          "threshold_rules": [
+            {
+              "spend_basis": "CURRENT_SPEND",
+              "threshold_percent": 0.5
+            },
+            {
+              "spend_basis": "CURRENT_SPEND",
+              "threshold_percent": 0.9
+            },
+            {
+              "spend_basis": "CURRENT_SPEND",
+              "threshold_percent": 1
+            }
+          ],
+          "timeouts": null
+        },
+        "after_unknown": {
+          "all_updates_rule": [],
+          "amount": [
+            {
+              "specified_amount": [
+                {}
+              ]
+            }
+          ],
+          "budget_filter": [
+            {
+              "custom_period": [],
+              "labels": true,
+              "projects": [
+                false
+              ],
+              "services": true
+            }
+          ],
+          "deletion_policy": true,
+          "id": true,
+          "name": true,
+          "threshold_rules": [
+            {},
+            {},
+            {}
+          ]
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "all_updates_rule": [],
+          "amount": [
+            {
+              "specified_amount": [
+                {}
+              ]
+            }
+          ],
+          "billing_account": true,
+          "budget_filter": [
+            {
+              "custom_period": [],
+              "labels": {},
+              "projects": [
+                false
+              ],
+              "services": []
+            }
+          ],
+          "threshold_rules": [
+            {},
+            {},
+            {}
+          ]
+        }
+      }
+    },
+    {
+      "address": "google_iam_workload_identity_pool.github",
+      "mode": "managed",
+      "type": "google_iam_workload_identity_pool",
+      "name": "github",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "attestation_rules": [],
+          "deletion_policy": "DELETE",
+          "description": null,
+          "disabled": null,
+          "display_name": "ToDo trusted GitHub",
+          "inline_certificate_issuance_config": [],
+          "inline_trust_config": [],
+          "project": "triodelicia-mensal4-2026",
+          "timeouts": null,
+          "workload_identity_pool_id": "todo-github"
+        },
+        "after_unknown": {
+          "attestation_rules": [],
+          "id": true,
+          "inline_certificate_issuance_config": [],
+          "inline_trust_config": [],
+          "mode": true,
+          "name": true,
+          "state": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "attestation_rules": [],
+          "inline_certificate_issuance_config": [],
+          "inline_trust_config": []
+        },
+        "after_identity": {
+          "project": null,
+          "workload_identity_pool_id": null
+        }
+      }
+    },
+    {
+      "address": "google_iam_workload_identity_pool_provider.github",
+      "mode": "managed",
+      "type": "google_iam_workload_identity_pool_provider",
+      "name": "github",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "attribute_condition": "assertion.repository_id == '1468894543' && assertion.repository_owner_id == '55161713' && (assertion.ref == 'refs/heads/main' || assertion.ref == 'refs/heads/feat/infra-terraform-ansible-actions')",
+          "attribute_mapping": {
+            "attribute.repository_id": "assertion.repository_id",
+            "attribute.repository_owner_id": "assertion.repository_owner_id",
+            "google.subject": "assertion.sub"
+          },
+          "aws": [],
+          "deletion_policy": "DELETE",
+          "description": null,
+          "disabled": null,
+          "display_name": null,
+          "oidc": [
+            {
+              "allowed_audiences": null,
+              "issuer_uri": "https://token.actions.githubusercontent.com",
+              "jwks_json": null
+            }
+          ],
+          "project": "triodelicia-mensal4-2026",
+          "saml": [],
+          "timeouts": null,
+          "workload_identity_pool_id": "todo-github",
+          "workload_identity_pool_provider_id": "github",
+          "x509": []
+        },
+        "after_unknown": {
+          "attribute_mapping": {},
+          "aws": [],
+          "id": true,
+          "name": true,
+          "oidc": [
+            {}
+          ],
+          "saml": [],
+          "state": true,
+          "x509": []
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "attribute_mapping": {},
+          "aws": [],
+          "oidc": [
+            {}
+          ],
+          "saml": [],
+          "x509": []
+        },
+        "after_identity": {
+          "project": null,
+          "workload_identity_pool_id": null,
+          "workload_identity_pool_provider_id": null
+        }
+      }
+    },
+    {
+      "address": "google_project_iam_custom_role.automation",
+      "mode": "managed",
+      "type": "google_project_iam_custom_role",
+      "name": "automation",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "description": "Only Compute resources used by this repository; no IAM, billing, APIs or bucket administration.",
+          "permissions": [
+            "compute.disks.create",
+            "compute.disks.delete",
+            "compute.disks.get",
+            "compute.disks.list",
+            "compute.disks.setLabels",
+            "compute.disks.use",
+            "compute.firewalls.create",
+            "compute.firewalls.delete",
+            "compute.firewalls.get",
+            "compute.firewalls.list",
+            "compute.firewalls.update",
+            "compute.globalOperations.get",
+            "compute.images.get",
+            "compute.images.useReadOnly",
+            "compute.instances.attachDisk",
+            "compute.instances.create",
+            "compute.instances.delete",
+            "compute.instances.detachDisk",
+            "compute.instances.get",
+            "compute.instances.list",
+            "compute.instances.osAdminLogin",
+            "compute.instances.osLogin",
+            "compute.instances.setLabels",
+            "compute.instances.setMetadata",
+            "compute.instances.setScheduling",
+            "compute.instances.setServiceAccount",
+            "compute.instances.setTags",
+            "compute.instances.start",
+            "compute.instances.stop",
+            "compute.instances.update",
+            "compute.machineTypes.get",
+            "compute.networks.create",
+            "compute.networks.delete",
+            "compute.networks.get",
+            "compute.networks.list",
+            "compute.networks.updatePolicy",
+            "compute.projects.get",
+            "compute.regionOperations.get",
+            "compute.regions.get",
+            "compute.subnetworks.create",
+            "compute.subnetworks.delete",
+            "compute.subnetworks.get",
+            "compute.subnetworks.list",
+            "compute.subnetworks.use",
+            "compute.subnetworks.useExternalIp",
+            "compute.zoneOperations.get",
+            "compute.zones.get",
+            "compute.zones.list",
+            "serviceusage.services.use"
+          ],
+          "project": "triodelicia-mensal4-2026",
+          "role_id": "todoInfrastructure",
+          "stage": "GA",
+          "title": "ToDo approved infrastructure lifecycle"
+        },
+        "after_unknown": {
+          "deleted": true,
+          "id": true,
+          "name": true,
+          "permissions": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "permissions": [
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false,
+            false
+          ]
+        },
+        "after_identity": {
+          "project": null,
+          "role_id": null
+        }
+      }
+    },
+    {
+      "address": "google_project_iam_member.automation",
+      "mode": "managed",
+      "type": "google_project_iam_member",
+      "name": "automation",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "condition": [],
+          "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "project": "triodelicia-mensal4-2026"
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true,
+          "role": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": []
+        }
+      }
+    },
+    {
+      "address": "google_project_iam_member.iap",
+      "mode": "managed",
+      "type": "google_project_iam_member",
+      "name": "iap",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "condition": [
+            {
+              "description": null,
+              "expression": "destination.port == 22 && (destination.ip == '10.42.0.10' || destination.ip == '10.42.0.20')",
+              "title": "only-todo-private-ssh"
+            }
+          ],
+          "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "project": "triodelicia-mensal4-2026",
+          "role": "roles/iap.tunnelResourceAccessor"
+        },
+        "after_unknown": {
+          "condition": [
+            {}
+          ],
+          "etag": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": [
+            {}
+          ]
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"billingbudgets.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "billingbudgets.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "billingbudgets.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"cloudbilling.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "cloudbilling.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "cloudbilling.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"cloudresourcemanager.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "cloudresourcemanager.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "cloudresourcemanager.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"compute.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "compute.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "compute.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"iam.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "iam.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "iam.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"iamcredentials.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "iamcredentials.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "iamcredentials.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"iap.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "iap.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "iap.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"oslogin.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "oslogin.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "oslogin.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"serviceusage.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "serviceusage.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "serviceusage.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"storage.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "storage.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "storage.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_project_service.required[\"sts.googleapis.com\"]",
+      "mode": "managed",
+      "type": "google_project_service",
+      "name": "required",
+      "index": "sts.googleapis.com",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "deletion_policy": "DELETE",
+          "disable_dependent_services": null,
+          "disable_on_destroy": false,
+          "project": "triodelicia-mensal4-2026",
+          "service": "sts.googleapis.com",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "project": null,
+          "service": null
+        }
+      }
+    },
+    {
+      "address": "google_service_account.automation",
+      "mode": "managed",
+      "type": "google_service_account",
+      "name": "automation",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "account_id": "todo-automation",
+          "create_ignore_already_exists": null,
+          "deletion_policy": "DELETE",
+          "description": null,
+          "disabled": false,
+          "display_name": "ToDo trusted GitHub workflows",
+          "email": "todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "project": "triodelicia-mensal4-2026",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true,
+          "name": true,
+          "unique_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "email": null,
+          "project": null
+        }
+      }
+    },
+    {
+      "address": "google_service_account.runtime[\"app\"]",
+      "mode": "managed",
+      "type": "google_service_account",
+      "name": "runtime",
+      "index": "app",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "account_id": "todo-app",
+          "create_ignore_already_exists": null,
+          "deletion_policy": "DELETE",
+          "description": null,
+          "disabled": false,
+          "display_name": "ToDo app runtime",
+          "email": "todo-app@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "member": "serviceAccount:todo-app@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "project": "triodelicia-mensal4-2026",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true,
+          "name": true,
+          "unique_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "email": null,
+          "project": null
+        }
+      }
+    },
+    {
+      "address": "google_service_account.runtime[\"db\"]",
+      "mode": "managed",
+      "type": "google_service_account",
+      "name": "runtime",
+      "index": "db",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "account_id": "todo-db",
+          "create_ignore_already_exists": null,
+          "deletion_policy": "DELETE",
+          "description": null,
+          "disabled": false,
+          "display_name": "ToDo db runtime",
+          "email": "todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "member": "serviceAccount:todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "project": "triodelicia-mensal4-2026",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "id": true,
+          "name": true,
+          "unique_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {},
+        "after_identity": {
+          "email": null,
+          "project": null
+        }
+      }
+    },
+    {
+      "address": "google_service_account_iam_member.attach_runtime[\"app\"]",
+      "mode": "managed",
+      "type": "google_service_account_iam_member",
+      "name": "attach_runtime",
+      "index": "app",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "condition": [],
+          "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "role": "roles/iam.serviceAccountUser"
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true,
+          "service_account_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": []
+        }
+      }
+    },
+    {
+      "address": "google_service_account_iam_member.attach_runtime[\"db\"]",
+      "mode": "managed",
+      "type": "google_service_account_iam_member",
+      "name": "attach_runtime",
+      "index": "db",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "condition": [],
+          "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "role": "roles/iam.serviceAccountUser"
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true,
+          "service_account_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": []
+        }
+      }
+    },
+    {
+      "address": "google_service_account_iam_member.federation",
+      "mode": "managed",
+      "type": "google_service_account_iam_member",
+      "name": "federation",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "condition": [],
+          "role": "roles/iam.workloadIdentityUser"
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true,
+          "member": true,
+          "service_account_id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": []
+        }
+      }
+    },
+    {
+      "address": "google_storage_bucket.protected[\"backups\"]",
+      "mode": "managed",
+      "type": "google_storage_bucket",
+      "name": "protected",
+      "index": "backups",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "default_event_based_hold": null,
+          "deletion_policy": "DELETE",
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "enable_object_retention": null,
+          "encryption": [],
+          "force_destroy": false,
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "labels": null,
+          "lifecycle_rule": [
+            {
+              "action": [
+                {
+                  "storage_class": "",
+                  "type": "Delete"
+                }
+              ],
+              "condition": [
+                {
+                  "age": 7,
+                  "created_before": "",
+                  "custom_time_before": "",
+                  "days_since_custom_time": null,
+                  "days_since_noncurrent_time": null,
+                  "matches_prefix": [],
+                  "matches_storage_class": [],
+                  "matches_suffix": [],
+                  "noncurrent_time_before": "",
+                  "num_newer_versions": null,
+                  "send_age_if_zero": null,
+                  "send_days_since_custom_time_if_zero": null,
+                  "send_days_since_noncurrent_time_if_zero": null,
+                  "send_num_newer_versions_if_zero": null,
+                  "size_above_bytes": null,
+                  "size_below_bytes": null,
+                  "with_state": "ANY"
+                }
+              ]
+            }
+          ],
+          "location": "US-CENTRAL1",
+          "logging": [],
+          "name": "triodelicia-mensal4-2026-todo-backups",
+          "public_access_prevention": "enforced",
+          "requester_pays": null,
+          "retention_policy": [
+            {
+              "is_locked": false,
+              "retention_period": "604800"
+            }
+          ],
+          "soft_delete_policy": [
+            {
+              "retention_duration_seconds": 0
+            }
+          ],
+          "storage_class": "STANDARD",
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "timeouts": null,
+          "uniform_bucket_level_access": true,
+          "versioning": [
+            {
+              "enabled": false
+            }
+          ]
+        },
+        "after_unknown": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "id": true,
+          "ip_filter": [],
+          "lifecycle_rule": [
+            {
+              "action": [
+                {}
+              ],
+              "condition": [
+                {
+                  "matches_prefix": [],
+                  "matches_storage_class": [],
+                  "matches_suffix": []
+                }
+              ]
+            }
+          ],
+          "logging": [],
+          "project": true,
+          "project_number": true,
+          "retention_policy": [
+            {}
+          ],
+          "rpo": true,
+          "self_link": true,
+          "soft_delete_policy": [
+            {
+              "effective_time": true
+            }
+          ],
+          "terraform_labels": {},
+          "time_created": true,
+          "updated": true,
+          "url": true,
+          "versioning": [
+            {}
+          ],
+          "website": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "lifecycle_rule": [
+            {
+              "action": [
+                {}
+              ],
+              "condition": [
+                {
+                  "matches_prefix": [],
+                  "matches_storage_class": [],
+                  "matches_suffix": []
+                }
+              ]
+            }
+          ],
+          "logging": [],
+          "retention_policy": [
+            {}
+          ],
+          "soft_delete_policy": [
+            {}
+          ],
+          "terraform_labels": {},
+          "versioning": [
+            {}
+          ],
+          "website": []
+        },
+        "after_identity": {
+          "name": null,
+          "project": null
+        }
+      }
+    },
+    {
+      "address": "google_storage_bucket.protected[\"state\"]",
+      "mode": "managed",
+      "type": "google_storage_bucket",
+      "name": "protected",
+      "index": "state",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "default_event_based_hold": null,
+          "deletion_policy": "DELETE",
+          "effective_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "enable_object_retention": null,
+          "encryption": [],
+          "force_destroy": false,
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "labels": null,
+          "lifecycle_rule": [
+            {
+              "action": [
+                {
+                  "storage_class": "",
+                  "type": "Delete"
+                }
+              ],
+              "condition": [
+                {
+                  "age": 30,
+                  "created_before": "",
+                  "custom_time_before": "",
+                  "days_since_custom_time": null,
+                  "days_since_noncurrent_time": null,
+                  "matches_prefix": [],
+                  "matches_storage_class": [],
+                  "matches_suffix": [],
+                  "noncurrent_time_before": "",
+                  "num_newer_versions": null,
+                  "send_age_if_zero": null,
+                  "send_days_since_custom_time_if_zero": null,
+                  "send_days_since_noncurrent_time_if_zero": null,
+                  "send_num_newer_versions_if_zero": null,
+                  "size_above_bytes": null,
+                  "size_below_bytes": null,
+                  "with_state": "ARCHIVED"
+                }
+              ]
+            }
+          ],
+          "location": "US-CENTRAL1",
+          "logging": [],
+          "name": "triodelicia-mensal4-2026-todo-state",
+          "public_access_prevention": "enforced",
+          "requester_pays": null,
+          "retention_policy": [],
+          "soft_delete_policy": [
+            {
+              "retention_duration_seconds": 0
+            }
+          ],
+          "storage_class": "STANDARD",
+          "terraform_labels": {
+            "goog-terraform-provisioned": "true"
+          },
+          "timeouts": null,
+          "uniform_bucket_level_access": true,
+          "versioning": [
+            {
+              "enabled": true
+            }
+          ]
+        },
+        "after_unknown": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "id": true,
+          "ip_filter": [],
+          "lifecycle_rule": [
+            {
+              "action": [
+                {}
+              ],
+              "condition": [
+                {
+                  "matches_prefix": [],
+                  "matches_storage_class": [],
+                  "matches_suffix": []
+                }
+              ]
+            }
+          ],
+          "logging": [],
+          "project": true,
+          "project_number": true,
+          "retention_policy": [],
+          "rpo": true,
+          "self_link": true,
+          "soft_delete_policy": [
+            {
+              "effective_time": true
+            }
+          ],
+          "terraform_labels": {},
+          "time_created": true,
+          "updated": true,
+          "url": true,
+          "versioning": [
+            {}
+          ],
+          "website": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "autoclass": [],
+          "cors": [],
+          "custom_placement_config": [],
+          "effective_labels": {},
+          "encryption": [],
+          "hierarchical_namespace": [],
+          "ip_filter": [],
+          "lifecycle_rule": [
+            {
+              "action": [
+                {}
+              ],
+              "condition": [
+                {
+                  "matches_prefix": [],
+                  "matches_storage_class": [],
+                  "matches_suffix": []
+                }
+              ]
+            }
+          ],
+          "logging": [],
+          "retention_policy": [],
+          "soft_delete_policy": [
+            {}
+          ],
+          "terraform_labels": {},
+          "versioning": [
+            {}
+          ],
+          "website": []
+        },
+        "after_identity": {
+          "name": null,
+          "project": null
+        }
+      }
+    },
+    {
+      "address": "google_storage_bucket_iam_member.backup",
+      "mode": "managed",
+      "type": "google_storage_bucket_iam_member",
+      "name": "backup",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "triodelicia-mensal4-2026-todo-backups",
+          "condition": [],
+          "member": "serviceAccount:todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "role": "roles/storage.objectUser",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "condition": [],
+          "etag": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": []
+        }
+      }
+    },
+    {
+      "address": "google_storage_bucket_iam_member.state",
+      "mode": "managed",
+      "type": "google_storage_bucket_iam_member",
+      "name": "state",
+      "provider_name": "registry.terraform.io/hashicorp/google",
+      "change": {
+        "actions": [
+          "create"
+        ],
+        "before": null,
+        "after": {
+          "bucket": "triodelicia-mensal4-2026-todo-state",
+          "condition": [
+            {
+              "description": null,
+              "expression": "resource.type == 'storage.googleapis.com/Bucket' || resource.name.startsWith('projects/_/buckets/triodelicia-mensal4-2026-todo-state/objects/todo/main/')",
+              "title": "only-main-state-and-locks"
+            }
+          ],
+          "member": "serviceAccount:todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "role": "roles/storage.objectAdmin",
+          "timeouts": null
+        },
+        "after_unknown": {
+          "condition": [
+            {}
+          ],
+          "etag": true,
+          "id": true
+        },
+        "before_sensitive": false,
+        "after_sensitive": {
+          "condition": [
+            {}
+          ]
+        }
+      }
+    }
+  ],
+  "output_changes": {
+    "automation_service_account": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": "todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+      "after_unknown": false,
+      "before_sensitive": false,
+      "after_sensitive": false
+    },
+    "backup_bucket": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": "triodelicia-mensal4-2026-todo-backups",
+      "after_unknown": false,
+      "before_sensitive": false,
+      "after_sensitive": false
+    },
+    "state_bucket": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after": "triodelicia-mensal4-2026-todo-state",
+      "after_unknown": false,
+      "before_sensitive": false,
+      "after_sensitive": false
+    },
+    "wif_provider": {
+      "actions": [
+        "create"
+      ],
+      "before": null,
+      "after_unknown": true,
+      "before_sensitive": false,
+      "after_sensitive": false
+    }
+  },
+  "prior_state": {
+    "format_version": "1.0",
+    "terraform_version": "1.17.2",
+    "values": {
+      "outputs": {
+        "automation_service_account": {
+          "sensitive": false,
+          "value": "todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+          "type": "string"
+        },
+        "backup_bucket": {
+          "sensitive": false,
+          "value": "triodelicia-mensal4-2026-todo-backups",
+          "type": "string"
+        },
+        "state_bucket": {
+          "sensitive": false,
+          "value": "triodelicia-mensal4-2026-todo-state",
+          "type": "string"
+        }
+      },
+      "root_module": {}
+    }
+  },
+  "configuration": {
+    "provider_config": {
+      "google": {
+        "name": "google",
+        "full_name": "registry.terraform.io/hashicorp/google",
+        "version_constraint": "~> 7.0",
+        "expressions": {
+          "billing_project": {
+            "references": [
+              "var.project_id"
+            ]
+          },
+          "project": {
+            "references": [
+              "var.project_id"
+            ]
+          },
+          "user_project_override": {
+            "constant_value": true
+          }
+        }
+      }
+    },
+    "root_module": {
+      "outputs": {
+        "automation_service_account": {
+          "expression": {
+            "references": [
+              "google_service_account.automation.email",
+              "google_service_account.automation"
+            ]
+          }
+        },
+        "backup_bucket": {
+          "expression": {
+            "references": [
+              "google_storage_bucket.protected[\"backups\"].name",
+              "google_storage_bucket.protected[\"backups\"]",
+              "google_storage_bucket.protected"
+            ]
+          }
+        },
+        "state_bucket": {
+          "expression": {
+            "references": [
+              "google_storage_bucket.protected[\"state\"].name",
+              "google_storage_bucket.protected[\"state\"]",
+              "google_storage_bucket.protected"
+            ]
+          }
+        },
+        "wif_provider": {
+          "expression": {
+            "references": [
+              "google_iam_workload_identity_pool_provider.github.name",
+              "google_iam_workload_identity_pool_provider.github"
+            ]
+          }
+        }
+      },
+      "resources": [
+        {
+          "address": "google_billing_budget.initial_tests",
+          "mode": "managed",
+          "type": "google_billing_budget",
+          "name": "initial_tests",
+          "provider_config_key": "google",
+          "expressions": {
+            "amount": [
+              {
+                "specified_amount": [
+                  {
+                    "currency_code": {
+                      "constant_value": "BRL"
+                    },
+                    "units": {
+                      "constant_value": "5"
+                    }
+                  }
+                ]
+              }
+            ],
+            "billing_account": {
+              "references": [
+                "var.billing_account_id"
+              ]
+            },
+            "budget_filter": [
+              {
+                "projects": {
+                  "constant_value": [
+                    "projects/271680307280"
+                  ]
+                }
+              }
+            ],
+            "display_name": {
+              "constant_value": "ToDo academic initial tests - BRL5 alert"
+            },
+            "threshold_rules": [
+              {
+                "threshold_percent": {
+                  "constant_value": 0.5
+                }
+              },
+              {
+                "threshold_percent": {
+                  "constant_value": 0.9
+                }
+              },
+              {
+                "threshold_percent": {
+                  "constant_value": 1
+                }
+              }
+            ]
+          },
+          "schema_version": 1,
+          "depends_on": [
+            "google_project_service.required"
+          ]
+        },
+        {
+          "address": "google_iam_workload_identity_pool.github",
+          "mode": "managed",
+          "type": "google_iam_workload_identity_pool",
+          "name": "github",
+          "provider_config_key": "google",
+          "expressions": {
+            "display_name": {
+              "constant_value": "ToDo trusted GitHub"
+            },
+            "workload_identity_pool_id": {
+              "constant_value": "todo-github"
+            }
+          },
+          "schema_version": 0,
+          "depends_on": [
+            "google_project_service.required"
+          ]
+        },
+        {
+          "address": "google_iam_workload_identity_pool_provider.github",
+          "mode": "managed",
+          "type": "google_iam_workload_identity_pool_provider",
+          "name": "github",
+          "provider_config_key": "google",
+          "expressions": {
+            "attribute_condition": {
+              "references": [
+                "var.repository_id",
+                "var.repository_owner_id"
+              ]
+            },
+            "attribute_mapping": {
+              "constant_value": {
+                "attribute.repository_id": "assertion.repository_id",
+                "attribute.repository_owner_id": "assertion.repository_owner_id",
+                "google.subject": "assertion.sub"
+              }
+            },
+            "oidc": [
+              {
+                "issuer_uri": {
+                  "constant_value": "https://token.actions.githubusercontent.com"
+                }
+              }
+            ],
+            "workload_identity_pool_id": {
+              "references": [
+                "google_iam_workload_identity_pool.github.workload_identity_pool_id",
+                "google_iam_workload_identity_pool.github"
+              ]
+            },
+            "workload_identity_pool_provider_id": {
+              "constant_value": "github"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "google_project_iam_custom_role.automation",
+          "mode": "managed",
+          "type": "google_project_iam_custom_role",
+          "name": "automation",
+          "provider_config_key": "google",
+          "expressions": {
+            "description": {
+              "constant_value": "Only Compute resources used by this repository; no IAM, billing, APIs or bucket administration."
+            },
+            "permissions": {
+              "constant_value": [
+                "compute.projects.get",
+                "compute.zones.get",
+                "compute.zones.list",
+                "compute.regions.get",
+                "compute.machineTypes.get",
+                "compute.images.get",
+                "compute.images.useReadOnly",
+                "compute.networks.create",
+                "compute.networks.get",
+                "compute.networks.list",
+                "compute.networks.delete",
+                "compute.networks.updatePolicy",
+                "compute.subnetworks.create",
+                "compute.subnetworks.get",
+                "compute.subnetworks.list",
+                "compute.subnetworks.delete",
+                "compute.subnetworks.use",
+                "compute.subnetworks.useExternalIp",
+                "compute.firewalls.create",
+                "compute.firewalls.get",
+                "compute.firewalls.list",
+                "compute.firewalls.update",
+                "compute.firewalls.delete",
+                "compute.disks.create",
+                "compute.disks.get",
+                "compute.disks.list",
+                "compute.disks.use",
+                "compute.disks.delete",
+                "compute.disks.setLabels",
+                "compute.instances.create",
+                "compute.instances.get",
+                "compute.instances.list",
+                "compute.instances.delete",
+                "compute.instances.start",
+                "compute.instances.stop",
+                "compute.instances.setMetadata",
+                "compute.instances.setServiceAccount",
+                "compute.instances.setTags",
+                "compute.instances.setLabels",
+                "compute.instances.setScheduling",
+                "compute.instances.attachDisk",
+                "compute.instances.detachDisk",
+                "compute.instances.update",
+                "compute.instances.osLogin",
+                "compute.instances.osAdminLogin",
+                "compute.globalOperations.get",
+                "compute.regionOperations.get",
+                "compute.zoneOperations.get",
+                "serviceusage.services.use"
+              ]
+            },
+            "project": {
+              "references": [
+                "var.project_id"
+              ]
+            },
+            "role_id": {
+              "constant_value": "todoInfrastructure"
+            },
+            "title": {
+              "constant_value": "ToDo approved infrastructure lifecycle"
+            }
+          },
+          "schema_version": 0,
+          "depends_on": [
+            "google_project_service.required"
+          ]
+        },
+        {
+          "address": "google_project_iam_member.automation",
+          "mode": "managed",
+          "type": "google_project_iam_member",
+          "name": "automation",
+          "provider_config_key": "google",
+          "expressions": {
+            "member": {
+              "references": [
+                "google_service_account.automation.email",
+                "google_service_account.automation"
+              ]
+            },
+            "project": {
+              "references": [
+                "var.project_id"
+              ]
+            },
+            "role": {
+              "references": [
+                "google_project_iam_custom_role.automation.name",
+                "google_project_iam_custom_role.automation"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "google_project_iam_member.iap",
+          "mode": "managed",
+          "type": "google_project_iam_member",
+          "name": "iap",
+          "provider_config_key": "google",
+          "expressions": {
+            "condition": [
+              {
+                "expression": {
+                  "constant_value": "destination.port == 22 && (destination.ip == '10.42.0.10' || destination.ip == '10.42.0.20')"
+                },
+                "title": {
+                  "constant_value": "only-todo-private-ssh"
+                }
+              }
+            ],
+            "member": {
+              "references": [
+                "google_service_account.automation.email",
+                "google_service_account.automation"
+              ]
+            },
+            "project": {
+              "references": [
+                "var.project_id"
+              ]
+            },
+            "role": {
+              "constant_value": "roles/iap.tunnelResourceAccessor"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "google_project_service.required",
+          "mode": "managed",
+          "type": "google_project_service",
+          "name": "required",
+          "provider_config_key": "google",
+          "expressions": {
+            "disable_on_destroy": {
+              "constant_value": false
+            },
+            "project": {
+              "references": [
+                "var.project_id"
+              ]
+            },
+            "service": {
+              "references": [
+                "each.value"
+              ]
+            }
+          },
+          "schema_version": 0,
+          "for_each_expression": {
+            "references": [
+              "local.services"
+            ]
+          }
+        },
+        {
+          "address": "google_service_account.automation",
+          "mode": "managed",
+          "type": "google_service_account",
+          "name": "automation",
+          "provider_config_key": "google",
+          "expressions": {
+            "account_id": {
+              "constant_value": "todo-automation"
+            },
+            "display_name": {
+              "constant_value": "ToDo trusted GitHub workflows"
+            }
+          },
+          "schema_version": 0,
+          "depends_on": [
+            "google_project_service.required"
+          ]
+        },
+        {
+          "address": "google_service_account.runtime",
+          "mode": "managed",
+          "type": "google_service_account",
+          "name": "runtime",
+          "provider_config_key": "google",
+          "expressions": {
+            "account_id": {
+              "references": [
+                "each.key"
+              ]
+            },
+            "display_name": {
+              "references": [
+                "each.key"
+              ]
+            }
+          },
+          "schema_version": 0,
+          "depends_on": [
+            "google_project_service.required"
+          ]
+        },
+        {
+          "address": "google_service_account_iam_member.attach_runtime",
+          "mode": "managed",
+          "type": "google_service_account_iam_member",
+          "name": "attach_runtime",
+          "provider_config_key": "google",
+          "expressions": {
+            "member": {
+              "references": [
+                "google_service_account.automation.email",
+                "google_service_account.automation"
+              ]
+            },
+            "role": {
+              "constant_value": "roles/iam.serviceAccountUser"
+            },
+            "service_account_id": {
+              "references": [
+                "each.value.name",
+                "each.value"
+              ]
+            }
+          },
+          "schema_version": 0,
+          "for_each_expression": {
+            "references": [
+              "google_service_account.runtime"
+            ]
+          }
+        },
+        {
+          "address": "google_service_account_iam_member.federation",
+          "mode": "managed",
+          "type": "google_service_account_iam_member",
+          "name": "federation",
+          "provider_config_key": "google",
+          "expressions": {
+            "member": {
+              "references": [
+                "google_iam_workload_identity_pool.github.name",
+                "google_iam_workload_identity_pool.github",
+                "var.repository_id"
+              ]
+            },
+            "role": {
+              "constant_value": "roles/iam.workloadIdentityUser"
+            },
+            "service_account_id": {
+              "references": [
+                "google_service_account.automation.name",
+                "google_service_account.automation"
+              ]
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "google_storage_bucket.protected",
+          "mode": "managed",
+          "type": "google_storage_bucket",
+          "name": "protected",
+          "provider_config_key": "google",
+          "expressions": {
+            "force_destroy": {
+              "constant_value": false
+            },
+            "lifecycle_rule": [
+              {
+                "action": [
+                  {
+                    "type": {
+                      "constant_value": "Delete"
+                    }
+                  }
+                ],
+                "condition": [
+                  {
+                    "age": {
+                      "references": [
+                        "each.key"
+                      ]
+                    },
+                    "with_state": {
+                      "references": [
+                        "each.key"
+                      ]
+                    }
+                  }
+                ]
+              }
+            ],
+            "location": {
+              "constant_value": "US-CENTRAL1"
+            },
+            "name": {
+              "references": [
+                "var.project_id",
+                "each.key"
+              ]
+            },
+            "public_access_prevention": {
+              "constant_value": "enforced"
+            },
+            "soft_delete_policy": [
+              {
+                "retention_duration_seconds": {
+                  "constant_value": 0
+                }
+              }
+            ],
+            "storage_class": {
+              "constant_value": "STANDARD"
+            },
+            "uniform_bucket_level_access": {
+              "constant_value": true
+            },
+            "versioning": [
+              {
+                "enabled": {
+                  "references": [
+                    "each.key"
+                  ]
+                }
+              }
+            ]
+          },
+          "schema_version": 4,
+          "depends_on": [
+            "google_project_service.required"
+          ]
+        },
+        {
+          "address": "google_storage_bucket_iam_member.backup",
+          "mode": "managed",
+          "type": "google_storage_bucket_iam_member",
+          "name": "backup",
+          "provider_config_key": "google",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "google_storage_bucket.protected[\"backups\"].name",
+                "google_storage_bucket.protected[\"backups\"]",
+                "google_storage_bucket.protected"
+              ]
+            },
+            "member": {
+              "references": [
+                "google_service_account.runtime[\"db\"].email",
+                "google_service_account.runtime[\"db\"]",
+                "google_service_account.runtime"
+              ]
+            },
+            "role": {
+              "constant_value": "roles/storage.objectUser"
+            }
+          },
+          "schema_version": 0
+        },
+        {
+          "address": "google_storage_bucket_iam_member.state",
+          "mode": "managed",
+          "type": "google_storage_bucket_iam_member",
+          "name": "state",
+          "provider_config_key": "google",
+          "expressions": {
+            "bucket": {
+              "references": [
+                "google_storage_bucket.protected[\"state\"].name",
+                "google_storage_bucket.protected[\"state\"]",
+                "google_storage_bucket.protected"
+              ]
+            },
+            "condition": [
+              {
+                "expression": {
+                  "references": [
+                    "google_storage_bucket.protected[\"state\"].name",
+                    "google_storage_bucket.protected[\"state\"]",
+                    "google_storage_bucket.protected"
+                  ]
+                },
+                "title": {
+                  "constant_value": "only-main-state-and-locks"
+                }
+              }
+            ],
+            "member": {
+              "references": [
+                "google_service_account.automation.email",
+                "google_service_account.automation"
+              ]
+            },
+            "role": {
+              "constant_value": "roles/storage.objectAdmin"
+            }
+          },
+          "schema_version": 0
+        }
+      ],
+      "variables": {
+        "billing_account_id": {
+          "sensitive": true
+        },
+        "project_id": {},
+        "repository": {
+          "default": "pepepedrinho/S8_GCP_IaC_CICD_ToDoApp"
+        },
+        "repository_id": {},
+        "repository_owner_id": {}
+      }
+    }
+  },
+  "relevant_attributes": [
+    {
+      "resource": "google_iam_workload_identity_pool.github",
+      "attribute": [
+        "name"
+      ]
+    },
+    {
+      "resource": "google_project_iam_custom_role.automation",
+      "attribute": [
+        "name"
+      ]
+    },
+    {
+      "resource": "google_service_account.automation",
+      "attribute": [
+        "email"
+      ]
+    },
+    {
+      "resource": "google_service_account.automation",
+      "attribute": [
+        "name"
+      ]
+    },
+    {
+      "resource": "google_iam_workload_identity_pool.github",
+      "attribute": [
+        "workload_identity_pool_id"
+      ]
+    },
+    {
+      "resource": "google_storage_bucket.protected[\"state\"]",
+      "attribute": [
+        "name"
+      ]
+    },
+    {
+      "resource": "google_iam_workload_identity_pool_provider.github",
+      "attribute": [
+        "name"
+      ]
+    },
+    {
+      "resource": "google_service_account.runtime",
+      "attribute": []
+    },
+    {
+      "resource": "google_service_account.runtime[\"db\"]",
+      "attribute": [
+        "email"
+      ]
+    },
+    {
+      "resource": "google_storage_bucket.protected[\"backups\"]",
+      "attribute": [
+        "name"
+      ]
+    }
+  ],
+  "checks": [
+    {
+      "address": {
+        "kind": "var",
+        "name": "project_id",
+        "to_display": "var.project_id"
+      },
+      "status": "pass",
+      "instances": [
+        {
+          "address": {
+            "to_display": "var.project_id"
+          },
+          "status": "pass"
+        }
+      ]
+    }
+  ],
+  "timestamp": "2026-11-23T16:49:42Z",
+  "applyable": true,
+  "complete": true,
+  "errored": false
+}

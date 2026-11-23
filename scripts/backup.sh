@@ -27,4 +27,12 @@ if [[ -n "${BACKUP_BUCKET:-}" ]]; then
   python3 "$(dirname "$0")/gcs.py" upload "$BACKUP_BUCKET" "todo/$(basename "$archive")" "$archive"
   python3 "$(dirname "$0")/gcs.py" upload "$BACKUP_BUCKET" "todo/$(basename "$archive").json" "$archive.json"
 fi
+# Remove only old, validated local archives after this backup has recovered
+# successfully (and, when configured, both uploads have completed).
+while IFS= read -r -d '' manifest; do
+  old_archive=${manifest%.json}
+  if [[ -f "$old_archive" ]] && python3 -c 'import json,sys; assert json.load(open(sys.argv[1])).get("validated") is True' "$manifest"; then
+    rm -- "$old_archive" "$manifest"
+  fi
+done < <(find "$root/backups" -maxdepth 1 -type f -name 'todo-????????T??????Z.archive.gz.json' -mtime +7 -print0)
 echo '{"event":"backup_validated","retention_days":7}'

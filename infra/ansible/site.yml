@@ -1,0 +1,18 @@
+---
+- name: Configure public application host and package relay
+  hosts: app
+  become: true
+  roles:
+    - app_host
+
+- name: Configure private database
+  hosts: database
+  become: true
+  roles:
+    - database_host
+
+- name: Deploy application and HTTPS
+  hosts: app
+  become: true
+  roles:
+    - application

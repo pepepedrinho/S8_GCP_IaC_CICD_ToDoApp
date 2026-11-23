@@ -1,0 +1,25 @@
+services:
+  frontend:
+    image: ${FRONTEND_IMAGE:?required}
+    ports: ['127.0.0.1:8080:80']
+    restart: unless-stopped
+    mem_limit: 96m
+    depends_on:
+      backend: {condition: service_healthy}
+    logging: &logging
+      driver: json-file
+      options: {max-size: '5m', max-file: '2'}
+  backend:
+    image: ${BACKEND_IMAGE:?required}
+    environment:
+      MONGODB_URI_FILE: /run/secrets/mongodb_uri
+      APP_VERSION: ${APP_VERSION:?required}
+    volumes: ['./secrets/mongodb_uri:/run/secrets/mongodb_uri:ro']
+    restart: unless-stopped
+    mem_limit: 224m
+    healthcheck:
+      test: [CMD, node, -e, 'fetch("http://127.0.0.1:5000/health/ready").then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))']
+      interval: 10s
+      timeout: 4s
+      retries: 12
+    logging: *logging

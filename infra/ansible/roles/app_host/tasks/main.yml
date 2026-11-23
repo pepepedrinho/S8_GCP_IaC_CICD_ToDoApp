@@ -1,0 +1,64 @@
+---
+- name: Install packages from Ubuntu repositories
+  ansible.builtin.apt:
+    name: [docker.io, docker-compose-v2, squid, nginx, certbot, python3-certbot-nginx]
+    state: present
+    update_cache: true
+    cache_valid_time: 3600
+- name: Create application directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop: ["{{ todo_root }}", "{{ todo_root }}/artifacts", "{{ todo_root }}/webroot", "{{ todo_root }}/bin"]
+- name: Configure restricted package relay
+  ansible.builtin.copy:
+    dest: /etc/squid/squid.conf
+    mode: '0644'
+    content: |
+      http_port {{ todo_app_private_ip }}:3128
+      acl private_database src {{ todo_db_private_ip }}/32
+      acl ubuntu_repositories dstdomain .ubuntu.com .canonical.com
+      acl safe_ports port 80 443
+      http_access deny !safe_ports
+      http_access allow private_database ubuntu_repositories
+      http_access deny all
+      cache deny all
+      access_log none
+      cache_mem 8 MB
+      maximum_object_size 0 KB
+  notify: Restart squid
+- name: Start Docker and package relay
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: [docker, squid]
+- name: Apply relay configuration before database apt
+  ansible.builtin.meta: flush_handlers
+- name: Check transferred application image
+  ansible.builtin.command: "docker image inspect {{ todo_frontend_image }}"
+  register: app_host_image
+  changed_when: false
+  failed_when: false
+- name: Import transferred application images
+  ansible.builtin.command: "docker load -i {{ todo_root }}/artifacts/application.tar"
+  when: app_host_image.rc != 0
+  changed_when: true
+- name: Download pinned Mongo image on the public host
+  ansible.builtin.command: "docker pull {{ todo_mongo_image }}"
+  register: app_host_mongo_pull
+  changed_when: "'Downloaded newer image' in app_host_mongo_pull.stdout"
+- name: Inspect existing image artifact
+  ansible.builtin.stat:
+    path: "{{ todo_root }}/artifacts/mongo.tar"
+  register: app_host_mongo_artifact
+- name: Export image for the private host
+  ansible.builtin.command: "docker save -o {{ todo_root }}/artifacts/mongo.tar {{ todo_mongo_image }}"
+  when: app_host_mongo_pull.changed or not app_host_mongo_artifact.stat.exists
+  changed_when: true
+- name: Fetch image archive through SSH to controller
+  ansible.builtin.fetch:
+    src: "{{ todo_root }}/artifacts/mongo.tar"
+    dest: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar"
+    flat: true

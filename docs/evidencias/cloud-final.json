@@ -1,0 +1,18 @@
+{
+  "checked_at_utc": "2026-11-23T17:04:40.711310+00:00",
+  "project_id": "triodelicia-mensal4-2026",
+  "project_state": "ACTIVE",
+  "billing_enabled": true,
+  "enabled_apis": [
+    "cloudbilling.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "serviceusage.googleapis.com"
+  ],
+  "bootstrap_applied": false,
+  "compute_inventory": null,
+  "disks": null,
+  "reserved_addresses": null,
+  "buckets": null,
+  "compute_query_note": "Compute API is disabled; no provisioning/apply was performed in this implementation.",
+  "storage_query_note": "Storage API is disabled; no buckets were applied."
+}

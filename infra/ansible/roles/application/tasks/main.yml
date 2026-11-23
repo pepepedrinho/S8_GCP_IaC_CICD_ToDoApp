@@ -1,0 +1,90 @@
+---
+- name: Create protected application secret directory
+  ansible.builtin.file:
+    path: "{{ todo_root }}/secrets"
+    state: directory
+    mode: '0700'
+- name: Configure limited application database credential
+  ansible.builtin.copy:
+    content: "mongodb://todo:{{ mongo_app_password | urlencode }}@{{ todo_db_private_ip }}:27017/todo-app?authSource=todo-app"
+    dest: "{{ todo_root }}/secrets/mongodb_uri"
+    owner: '1000'
+    group: '1000'
+    mode: '0400'
+  no_log: true
+- name: Configure application Compose
+  ansible.builtin.template:
+    src: compose.yml.j2
+    dest: "{{ todo_root }}/compose.yml"
+    mode: '0600'
+- name: Install transactional deploy script
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../scripts/deploy-images.sh"
+    dest: "{{ todo_root }}/bin/deploy-images.sh"
+    mode: '0700'
+- name: Deploy identified application version
+  ansible.builtin.command:
+    argv: ["{{ todo_root }}/bin/deploy-images.sh", "{{ todo_frontend_image }}", "{{ todo_backend_image }}", "{{ todo_version }}"]
+  register: application_deploy
+  changed_when: "'deployed' in application_deploy.stdout"
+- name: Check current domain certificate
+  ansible.builtin.stat:
+    path: "/etc/letsencrypt/live/{{ todo_domain }}/fullchain.pem"
+  register: application_existing_certificate
+- name: Configure HTTP ingress and ACME webroot
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/sites-available/todo
+    mode: '0644'
+  when: not application_existing_certificate.stat.exists or not todo_enable_https | bool
+  notify: Reload nginx
+- name: Remove default Nginx site
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+- name: Enable ToDo site
+  ansible.builtin.file:
+    src: /etc/nginx/sites-available/todo
+    dest: /etc/nginx/sites-enabled/todo
+    state: link
+  notify: Reload nginx
+- name: Start Nginx
+  ansible.builtin.systemd_service:
+    name: nginx
+    state: started
+    enabled: true
+- name: Apply HTTP configuration
+  ansible.builtin.meta: flush_handlers
+- name: Obtain or renew public certificate
+  ansible.builtin.command:
+    argv:
+      - certbot
+      - certonly
+      - --webroot
+      - -w
+      - /opt/todo/webroot
+      - -d
+      - "{{ todo_domain }}"
+      - --email
+      - "{{ todo_certificate_email }}"
+      - --agree-tos
+      - --non-interactive
+      - --keep-until-expiring
+  when: todo_enable_https | bool
+  register: application_certificate
+  changed_when: "'Successfully received certificate' in application_certificate.stdout"
+- name: Enable TLS ingress
+  ansible.builtin.template:
+    src: nginx-tls.conf.j2
+    dest: /etc/nginx/sites-available/todo
+    mode: '0644'
+  when: todo_enable_https | bool
+  notify: Reload nginx
+- name: Configure certificate reload on renewal
+  ansible.builtin.copy:
+    dest: /etc/letsencrypt/renewal-hooks/deploy/reload-nginx
+    mode: '0755'
+    content: |
+      #!/bin/sh
+      nginx -t && systemctl reload nginx
+  when: todo_enable_https | bool

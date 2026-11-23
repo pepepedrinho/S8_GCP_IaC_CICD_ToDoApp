@@ -1,0 +1,15 @@
+---
+todo_project: triodelicia-mensal4-2026
+todo_region: us-central1
+todo_zone: us-central1-a
+todo_app_private_ip: 10.42.0.10
+todo_db_private_ip: 10.42.0.20
+todo_backup_bucket: triodelicia-mensal4-2026-todo-backups
+todo_root: /opt/todo
+todo_mongo_image: mongo:8.0
+todo_mongo_memory: 448m
+todo_backend_image: todo-backend:local
+todo_frontend_image: todo-frontend:local
+todo_version: local
+todo_certificate_email: pedrohalvesdosantos@gmail.com
+todo_enable_https: true

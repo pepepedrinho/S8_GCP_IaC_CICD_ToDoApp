@@ -1,0 +1,85 @@
+name: Validate
+on:
+  push:
+    branches: [main, feat/infra-terraform-ansible-actions]
+    paths-ignore: ['docs/**', README.md]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [backend, frontend]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: ${{ matrix.directory }}/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npm audit --audit-level=low
+      - if: matrix.directory == 'frontend'
+        run: npm run build
+  infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.17.2
+          terraform_wrapper: false
+      - run: |
+          terraform fmt -check -recursive infra/terraform
+          for module in bootstrap main; do
+            terraform -chdir=infra/terraform/$module init -backend=false -input=false
+            terraform -chdir=infra/terraform/$module validate
+          done
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install ansible-core==2.19.4 ansible-lint==25.11.1
+      - run: ansible-galaxy collection install -r infra/ansible/requirements.yml
+      - run: |
+          export ANSIBLE_CONFIG="$PWD/infra/ansible/ansible.cfg"
+          ansible-playbook -i infra/ansible/inventory.example.yml infra/ansible/site.yml --syntax-check
+          ansible-lint --offline infra/ansible/site.yml
+          python -m compileall -q scripts
+          shellcheck scripts/*.sh
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      COMPOSE_PROJECT_NAME: todo-ci
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          python scripts/init-local.py
+          docker compose build
+          docker compose up -d --wait --wait-timeout 180
+          python scripts/smoke.py http://127.0.0.1:8080 --evidence docs/evidencias/ci-smoke.json
+          python scripts/integration.py
+          python scripts/test-release.py
+          export TODO_ROOT="$PWD/.local" COMPOSE_FILE="$PWD/docker-compose.yaml" MONGO_IMAGE=todo-mongo:local
+          bash scripts/backup.sh
+      - if: always()
+        run: docker compose stop
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: local-validation
+          path: docs/evidencias/*.json
+          retention-days: 7
+  images:
+    if: github.event_name == 'push'
+    needs: [application, infrastructure, integration]
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/images.yml
