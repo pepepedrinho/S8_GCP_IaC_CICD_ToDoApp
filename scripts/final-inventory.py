@@ -13,7 +13,7 @@ result = {
     'project_state': project['lifecycleState'],
     'billing_enabled': billing.get('billingEnabled', False),
     'enabled_apis': enabled,
-    'bootstrap_applied': False,
+    'bootstrap_apply_record_present': (ROOT / '.local' / 'bootstrap-outputs.json').exists(),
     'compute_inventory': None,
     'disks': None,
     'reserved_addresses': None,
@@ -25,11 +25,11 @@ if 'compute.googleapis.com' in enabled:
     result['disks'] = [{'name': d['name'], 'size_gb': d['sizeGb']} for d in gcloud('compute', 'disks', 'list', json_output=True)]
     result['reserved_addresses'] = [{'name': a['name'], 'status': a['status']} for a in gcloud('compute', 'addresses', 'list', json_output=True)]
 else:
-    result['compute_query_note'] = 'Compute API is disabled; no provisioning/apply was performed in this implementation.'
+    result['compute_query_note'] = 'Compute API is disabled; inventory was not queried.'
 if 'storage.googleapis.com' in enabled:
     result['buckets'] = [b.get('name') for b in gcloud('storage', 'buckets', 'list', json_output=True)]
 else:
-    result['storage_query_note'] = 'Storage API is disabled; no buckets were applied.'
+    result['storage_query_note'] = 'Storage API is disabled; inventory was not queried.'
 target = ROOT / 'docs' / 'evidencias' / 'cloud-final.json'
 target.write_text(json.dumps(result, indent=2), encoding='utf-8')
 print(json.dumps(result, indent=2))
