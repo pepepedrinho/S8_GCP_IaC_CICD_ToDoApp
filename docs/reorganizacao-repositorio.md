@@ -1,6 +1,6 @@
 # Reorganização do repositório
 
-A estrutura de branches representa marcos cumulativos do desenvolvimento. A main é a referência operacional e deve apontar para o mesmo commit de 05-entrega-final. Os marcos não foram divididos por tecnologia quando o código foi introduzido no mesmo commit.
+A estrutura de branches representa marcos cumulativos do desenvolvimento. A main é a referência operacional e aponta para o mesmo commit de 05-entrega-final. Os marcos não foram divididos por tecnologia quando o código foi introduzido no mesmo commit.
 
 ## Marcos preservados
 
@@ -23,7 +23,7 @@ O arquivo [commits-reescritos.json](historico/commits-reescritos.json) relaciona
 
 Antes da reescrita, o workspace e a sincronização remota foram conferidos e um Git bundle completo foi criado e verificado. A cópia privada fica em `.local/history-backups/20261125T194551Z/repositorio-antes-da-reorganizacao.bundle`, ignorada pelo Git. SHA-256 do bundle: `f511cba1be11e09509420bc14f96d88931e18ff3ca8bd6908ca5a2a7fa00e8ca`. Estados, credenciais e backups da aplicação continuam fora do repositório público.
 
-A main pode avançar por fast-forward a partir da base preservada; a publicação não exige force push. A branch antiga só é removida após a verificação das novas referências, CI e compatibilidade operacional. Não se publica o bundle privado nem se alteram referências do repositório do professor.
+A main foi publicada por fast-forward a partir da base preservada, sem force push. A branch antiga foi removida depois da verificação das novas referências, CI e compatibilidade operacional, com lease do SHA exato para impedir a perda de alterações remotas inesperadas. Não se publica o bundle privado nem se alteram referências do repositório do professor.
 
 ## Compatibilidade operacional
 
@@ -31,7 +31,7 @@ A main pode avançar por fast-forward a partir da base preservada; a publicaçã
 - Validate acompanha pushes na main e pull requests. Publicação de imagens permanece ligada à CI aprovada na main e à execução manual específica.
 - Os comandos do manual usam main; a condição OIDC implantada já aceita essa branch. A referência legada no Terraform foi mantida para representar fielmente o IAM aplicado, sem novo apply.
 - Os quatro manifests GHCR dos SHAs 9a2747c/fa626de foram reconferidos por HEAD 200, com digests em [compatibilidade-ghcr.json](evidencias/compatibilidade-ghcr.json). Imagens existentes não foram renomeadas.
-- O código de aplicação, Compose, Dockerfiles, scripts operacionais, Terraform, Ansible e testes foi preservado. A revisão de workflows limita-se aos gatilhos e filtros de branches.
+- O código da aplicação, Compose, Dockerfiles, scripts operacionais, Terraform e testes foi preservado. A revisão de workflows abrange gatilhos/filtros e a passagem do contato ACME por configuração protegida. Em Ansible, somente a origem do contato foi externalizada para CERTIFICATE_EMAIL; o valor utilizado permanece o mesmo, sem alteração de credenciais de autenticação.
 
 ## Limpeza e documentação
 
@@ -44,3 +44,20 @@ Foram arquivados privadamente 65 arquivos/diretórios locais: logs, roteiros de 
 As verificações da reorganização distinguem integridade Git, validações estáticas/CI e leituras do estado GCP. A CI desta etapa não representa novo teste remoto de implantação. O registro final das execuções e verificações fica em `evidencias/reorganizacao-validacao.json`.
 
 O aceite permanece em **15/16 (93,75%)**. ACE-10 e rotação do token DuckDNS continuam pendentes. Não houve inicialização de VMs, deploy, Terraform apply/destroy, alteração de credenciais ou mudança de arquitetura. Leituras CLI em [reorganizacao-vms.json](evidencias/reorganizacao-vms.json) confirmam o estado TERMINATED.
+
+### Resultados finais
+
+- [CI 45692678805](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45692678805): aprovada após a externalização do contato ACME, incluindo os seis jobs. Não houve implantação na GCP.
+- [CI 45690367361](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45690367361): aprovada na main, seis jobs concluídos, incluindo integração e publicação das imagens frontend/backend. Essas novas imagens não foram implantadas na GCP.
+- [Infrastructure validate 45690440676](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45690440676): acionamento manual na main aprovado; etapas de autenticação GCP e apply não executadas.
+- Actionlint 1.7.12 aprovado; CI Linux aprovou Terraform, Ansible, ShellCheck, testes de aplicação e integração.
+- Correspondência dos 30 commits conferida, 62 JSON históricos preservados, links internos válidos e nenhuma ocorrência dos seis valores privados conhecidos ou dos padrões de credenciais verificados.
+- README e diagrama Mermaid conferidos renderizados no GitHub. A página pública do workflow exibe o arquivo na main e a execução manual aprovada. O botão Run workflow exige sessão autenticada e não foi observado na sessão pública; o acionamento foi comprovado pela CLI.
+- Sete branches publicadas; main e 05-entrega-final idênticas. A branch antiga foi removida e o bundle privado permanece verificado.
+- VMs reconferidas TERMINATED pelo GCP CLI às 17:15:57 (Brasília, UTC−3), sem inicialização durante a reorganização. Apenas documentação/evidências são atualizadas após essa leitura.
+
+A descrição, o endereço de demonstração e os tópicos do repositório também foram preenchidos. O [registro de validação](evidencias/reorganizacao-validacao.json), os [resultados dos runs](evidencias/reorganizacao-ci.json) e a [captura do README](evidencias/github-readme.jpg) permitem conferir a entrega.
+
+### Privacidade da configuração ACME
+
+O contato Certbot deixou de estar fixo na versão atual do código e passou ao secret de configuração CERTIFICATE_EMAIL. Deploy/start verificam sua presença antes de iniciar VMs. O contato é mantido em execução e não é credencial de autenticação; senhas, tokens e contas de serviço existentes não foram alterados. A configuração foi validada estaticamente, sem novo teste de emissão na GCP nesta etapa. Os commits históricos preservados ainda contêm a configuração original; removê-la retroativamente exigiria alterar suas árvores, o que não faz parte da tradução das mensagens.

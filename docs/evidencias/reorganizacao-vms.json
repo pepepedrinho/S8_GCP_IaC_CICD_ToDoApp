@@ -25,6 +25,54 @@
         "url": null
       },
       "ambas_desligadas": true
+    },
+    {
+      "fase": "apos-publicacao-e-validacoes",
+      "verificado_em_utc": "2026-11-25T20:08:22.954971+00:00",
+      "estado": {
+        "todo-app": {
+          "status": "TERMINATED",
+          "machine_type": "e2-micro",
+          "max_run_seconds": 21600,
+          "termination_action": "STOP",
+          "termination_timestamp": null,
+          "public_ip": null
+        },
+        "todo-db": {
+          "status": "TERMINATED",
+          "machine_type": "e2-micro",
+          "max_run_seconds": 21600,
+          "termination_action": "STOP",
+          "termination_timestamp": null,
+          "public_ip": null
+        },
+        "url": null
+      },
+      "ambas_desligadas": true
+    },
+    {
+      "fase": "apos-configuracao-acme-e-ci",
+      "verificado_em_utc": "2026-11-25T20:15:57.267108+00:00",
+      "estado": {
+        "todo-app": {
+          "status": "TERMINATED",
+          "machine_type": "e2-micro",
+          "max_run_seconds": 21600,
+          "termination_action": "STOP",
+          "termination_timestamp": null,
+          "public_ip": null
+        },
+        "todo-db": {
+          "status": "TERMINATED",
+          "machine_type": "e2-micro",
+          "max_run_seconds": 21600,
+          "termination_action": "STOP",
+          "termination_timestamp": null,
+          "public_ip": null
+        },
+        "url": null
+      },
+      "ambas_desligadas": true
     }
   ]
 }

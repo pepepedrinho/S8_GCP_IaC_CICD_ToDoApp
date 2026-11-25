@@ -17,6 +17,8 @@ Para acionar os workflows, utilizar GitHub CLI autenticada ou **Actions → work
 
 Esses parâmetros já existem no repositório. CERTIFICATE_EMAIL guarda o contato ACME como configuração protegida, sem endereço pessoal fixo no código. Ansible lê esse valor do ambiente; na execução direta fora do Actions, fornecer a mesma variável de forma privada. O contato não é uma credencial de autenticação. Valores de secrets não devem ser copiados para código, relatórios ou logs. O script `scripts/configure-github.py` permite preparar uma instalação nova sem sobrescrever secrets existentes. As senhas MongoDB precisam permanecer compatíveis com os usuários persistidos; alterar apenas o arquivo de senha não atualiza a credencial no banco.
 
+Em uma instalação nova, cadastrar também o contato ACME com `gh secret set CERTIFICATE_EMAIL -R pepepedrinho/S8_GCP_IaC_CICD_ToDoApp`, informando o valor na entrada protegida, e configurar os demais secrets da tabela.
+
 OIDC emite credenciais temporárias para a conta de automação. A configuração e os limites de acesso estão em [segurança do bootstrap](seguranca-bootstrap.md). Não são necessárias chaves JSON de conta de serviço.
 
 ## Iniciar e encerrar a apresentação

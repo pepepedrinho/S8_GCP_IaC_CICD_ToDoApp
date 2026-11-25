@@ -58,3 +58,5 @@ ACE-10 depende do registro humano em `../ensaio-alunos.md`; nenhum JSON desta pa
 `compatibilidade-ghcr.json` registra HEAD 200/digests dos quatro manifests históricos, sem publicar ou renomear imagens. `reorganizacao-vms.json` registra somente leituras do estado TERMINATED durante a organização do repositório. A tradução de commits está em `../historico/commits-reescritos.json`; os source_commit e URLs dos JSON anteriores continuam originais. O relatório anterior à revisão editorial foi preservado em `historico/relatorio-20261125-antes-reorganizacao.md`.
 
 As verificações de CI posteriores à reorganização avaliam código e integração no runner, sem constituir nova implantação ou teste remoto na GCP. Os resultados correspondentes são identificados no registro da reorganização.
+
+`reorganizacao-validacao.json` consolida integridade e compatibilidade; `reorganizacao-ci.json` preserva os dois runs posteriores na main; `github-readme.jpg` registra a apresentação renderizada. `limpeza-repositorio.json` registra o arquivamento privado de 65 itens e a preservação dos arquivos funcionais.

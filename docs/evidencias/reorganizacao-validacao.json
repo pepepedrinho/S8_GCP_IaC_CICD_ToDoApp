@@ -1,5 +1,5 @@
 {
-  "verificado_em_utc": "2026-11-25T19:57:13.787938+00:00",
+  "verificado_em_utc": "2026-11-25T20:16:51.441261+00:00",
   "commits_traduzidos": 30,
   "arvores_autoria_datas_preservadas": true,
   "commits_professor_intactos": 3,
@@ -23,7 +23,7 @@
     "LICENSE"
   ],
   "json_historicos_preservados": 62,
-  "json_validos": 66,
+  "json_validos": 68,
   "links_internos_quebrados": 0,
   "workflows_nuvem_somente_manuais": true,
   "ci_push_somente_main": true,
@@ -31,7 +31,64 @@
   "ocorrencias_de_segredos": 0,
   "padroes_de_segredos_verificados": 5,
   "provas_gitignore": 12,
-  "ci_pos_reorganizacao": "aguardando publicacao na main",
+  "ci_pos_reorganizacao": {
+    "id": 45692678805,
+    "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45692678805",
+    "commit": "7de9a39aed4fce046caae65075d6459c03231007",
+    "branch": "main",
+    "conclusao": "success",
+    "jobs_aprovados": 6,
+    "publicou_imagens_sem_implantar": true
+  },
   "nova_implantacao_gcp": false,
-  "actionlint": "1.7.12: aprovado; shellcheck dos scripts será executado pela CI Linux"
+  "actionlint": "1.7.12: aprovado; shellcheck dos scripts será executado pela CI Linux",
+  "validacao_manual_sem_gcp": {
+    "id": 45690440676,
+    "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45690440676",
+    "commit": "7dd21914583313cbc4b33a2c255926675483a816",
+    "branch": "main",
+    "conclusao": "success",
+    "autenticacao_gcp_executada": false
+  },
+  "verificacao_interface": {
+    "readme_e_mermaid_renderizados": true,
+    "workflows_listados_na_main": true,
+    "execucao_manual_na_main_visivel": true,
+    "sessao_publica_sem_login": true,
+    "botao_run_workflow_conferido_visualmente": false,
+    "motivo": "O botao de acionamento exige sessao autenticada; o dispatch autorizado foi comprovado pela CLI e pelo run exibido na interface."
+  },
+  "main_e_ultima_branch_mesmo_commit": true,
+  "branch_antiga_removida": true,
+  "remocao_branch_protegida_por_lease": true,
+  "publicacao_main_fast_forward_sem_force_push": true,
+  "leitura_gcp_final": "reorganizacao-vms.json",
+  "codigo_funcional_inalterado_desde_ci": true,
+  "alteracoes_apos_ci": "Somente documentação/evidências; nenhuma alteração de código, workflows ou configuração após o commit validado pela CI final.",
+  "excecao_organizacao_configuracao": {
+    "arquivo": "infra/ansible/group_vars/all.yml",
+    "contato_acme_por_ambiente": "CERTIFICATE_EMAIL",
+    "mesmo_valor_configurado": true,
+    "sem_rotacao_de_credenciais": true,
+    "teste_template_ansible_local": "aprovado com contato ficticio, sem rede",
+    "syntax_e_lint_ansible": "aprovados, zero avisos",
+    "contato_pessoal_ausente_nos_arquivos_atuais": true,
+    "configuracao_original_permanece_no_historico_preservado": true
+  },
+  "bundle_privado_hash_conferido": true,
+  "ci_inicial_reorganizacao": {
+    "id": 45690367361,
+    "url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45690367361",
+    "commit": "7dd21914583313cbc4b33a2c255926675483a816",
+    "branch": "main",
+    "conclusao": "success",
+    "jobs_aprovados": 6,
+    "publicou_imagens_sem_implantar": true
+  },
+  "configuracao_acme_preservada_em_execucao_sem_novo_deploy": true,
+  "credenciais_autenticacao_existentes_inalteradas": {
+    "DUCKDNS_TOKEN": "updatedAt anterior a reorganizacao",
+    "MONGO_APP_PASSWORD": "updatedAt anterior a reorganizacao",
+    "MONGO_ROOT_PASSWORD": "updatedAt anterior a reorganizacao"
+  }
 }
