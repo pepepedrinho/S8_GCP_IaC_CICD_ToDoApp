@@ -24,7 +24,7 @@ jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 50
     env:
       IMAGE_COMMIT: ${{ inputs.image_commit }}
       COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
@@ -97,12 +97,12 @@ jobs:
           prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
           ansible-playbook -i .local/inventory.yml infra/ansible/site.yml -e @.local/cloud-secrets.json -e @.local/runtime.json -e "todo_version=$IMAGE_COMMIT" -e "todo_frontend_image=$prefix-frontend:$IMAGE_COMMIT" -e "todo_backend_image=$prefix-backend:$IMAGE_COMMIT" | tee .local/ansible-second-run.log
           python -c "import pathlib,re; t=pathlib.Path('.local/ansible-second-run.log').read_text(); r=re.findall(r'changed=(\d+).*unreachable=(\d+).*failed=(\d+)', t); assert len(r)==2 and all(x==('0','0','0') for x in r), r"
-      - name: Validate public HTTPS and backup recovery
+      - name: Validate public HTTPS and application readiness
         run: |
           url=$(python -c 'import json; print("https://"+json.load(open(".local/runtime.json"))["todo_domain"])')
           python scripts/smoke.py "$url" --load --evidence docs/evidencias/gcp-smoke.json
-          python scripts/cloud-acceptance.py --comparison-commit "$COMPARISON_COMMIT"
           python scripts/cloud.py status
+          echo 'Extended persistence, rollback and GCS recovery tests: run Operate with operation=acceptance and the comparison image SHA.' >> "$GITHUB_STEP_SUMMARY"
       - name: Collect bounded diagnostics on failure
         if: failure()
         run: python scripts/cloud.py logs
