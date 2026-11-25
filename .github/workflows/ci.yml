@@ -51,6 +51,7 @@ jobs:
           ansible-playbook -i infra/ansible/inventory.example.yml infra/ansible/site.yml --syntax-check
           ansible-lint --offline infra/ansible/site.yml
           python -m compileall -q scripts
+          python scripts/test-gcloud-ssh.py
           shellcheck scripts/*.sh
   integration:
     runs-on: ubuntu-latest
