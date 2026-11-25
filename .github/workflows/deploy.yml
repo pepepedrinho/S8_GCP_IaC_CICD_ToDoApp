@@ -33,6 +33,7 @@ jobs:
       ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
     steps:
       - uses: actions/checkout@v4
+      - run: python scripts/prepare-evidence.py deploy
       - uses: google-github-actions/auth@v3
         id: gcp
         with:
@@ -107,5 +108,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deployment-evidence
-          path: docs/evidencias/*.json
+          path: |
+            docs/evidencias/deploy-context.json
+            docs/evidencias/cloud-boot.json
+            docs/evidencias/cloud-status.json
+            docs/evidencias/cloud-stop.json
+            docs/evidencias/cloud-diagnostics.json
+            docs/evidencias/gcp-smoke.json
+            docs/evidencias/gcp-acceptance.json
           retention-days: 14

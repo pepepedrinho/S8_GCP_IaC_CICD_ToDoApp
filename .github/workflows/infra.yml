@@ -28,6 +28,7 @@ jobs:
       TF_IN_AUTOMATION: 'true'
     steps:
       - uses: actions/checkout@v4
+      - run: python scripts/prepare-evidence.py infra
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.17.2
@@ -78,5 +79,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: infrastructure-evidence
-          path: docs/evidencias/cloud-*.json
+          path: |
+            docs/evidencias/infra-context.json
+            docs/evidencias/cloud-status.json
+            docs/evidencias/cloud-stop.json
           retention-days: 7

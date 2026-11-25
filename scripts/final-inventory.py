@@ -33,10 +33,13 @@ if 'compute.googleapis.com' in enabled:
         'public_ips': [a.get('natIP') for n in vm['networkInterfaces'] for a in n.get('accessConfigs', []) if a.get('natIP')],
     } for vm in vms]
     result['all_vms_terminated'] = len(vms) == 2 and all(vm['status'] == 'TERMINATED' for vm in vms)
-    result['disks'] = [{'name': d['name'], 'size_gb': d['sizeGb'], 'type': d['type'].split('/')[-1], 'zone': d['zone'].split('/')[-1], 'status': d['status']} for d in gcloud('compute', 'disks', 'list', json_output=True)]
+    result['disks'] = [{'name': d['name'], 'size_gb': d['sizeGb'], 'type': d['type'].split('/')[-1], 'zone': d['zone'].split('/')[-1], 'status': d['status'], 'created': d['creationTimestamp']} for d in gcloud('compute', 'disks', 'list', json_output=True)]
     result['reserved_addresses'] = [{'name': a['name'], 'status': a['status']} for a in gcloud('compute', 'addresses', 'list', json_output=True)]
     result['routers'] = [r['name'] for r in gcloud('compute', 'routers', 'list', json_output=True)]
     result['forwarding_rules'] = [r['name'] for r in gcloud('compute', 'forwarding-rules', 'list', json_output=True)]
+    result['snapshots'] = [s['name'] for s in gcloud('compute', 'snapshots', 'list', json_output=True)]
+    result['custom_images'] = [i['name'] for i in gcloud('compute', 'images', 'list', '--no-standard-images', json_output=True)]
+    result['machine_images'] = [i['name'] for i in gcloud('compute', 'machine-images', 'list', json_output=True)]
     result['networks'] = [n['name'] for n in gcloud('compute', 'networks', 'list', json_output=True)]
     result['firewalls'] = [{'name': f['name'], 'network': f['network'].split('/')[-1], 'source_ranges': f.get('sourceRanges'), 'target_tags': f.get('targetTags'), 'allowed': f.get('allowed')} for f in gcloud('compute', 'firewall-rules', 'list', json_output=True)]
     result['instance_operations'] = [{
