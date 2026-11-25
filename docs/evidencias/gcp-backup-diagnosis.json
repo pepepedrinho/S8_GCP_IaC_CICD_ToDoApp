@@ -1,0 +1,15 @@
+{
+  "checked_at_utc": "2026-11-25T15:49:06.145987+00:00",
+  "source_run": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45644032806",
+  "observed_error": "MongoServerSelectionError: Server selection timed out after 2000 ms",
+  "failed_before_archive": true,
+  "kernel_oom_check_returned_no_entries": true,
+  "vms_confirmed_terminated_after_diagnostic": true,
+  "journal_excerpt": [
+    "Nov 25 15:28:53 todo-db.us-central1-a.c.triodelicia-mensal4-2026.internal systemd[1]: Starting todo-backup.service - Validated Mongo backup to private GCS...",
+    "Nov 25 15:29:08 todo-db.us-central1-a.c.triodelicia-mensal4-2026.internal backup.sh[5684]: MongoServerSelectionError: Server selection timed out after 2000 ms",
+    "Nov 25 15:29:10 todo-db.us-central1-a.c.triodelicia-mensal4-2026.internal systemd[1]: todo-backup.service: Main process exited, code=exited, status=1/FAILURE",
+    "Nov 25 15:29:10 todo-db.us-central1-a.c.triodelicia-mensal4-2026.internal systemd[1]: todo-backup.service: Failed with result 'exit-code'.",
+    "Nov 25 15:29:10 todo-db.us-central1-a.c.triodelicia-mensal4-2026.internal systemd[1]: Failed to start todo-backup.service - Validated Mongo backup to private GCS."
+  ]
+}

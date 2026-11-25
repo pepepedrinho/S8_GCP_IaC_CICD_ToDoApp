@@ -163,7 +163,7 @@ def main():
         # A graceful stop deliberately stops containers; unless-stopped does not
         # bring those containers back after a VM reboot.
         if args.operation == 'start':
-            ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
+            ssh('todo-db', 'sudo flock --exclusive --timeout 600 /run/lock/todo-mongo-maintenance.lock docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120', timeout=780)
             ssh('todo-app', 'sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
     elif args.operation == 'stop':
         existing = instances(allow_missing=True)
@@ -187,7 +187,7 @@ def main():
     elif args.operation == 'rollback': print(ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback'))
     elif args.operation == 'logs':
         diagnostics = {}
-        command = "free -m; sudo docker ps -a --format '{{.Names}} {{.Status}}'; for id in $(sudo docker ps -aq); do sudo docker inspect \"$id\" --format '{{.Name}} OOMKilled={{.State.OOMKilled}} ExitCode={{.State.ExitCode}} Restarts={{.RestartCount}}'; sudo docker logs --tail 100 \"$id\" 2>&1; done; sudo journalctl -k -b -1 --no-pager -g 'Out of memory|oom-kill|Killed process' -n 10 2>/dev/null || true"
+        command = "free -m; sudo docker ps -a --format '{{.Names}} {{.Status}}'; for id in $(sudo docker ps -aq); do sudo docker inspect \"$id\" --format '{{.Name}} OOMKilled={{.State.OOMKilled}} ExitCode={{.State.ExitCode}} Restarts={{.RestartCount}}'; sudo docker logs --tail 100 \"$id\" 2>&1; done; sudo journalctl -u todo-backup.service --no-pager -n 50; sudo systemctl show todo-backup.service --property=Result --property=ExecMainStatus; sudo journalctl -k -b -1 --no-pager -g 'Out of memory|oom-kill|Killed process' -n 10 2>/dev/null || true"
         for name in ('todo-app', 'todo-db'):
             diagnostics[name] = ssh(name, command)
             print(name, diagnostics[name])
@@ -195,8 +195,8 @@ def main():
     elif args.operation == 'restore':
         import re
         if not re.fullmatch(r'todo/todo-\d{8}T\d{6}Z\.archive\.gz', args.object): raise ValueError('Invalid backup object')
-        command = f"sudo bash -c 'set -e; cd /opt/todo; source backup.env; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object} backups/restore.archive.gz; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object}.json backups/restore.archive.gz.json; python3 bin/verify-backup.py backups/restore.archive.gz'"
-        print(ssh('todo-db', command, timeout=660))
+        command = f"sudo bash -c 'set -e; cd /opt/todo; source backup.env; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object} backups/restore.archive.gz; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object}.json backups/restore.archive.gz.json; flock --exclusive --timeout 600 /run/lock/todo-mongo-maintenance.lock python3 bin/verify-backup.py backups/restore.archive.gz'"
+        print(ssh('todo-db', command, timeout=960))
     state = snapshot(allow_missing=args.operation == 'stop')
     evidence = ROOT / 'docs' / 'evidencias'; evidence.mkdir(parents=True, exist_ok=True)
     (evidence / ('cloud-' + args.operation + '.json')).write_text(json.dumps(state, indent=2))

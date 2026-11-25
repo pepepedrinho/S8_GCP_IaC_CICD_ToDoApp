@@ -12,7 +12,7 @@ mkdir -p "$root/backups"
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 archive="$root/backups/todo-$stamp.archive.gz"
 mongo() {
-  docker compose -f "$compose" exec -T mongo mongosh --quiet --eval "const fs=require('fs'); db.getSiblingDB('admin').auth('administrator',fs.readFileSync('/run/secrets/mongo_root_password','utf8').trim()); $1"
+  docker compose -f "$compose" exec -T mongo timeout --kill-after=10s 120s mongosh 'mongodb://127.0.0.1:27017/admin?serverSelectionTimeoutMS=10000&connectTimeoutMS=10000' --quiet --norc --eval "const fs=require('fs'); db.getSiblingDB('admin').auth('administrator',fs.readFileSync('/run/secrets/mongo_root_password','utf8').trim()); $1"
 }
 locked=0
 unlock() { if [[ "$locked" == 1 ]]; then mongo 'db.adminCommand({fsyncUnlock:1});' >/dev/null; fi; }

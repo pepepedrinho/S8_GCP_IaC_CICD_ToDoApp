@@ -17,6 +17,7 @@ from smoke import call
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--comparison-commit', default='')
+parser.add_argument('--recovery-only', action='store_true')
 args = parser.parse_args()
 assert not args.comparison_commit or re.fullmatch(r'[a-f0-9]{40}', args.comparison_commit)
 
@@ -25,8 +26,9 @@ assert all(state[n]['status'] == 'RUNNING' for n in ('todo-app', 'todo-db'))
 base = state['url']
 checks = []
 measurements = {}
-target = ROOT / 'docs/evidencias/gcp-acceptance.json'
-result = {'passed': False, 'cloud_test': True, 'url': base, 'checks': checks, 'state': state,
+phase = 'recovery' if args.recovery_only else 'all'
+target = ROOT / ('docs/evidencias/gcp-recovery.json' if args.recovery_only else 'docs/evidencias/gcp-acceptance.json')
+result = {'passed': False, 'phase': phase, 'cloud_test': True, 'url': base, 'checks': checks, 'state': state,
           'started_at_utc': datetime.datetime.now(datetime.timezone.utc).isoformat()}
 completed_tests = False
 target.write_text(json.dumps(result, indent=2), encoding='utf-8')
@@ -64,48 +66,50 @@ roles = json.loads(ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml 
 assert roles == [{'role': 'readWrite', 'db': 'todo-app'}]
 result['application_user_roles'] = roles
 record('application user has readWrite only on todo-app')
-_, task = call(base, '/todos', 'POST', {'text': 'GCP persistence acceptance ' + str(time.time_ns())})
-task_path = '/todos/' + task['_id']
-assert call(base, task_path, 'PATCH')[1]['completed'] is True
-ssh('todo-db', 'sudo systemctl stop todo-backup.timer')
+task_path = None
 try:
-    ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml restart mongo')
-    preserved(); record('Mongo restart preserves task and completed state')
-    ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --no-deps --force-recreate --pull never --wait --wait-timeout 180 mongo')
-    preserved(); record('Mongo container recreation preserves dedicated persistent disk')
-    original = ssh('todo-app', 'sudo cat /opt/todo/release.env')
-    release = dict(line.split('=', 1) for line in original.splitlines() if '=' in line)
-    for value in release.values(): assert re.fullmatch(r'[a-zA-Z0-9./:@_-]+', value)
-    if args.comparison_commit and args.comparison_commit != release['APP_VERSION']:
-        def image_id():
-            return ssh('todo-app', "sudo docker inspect $(sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml ps -q backend) --format '{{.Image}}'")
-        previous_image = image_id()
-        prefix = 'ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp'
-        ssh('todo-app', f'sudo docker image inspect {prefix}-backend:{args.comparison_commit} >/dev/null || sudo docker load -i /opt/todo/artifacts/application.tar')
-        ssh('todo-app', f'sudo /opt/todo/bin/deploy-images.sh {prefix}-frontend:{args.comparison_commit} {prefix}-backend:{args.comparison_commit} {args.comparison_commit}')
-        preserved(); assert image_id() != previous_image
-        assert call(base, '/health/live')[1]['version'] == args.comparison_commit
+    _, task = call(base, '/todos', 'POST', {'text': 'GCP persistence acceptance ' + str(time.time_ns())})
+    task_path = '/todos/' + task['_id']
+    assert call(base, task_path, 'PATCH')[1]['completed'] is True
+    ssh('todo-db', 'sudo systemctl stop todo-backup.timer')
+    if not args.recovery_only:
+        ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml restart mongo')
+        preserved(); record('Mongo restart preserves task and completed state')
+        ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --no-deps --force-recreate --pull never --wait --wait-timeout 180 mongo')
+        preserved(); record('Mongo container recreation preserves dedicated persistent disk')
+        original = ssh('todo-app', 'sudo cat /opt/todo/release.env')
+        release = dict(line.split('=', 1) for line in original.splitlines() if '=' in line)
+        for value in release.values(): assert re.fullmatch(r'[a-zA-Z0-9./:@_-]+', value)
+        if args.comparison_commit and args.comparison_commit != release['APP_VERSION']:
+            def image_id():
+                return ssh('todo-app', "sudo docker inspect $(sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml ps -q backend) --format '{{.Image}}'")
+            previous_image = image_id()
+            prefix = 'ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp'
+            ssh('todo-app', f'sudo docker image inspect {prefix}-backend:{args.comparison_commit} >/dev/null || sudo docker load -i /opt/todo/artifacts/application.tar')
+            ssh('todo-app', f'sudo /opt/todo/bin/deploy-images.sh {prefix}-frontend:{args.comparison_commit} {prefix}-backend:{args.comparison_commit} {args.comparison_commit}')
+            preserved(); assert image_id() != previous_image
+            assert call(base, '/health/live')[1]['version'] == args.comparison_commit
+            ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback')
+            preserved(); assert image_id() == previous_image
+            record('distinct GHCR image deployed and original image restored by rollback; task preserved')
+        # Identified configuration update exercises the production deploy script;
+        # distinct image replacement is performed separately by the deploy workflow.
+        version = release['APP_VERSION'] + '-acceptance'
+        ssh('todo-app', f"sudo /opt/todo/bin/deploy-images.sh {release['FRONTEND_IMAGE']} {release['BACKEND_IMAGE']} {version}")
+        preserved(); assert call(base, '/health/live')[1]['version'] == version
+        record('versioned application configuration update preserves data')
         ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback')
-        preserved(); assert image_id() == previous_image
-        record('distinct GHCR image deployed and original image restored by rollback; task preserved')
-    # Identified configuration update exercises the production deploy script;
-    # distinct image replacement is performed separately by the deploy workflow.
-    version = release['APP_VERSION'] + '-acceptance'
-    ssh('todo-app', f"sudo /opt/todo/bin/deploy-images.sh {release['FRONTEND_IMAGE']} {release['BACKEND_IMAGE']} {version}")
-    preserved(); assert call(base, '/health/live')[1]['version'] == version
-    record('versioned application configuration update preserves data')
-    ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback')
-    preserved(); assert call(base, '/health/live')[1]['version'] == release['APP_VERSION']
-    record('production rollback restores previous version and preserves task')
-    ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml stop mongo')
-    try:
-        call(base, '/health/ready')
-        raise AssertionError('Readiness did not fail without Mongo')
-    except urllib.error.HTTPError as error: assert error.code == 503
-    assert call(base, '/health/live')[0] == 200
-    record('database outage yields readiness503 and liveness200 over HTTPS')
-    ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 180')
-    preserved()
+        preserved(); assert call(base, '/health/live')[1]['version'] == release['APP_VERSION']
+        record('production rollback restores previous version and preserves task')
+        ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml stop mongo')
+        try:
+            call(base, '/health/ready')
+            raise AssertionError('Readiness did not fail without Mongo')
+        except urllib.error.HTTPError as error: assert error.code == 503
+        assert call(base, '/health/live')[0] == 200
+        record('database outage yields readiness503 and liveness200 over HTTPS')
+        ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 180')
+        preserved()
     ssh('todo-db', 'sudo systemctl start todo-backup.service', timeout=660)
     preserved()
     manifest = json.loads(ssh('todo-db', "sudo python3 -c \"import pathlib,json; p=max(pathlib.Path('/opt/todo/backups').glob('todo-*.archive.gz.json')); print(p.read_text())\""))

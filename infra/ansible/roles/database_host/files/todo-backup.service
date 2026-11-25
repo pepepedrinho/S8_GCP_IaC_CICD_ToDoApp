@@ -5,4 +5,4 @@ Requires=docker.service
 [Service]
 Type=oneshot
 TimeoutStartSec=600
-ExecStart=/opt/todo/bin/backup.sh
+ExecStart=/usr/bin/flock --exclusive /run/lock/todo-mongo-maintenance.lock /opt/todo/bin/backup.sh

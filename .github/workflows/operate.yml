@@ -17,6 +17,10 @@ on:
         description: For acceptance only, full SHA of the second already transferred image
         type: string
         required: false
+      recovery_only:
+        description: For acceptance, resume backup restore and certificate tests already pending
+        type: boolean
+        default: false
 permissions:
   contents: read
   id-token: write
@@ -32,6 +36,7 @@ jobs:
       OPERATION: ${{ inputs.operation }}
       BACKUP_OBJECT: ${{ inputs.backup_object }}
       COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
+      RECOVERY_ONLY: ${{ inputs.recovery_only }}
       ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
     steps:
       - uses: actions/checkout@v4
@@ -66,7 +71,7 @@ jobs:
           case "$OPERATION" in
             start|acceptance)
               test -n "$DUCKDNS_TOKEN" || { echo "::error::DUCKDNS_TOKEN is missing"; exit 1; }
-              if [[ "$OPERATION" == acceptance ]]; then
+              if [[ "$OPERATION" == acceptance && "$RECOVERY_ONLY" != true ]]; then
                 [[ "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
               fi
               python scripts/cloud.py start
@@ -74,6 +79,15 @@ jobs:
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
               if [[ "$OPERATION" == acceptance ]]; then
                 ansible-playbook -i .local/inventory.yml infra/ansible/operations.yml
+                ansible-playbook -i .local/inventory.yml infra/ansible/operations.yml | tee .local/operations-second-run.log
+                python - <<'PY'
+          import json,pathlib,re
+          text=pathlib.Path('.local/operations-second-run.log').read_text()
+          rows=re.findall(r'(todo-app|todo-db)\s+: ok=(\d+)\s+changed=(\d+)\s+unreachable=(\d+)\s+failed=(\d+)',text)
+          assert len(rows)==2 and all(row[2:]==('0','0','0') for row in rows),rows
+          result={'passed':True,'cloud_test':True,'playbook':'operations.yml','hosts':{row[0]:dict(zip(('ok','changed','unreachable','failed'),map(int,row[1:]))) for row in rows}}
+          pathlib.Path('docs/evidencias/gcp-operations-idempotence.json').write_text(json.dumps(result,indent=2))
+          PY
               fi
               ;;
             diagnose) python scripts/cloud.py boot; python scripts/cloud.py logs ;;
@@ -91,7 +105,10 @@ jobs:
           echo "Application: $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Validate persistence rollback and isolated GCS recovery
         if: inputs.operation == 'acceptance'
-        run: python scripts/cloud-acceptance.py --comparison-commit "$COMPARISON_COMMIT"
+        run: |
+          args=(--comparison-commit "$COMPARISON_COMMIT")
+          if [[ "$RECOVERY_ONLY" == true ]]; then args+=(--recovery-only); fi
+          python scripts/cloud-acceptance.py "${args[@]}"
       - name: Collect diagnostics after acceptance failure
         if: failure() && inputs.operation == 'acceptance'
         run: python scripts/cloud.py logs
@@ -117,4 +134,6 @@ jobs:
             docs/evidencias/cloud-rollback.json
             docs/evidencias/reactivation-smoke.json
             docs/evidencias/gcp-acceptance.json
+            docs/evidencias/gcp-recovery.json
+            docs/evidencias/gcp-operations-idempotence.json
           retention-days: 14

@@ -1,0 +1,48 @@
+{
+  "passed": false,
+  "cloud_test": true,
+  "url": "https://triodelicia.duckdns.org",
+  "checks": [
+    "public TCP 22 unavailable",
+    "public TCP 27017 unavailable",
+    "public TCP 3128 unavailable",
+    "application reaches Mongo on private address; database has no public IP",
+    "application user has readWrite only on todo-app",
+    "Mongo restart preserves task and completed state",
+    "Mongo container recreation preserves dedicated persistent disk",
+    "distinct GHCR image deployed and original image restored by rollback; task preserved",
+    "versioned application configuration update preserves data",
+    "production rollback restores previous version and preserves task",
+    "database outage yields readiness503 and liveness200 over HTTPS"
+  ],
+  "state": {
+    "todo-app": {
+      "status": "RUNNING",
+      "machine_type": "e2-micro",
+      "max_run_seconds": 21600,
+      "termination_action": "STOP",
+      "termination_timestamp": null,
+      "public_ip": "35.208.118.49"
+    },
+    "todo-db": {
+      "status": "RUNNING",
+      "machine_type": "e2-micro",
+      "max_run_seconds": 21600,
+      "termination_action": "STOP",
+      "termination_timestamp": null,
+      "public_ip": null
+    },
+    "url": "https://triodelicia.duckdns.org"
+  },
+  "started_at_utc": "2026-11-25T15:25:45.666411+00:00",
+  "application_user_roles": [
+    {
+      "role": "readWrite",
+      "db": "todo-app"
+    }
+  ],
+  "cleanup_completed": true,
+  "backup_schedule": "NextElapseUSecRealtime=Thu 2026-11-26 03:01:32 UTC\nLastTriggerUSec=Wed 2026-11-25 11:12:04 UTC\nPersistent=yes\nActiveState=active\nResult=exit-code\nExecMainStatus=1",
+  "finished_at_utc": "2026-11-25T15:29:26.024534+00:00",
+  "post_cleanup_document_sha256": "53592e65627a97acdefd3547c032eda4f1cc59450d894cb32620253bad620121"
+}

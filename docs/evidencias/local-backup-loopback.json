@@ -1,0 +1,11 @@
+{
+  "passed": true,
+  "cloud_test": false,
+  "gcs_upload_tested": false,
+  "connection": "Explicit 127.0.0.1 with bounded 10-second server selection and 120-second command timeout",
+  "restore": {
+    "event": "isolated_restore_validated",
+    "data_sha256": "edf0f15995d011f6d1866d72974ec0031d99230ab4a201c783d5eebf9624b345",
+    "production_overwritten": false
+  }
+}

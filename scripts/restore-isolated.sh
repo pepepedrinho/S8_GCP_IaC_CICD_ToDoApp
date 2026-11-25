@@ -21,11 +21,14 @@ trap cleanup EXIT
 docker compose -f "$compose" stop mongo >/dev/null
 docker volume create "$name" >/dev/null
 docker run -d --name "$name" --network none --memory 384m --mount "type=volume,source=$name,target=/data/db" --entrypoint mongod "$image" --bind_ip 127.0.0.1 --wiredTigerCacheSizeGB 0.256 >/dev/null
+ready=0
 for _ in {1..45}; do
-  if docker exec "$name" mongosh --quiet --eval 'quit(db.adminCommand({ping:1}).ok?0:1)' >/dev/null 2>&1; then break; fi
+  if docker exec "$name" bash -c 'exec 3<>/dev/tcp/127.0.0.1/27017' >/dev/null 2>&1; then ready=1; break; fi
   sleep 1
 done
-docker exec -i "$name" mongorestore --archive --gzip --nsInclude='todo-app.*' < "$archive" >/dev/null 2>&1
-actual=$(docker exec "$name" mongosh --quiet --eval "print(JSON.stringify(db.getSiblingDB('todo-app').todos.find({}, {_id:1,text:1,completed:1}).sort({_id:1}).toArray()))" | sha256sum | cut -d' ' -f1)
+[[ "$ready" == 1 ]] || { echo 'restore_database_start_failed'; exit 1; }
+
+docker exec -i "$name" mongorestore --host=127.0.0.1 --archive --gzip --nsInclude='todo-app.*' < "$archive" >/dev/null 2>&1
+actual=$(docker exec "$name" timeout --kill-after=10s 120s mongosh 'mongodb://127.0.0.1:27017/admin?serverSelectionTimeoutMS=10000&connectTimeoutMS=10000' --quiet --norc --eval "print(JSON.stringify(db.getSiblingDB('todo-app').todos.find({}, {_id:1,text:1,completed:1}).sort({_id:1}).toArray()))" | sha256sum | cut -d' ' -f1)
 [[ "$actual" == "$expected" ]] || { echo 'restore_validation_failed'; exit 1; }
 printf '{"event":"isolated_restore_validated","data_sha256":"%s","production_overwritten":false}\n' "$actual"

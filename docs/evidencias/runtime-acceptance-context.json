@@ -1,0 +1,9 @@
+{
+  "run_url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45644032806",
+  "source_commit": "02d7f1ac537778b2888e33e47de8fa5b6cddbf4a",
+  "started_at_utc": "2026-11-25T15:20:32.639144+00:00",
+  "kind": "operate",
+  "operation": "acceptance",
+  "image_commit": null,
+  "comparison_commit": "fa626deacdc5d0fffab1b82cdfcbeb64d720a456"
+}

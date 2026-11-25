@@ -1,0 +1,19 @@
+{
+  "todo-app": {
+    "status": "RUNNING",
+    "machine_type": "e2-micro",
+    "max_run_seconds": 21600,
+    "termination_action": "STOP",
+    "termination_timestamp": null,
+    "public_ip": "35.208.118.49"
+  },
+  "todo-db": {
+    "status": "RUNNING",
+    "machine_type": "e2-micro",
+    "max_run_seconds": 21600,
+    "termination_action": "STOP",
+    "termination_timestamp": null,
+    "public_ip": null
+  },
+  "url": "https://triodelicia.duckdns.org"
+}
