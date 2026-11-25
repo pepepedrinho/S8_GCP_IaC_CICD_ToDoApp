@@ -60,6 +60,7 @@ jobs:
         run: |
           case "$OPERATION" in
             start)
+              test -n "$DUCKDNS_TOKEN" || { echo "::error::DUCKDNS_TOKEN is missing"; exit 1; }
               python scripts/cloud.py start
               python scripts/cloud.py dns
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json

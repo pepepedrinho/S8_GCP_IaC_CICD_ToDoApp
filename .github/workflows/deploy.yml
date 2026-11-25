@@ -71,6 +71,7 @@ jobs:
           [[ -z "$COMPARISON_COMMIT" || "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
           test ${#MONGO_ROOT_PASSWORD} -ge 24
           test ${#MONGO_APP_PASSWORD} -ge 24
+          test -n "$DUCKDNS_TOKEN" || { echo "::error::DUCKDNS_TOKEN is missing"; exit 1; }
           python scripts/cloud.py boot
           python scripts/cloud.py dns
       - name: Transfer images; registry credentials stay only on runner
