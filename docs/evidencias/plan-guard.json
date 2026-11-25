@@ -1,0 +1,20 @@
+{
+  "passed": true,
+  "accepted_real_plans": [
+    "terraform-main-plan.json",
+    "terraform-main-reviewed-plan.json"
+  ],
+  "rejected_mutations": [
+    "additional disk",
+    "unapproved region",
+    "oversized data disk",
+    "SSD boot disk",
+    "public SSH",
+    "public database address",
+    "automatic restart",
+    "runtime beyond six hours",
+    "unapproved service",
+    "destruction through normal apply"
+  ],
+  "cloud_resources_changed": false
+}
