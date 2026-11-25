@@ -105,7 +105,7 @@ try:
     preserved(); checks.append('GCS copy downloaded and restored in isolated volume without overwriting production')
     for name in ('todo-app', 'todo-db'):
         measurements[name] = ssh(name, "free -b; sudo docker stats --no-stream --format '{{json .}}'; sudo docker inspect $(sudo docker ps -aq) --format '{{.Name}} OOMKilled={{.State.OOMKilled}}'")
-    renewal = ssh('todo-app', 'sudo certbot renew --dry-run --no-random-sleep-on-renew')
+    renewal = ssh('todo-app', f'sudo certbot renew --cert-name {base.removeprefix("https://")} --dry-run --no-random-sleep-on-renew')
     checks.append('certificate renewal dry-run succeeded')
     result = {'passed': True, 'cloud_test': True, 'url': base, 'checks': checks, 'backup_manifest': manifest, 'runtime_measurements': measurements, 'state': state}
     target.write_text(json.dumps(result, indent=2), encoding='utf-8')

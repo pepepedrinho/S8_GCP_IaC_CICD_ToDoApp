@@ -54,10 +54,14 @@ jobs:
           python-version: '3.13'
       - run: pip install ansible-core==2.19.4
       - name: Execute selected operation
+        env:
+          DUCKDNS_DOMAIN: ${{ vars.DUCKDNS_DOMAIN }}
+          DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
         run: |
           case "$OPERATION" in
             start)
               python scripts/cloud.py start
+              python scripts/cloud.py dns
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
               ;;
             diagnose) python scripts/cloud.py boot; python scripts/cloud.py logs ;;
@@ -87,6 +91,7 @@ jobs:
             docs/evidencias/cloud-stop.json
             docs/evidencias/cloud-status.json
             docs/evidencias/cloud-boot.json
+            docs/evidencias/cloud-dns.json
             docs/evidencias/cloud-logs.json
             docs/evidencias/cloud-diagnostics.json
             docs/evidencias/cloud-backup.json

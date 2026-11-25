@@ -63,12 +63,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Validate inputs and prepare SSH and secrets
+        env:
+          DUCKDNS_DOMAIN: ${{ vars.DUCKDNS_DOMAIN }}
+          DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
         run: |
           [[ "$IMAGE_COMMIT" =~ ^[a-f0-9]{40}$ ]]
           [[ -z "$COMPARISON_COMMIT" || "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
           test ${#MONGO_ROOT_PASSWORD} -ge 24
           test ${#MONGO_APP_PASSWORD} -ge 24
           python scripts/cloud.py boot
+          python scripts/cloud.py dns
       - name: Transfer images; registry credentials stay only on runner
         run: |
           prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
@@ -111,6 +115,7 @@ jobs:
           path: |
             docs/evidencias/deploy-context.json
             docs/evidencias/cloud-boot.json
+            docs/evidencias/cloud-dns.json
             docs/evidencias/cloud-status.json
             docs/evidencias/cloud-stop.json
             docs/evidencias/cloud-diagnostics.json

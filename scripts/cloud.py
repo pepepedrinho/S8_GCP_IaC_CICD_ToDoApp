@@ -8,6 +8,10 @@ import secrets
 import shutil
 import subprocess
 import time
+import ipaddress
+import socket
+import urllib.parse
+import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PRIVATE = ROOT / '.local'
@@ -58,8 +62,64 @@ def snapshot(allow_missing=False):
         if name == 'todo-db': assert not configs
         summary[name] = {'status': vm['status'], 'machine_type': 'e2-micro', 'max_run_seconds': int(scheduling['maxRunDuration']['seconds']), 'termination_action': scheduling['instanceTerminationAction'], 'termination_timestamp': scheduling.get('terminationTimestamp'), 'public_ip': configs[0].get('natIP') if configs else None}
     app_ip = summary['todo-app']['public_ip']
-    summary['url'] = 'https://todo-' + app_ip.replace('.', '-') + '.sslip.io' if app_ip else None
+    summary['url'] = 'https://' + duckdns_domain() if app_ip else None
     return summary
+
+def duckdns_domain():
+    domain = os.environ.get('DUCKDNS_DOMAIN') or 'triodelicia.duckdns.org'
+    if domain != 'triodelicia.duckdns.org':
+        raise RuntimeError('Unexpected DuckDNS domain')
+    return domain
+
+
+def update_duckdns(state):
+    domain = duckdns_domain()
+    token = os.environ.get('DUCKDNS_TOKEN', '')
+    if not token:
+        raise RuntimeError('DUCKDNS_TOKEN is missing')
+
+    app = state['todo-app']
+    if app['status'] != 'RUNNING' or not app['public_ip']:
+        raise RuntimeError('Application VM has no active public IP')
+
+    ip = str(ipaddress.IPv4Address(app['public_ip']))
+
+    query = urllib.parse.urlencode({
+        'domains': domain.removesuffix('.duckdns.org'),
+        'token': token,
+        'ip': ip,
+    })
+
+    try:
+        with urllib.request.urlopen(
+            'https://www.duckdns.org/update?' + query,
+            timeout=20,
+        ) as response:
+            result = response.read().decode('ascii').strip()
+    except Exception:
+        raise RuntimeError('DuckDNS update request failed') from None
+
+    if result != 'OK':
+        raise RuntimeError('DuckDNS rejected the update')
+
+    for attempt in range(36):
+        try:
+            addresses = {
+                item[4][0]
+                for item in socket.getaddrinfo(
+                    domain, None, socket.AF_INET, socket.SOCK_STREAM
+                )
+            }
+            if addresses == {ip}:
+                print(f'DuckDNS confirmed: {domain} -> {ip}')
+                return
+        except OSError:
+            pass
+        if attempt < 35:
+            time.sleep(5)
+
+    raise RuntimeError('DuckDNS propagation was not confirmed')
+
 
 def prepare():
     PRIVATE.mkdir(exist_ok=True)
@@ -92,7 +152,7 @@ def prepare():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=['status', 'prepare', 'boot', 'start', 'stop', 'backup', 'restore', 'rollback', 'logs'])
+    parser.add_argument('operation', choices=['status', 'prepare', 'boot', 'start', 'stop', 'backup', 'restore', 'rollback', 'logs', 'dns'])
     parser.add_argument('--object', default='')
     args = parser.parse_args()
     if args.operation in ('boot', 'start'):
@@ -119,6 +179,7 @@ def main():
             except RuntimeError as error: failures.append(str(error))
         state = snapshot(allow_missing=True)
         assert all(state[n]['status'] in ('TERMINATED', 'NOT_CREATED') for n in ('todo-app', 'todo-db')), failures
+    elif args.operation == 'dns': update_duckdns(snapshot())
     elif args.operation == 'prepare': prepare()
     elif args.operation == 'backup': print(ssh('todo-db', 'sudo /opt/todo/bin/backup.sh'))
     elif args.operation == 'rollback': print(ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback'))
