@@ -7,7 +7,7 @@ on:
     inputs:
       operation:
         type: choice
-        options: [start, stop, health, logs, diagnose, backup, restore, rollback, acceptance]
+        options: [start, stop, health, logs, diagnose, backup, restore, rollback, acceptance, recovery]
         required: true
       backup_object:
         description: For restore only, todo/todo-YYYYMMDDTHHMMSSZ.archive.gz
@@ -17,10 +17,6 @@ on:
         description: For acceptance only, full SHA of the second already transferred image
         type: string
         required: false
-      recovery_only:
-        description: For acceptance, resume backup restore and certificate tests already pending
-        type: boolean
-        default: false
 permissions:
   contents: read
   id-token: write
@@ -31,12 +27,11 @@ jobs:
   operate:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: ${{ inputs.operation == 'acceptance' && 40 || 20 }}
+    timeout-minutes: ${{ (inputs.operation == 'acceptance' || inputs.operation == 'recovery') && 40 || 20 }}
     env:
       OPERATION: ${{ inputs.operation }}
       BACKUP_OBJECT: ${{ inputs.backup_object }}
       COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
-      RECOVERY_ONLY: ${{ inputs.recovery_only }}
       ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
     steps:
       - uses: actions/checkout@v4
@@ -69,15 +64,15 @@ jobs:
           DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
         run: |
           case "$OPERATION" in
-            start|acceptance)
+            start|acceptance|recovery)
               test -n "$DUCKDNS_TOKEN" || { echo "::error::DUCKDNS_TOKEN is missing"; exit 1; }
-              if [[ "$OPERATION" == acceptance && "$RECOVERY_ONLY" != true ]]; then
+              if [[ "$OPERATION" == acceptance ]]; then
                 [[ "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
               fi
               python scripts/cloud.py start
               python scripts/cloud.py dns
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
-              if [[ "$OPERATION" == acceptance ]]; then
+              if [[ "$OPERATION" == acceptance || "$OPERATION" == recovery ]]; then
                 ansible-playbook -i .local/inventory.yml infra/ansible/operations.yml
                 ansible-playbook -i .local/inventory.yml infra/ansible/operations.yml | tee .local/operations-second-run.log
                 python - <<'PY'
@@ -97,24 +92,24 @@ jobs:
             *) exit 2 ;;
           esac
       - name: Verify public readiness and report URL
-        if: inputs.operation == 'start' || inputs.operation == 'health' || inputs.operation == 'rollback' || inputs.operation == 'acceptance'
+        if: inputs.operation == 'start' || inputs.operation == 'health' || inputs.operation == 'rollback' || inputs.operation == 'acceptance' || inputs.operation == 'recovery'
         run: |
           python scripts/cloud.py status
           url=$(python -c 'import json; print(json.load(open("docs/evidencias/cloud-status.json"))["url"])')
           python scripts/smoke.py "$url" --evidence docs/evidencias/reactivation-smoke.json
           echo "Application: $url" >> "$GITHUB_STEP_SUMMARY"
       - name: Validate persistence rollback and isolated GCS recovery
-        if: inputs.operation == 'acceptance'
+        if: inputs.operation == 'acceptance' || inputs.operation == 'recovery'
         run: |
           args=(--comparison-commit "$COMPARISON_COMMIT")
-          if [[ "$RECOVERY_ONLY" == true ]]; then args+=(--recovery-only); fi
+          if [[ "$OPERATION" == recovery ]]; then args+=(--recovery-only); fi
           python scripts/cloud-acceptance.py "${args[@]}"
       - name: Collect diagnostics after acceptance failure
-        if: failure() && inputs.operation == 'acceptance'
+        if: failure() && (inputs.operation == 'acceptance' || inputs.operation == 'recovery')
         run: python scripts/cloud.py logs
       - if: failure() && inputs.operation == 'start'
         run: python scripts/cloud.py stop
-      - if: always() && (inputs.operation == 'diagnose' || inputs.operation == 'acceptance')
+      - if: always() && (inputs.operation == 'diagnose' || inputs.operation == 'acceptance' || inputs.operation == 'recovery')
         run: python scripts/cloud.py stop
       - if: always()
         uses: actions/upload-artifact@v4

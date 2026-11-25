@@ -25,6 +25,6 @@ context = {
     'operation': os.environ.get('OPERATION'),
     'image_commit': os.environ.get('IMAGE_COMMIT'),
     'comparison_commit': os.environ.get('COMPARISON_COMMIT'),
-    'recovery_only': os.environ.get('RECOVERY_ONLY'),
+    'recovery_only': os.environ.get('OPERATION') == 'recovery',
 }
 (folder / (kind + '-context.json')).write_text(json.dumps(context, indent=2), encoding='utf-8')
