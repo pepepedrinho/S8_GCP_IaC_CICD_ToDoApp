@@ -39,10 +39,24 @@ jobs:
           terraform -chdir=infra/terraform/main init -backend=false -input=false
           terraform -chdir=infra/terraform/main validate
       - uses: google-github-actions/auth@v3
+        id: gcp
         if: inputs.action != 'validate'
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 3600s
+      - name: Use temporary service-account token
+        if: inputs.action != 'validate'
+        env:
+          GCP_ACCESS_TOKEN: ${{ steps.gcp.outputs.access_token }}
+        run: |
+          python - <<'PY'
+          import os
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write('CLOUDSDK_AUTH_ACCESS_TOKEN=' + os.environ['GCP_ACCESS_TOKEN'] + '\n')
+              env.write('GOOGLE_OAUTH_ACCESS_TOKEN=' + os.environ['GCP_ACCESS_TOKEN'] + '\n')
+          PY
       - uses: google-github-actions/setup-gcloud@v3
         if: inputs.action != 'validate'
       - if: inputs.action != 'validate'

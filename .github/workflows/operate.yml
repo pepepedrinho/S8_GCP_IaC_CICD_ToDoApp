@@ -31,9 +31,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: google-github-actions/auth@v3
+        id: gcp
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_lifetime: 3600s
+      - name: Use temporary service-account token
+        env:
+          GCP_ACCESS_TOKEN: ${{ steps.gcp.outputs.access_token }}
+        run: |
+          python - <<'PY'
+          import os
+          with open(os.environ['GITHUB_ENV'], 'a') as env:
+              env.write('CLOUDSDK_AUTH_ACCESS_TOKEN=' + os.environ['GCP_ACCESS_TOKEN'] + '\n')
+              env.write('GOOGLE_OAUTH_ACCESS_TOKEN=' + os.environ['GCP_ACCESS_TOKEN'] + '\n')
+          PY
       - uses: google-github-actions/setup-gcloud@v3
       - uses: actions/setup-python@v5
         with:
