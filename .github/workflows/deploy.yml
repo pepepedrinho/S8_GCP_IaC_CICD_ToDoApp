@@ -97,6 +97,9 @@ jobs:
           python scripts/smoke.py "$url" --load --evidence docs/evidencias/gcp-smoke.json
           python scripts/cloud-acceptance.py --comparison-commit "$COMPARISON_COMMIT"
           python scripts/cloud.py status
+      - name: Collect bounded diagnostics on failure
+        if: failure()
+        run: python scripts/cloud.py logs
       - name: Stop both VMs after the unattended deployment tests
         if: always()
         run: python scripts/cloud.py stop

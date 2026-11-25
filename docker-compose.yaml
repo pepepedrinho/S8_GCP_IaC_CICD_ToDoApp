@@ -41,8 +41,10 @@ services:
     volumes: [mongo-data:/data/db]
     restart: unless-stopped
     mem_limit: 512m
+    stop_grace_period: 60s
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "--eval", "quit(db.adminCommand({ping:1}).ok ? 0 : 1)"]
+      test: ["CMD", "bash", "/usr/local/bin/todo-mongo-health"]
+      start_period: 180s
       interval: 10s
       timeout: 5s
       retries: 15

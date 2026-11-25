@@ -4,6 +4,7 @@ services:
     command: [mongod, --wiredTigerCacheSizeGB, '0.256', --bind_ip_all]
     restart: unless-stopped
     mem_limit: {{ todo_mongo_memory }}
+    stop_grace_period: 60s
     ports: ['{{ todo_db_private_ip }}:27017:27017']
     environment:
       MONGO_INITDB_ROOT_USERNAME: administrator
@@ -12,11 +13,13 @@ services:
     volumes:
       - /srv/todo-data/mongo:/data/db
       - ./init-mongo.js:/docker-entrypoint-initdb.d/10-todo.js:ro
+      - ./healthcheck.sh:/usr/local/bin/todo-mongo-health:ro
       - ./secrets/mongo_root_password:/run/secrets/mongo_root_password:ro
       - ./secrets/mongo_app_password:/run/secrets/mongo_app_password:ro
       - ./secrets/mongo_tools_config:/run/secrets/mongo_tools_config:ro
     healthcheck:
-      test: [CMD, mongosh, --quiet, --eval, 'quit(db.adminCommand({ping:1}).ok?0:1)']
+      test: [CMD, bash, /usr/local/bin/todo-mongo-health]
+      start_period: 180s
       interval: 10s
       timeout: 5s
       retries: 12
