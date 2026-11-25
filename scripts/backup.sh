@@ -5,6 +5,9 @@ root=${TODO_ROOT:-/opt/todo}
 # shellcheck disable=SC1091
 [[ ! -f "$root/backup.env" ]] || source "$root/backup.env"
 compose=${COMPOSE_FILE:-$root/compose.yml}
+# A persistent timer may fire immediately after VM boot, before the explicit
+# start workflow has started containers that were gracefully stopped earlier.
+docker compose -f "$compose" up -d --pull never --wait --wait-timeout 300 mongo >/dev/null
 mkdir -p "$root/backups"
 stamp=$(date -u +%Y%m%dT%H%M%SZ)
 archive="$root/backups/todo-$stamp.archive.gz"

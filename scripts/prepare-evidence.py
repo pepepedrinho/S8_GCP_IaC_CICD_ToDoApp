@@ -9,8 +9,8 @@ if os.environ.get('GITHUB_ACTIONS') != 'true':
     raise SystemExit('This cleanup is restricted to disposable Actions checkouts')
 kind = sys.argv[1]
 names = {
-    'deploy': ['cloud-boot', 'cloud-status', 'cloud-stop', 'cloud-diagnostics', 'gcp-smoke', 'gcp-acceptance'],
-    'operate': ['cloud-start', 'cloud-stop', 'cloud-status', 'cloud-boot', 'cloud-logs', 'cloud-diagnostics', 'cloud-backup', 'cloud-restore', 'cloud-rollback', 'reactivation-smoke'],
+    'deploy': ['cloud-boot', 'cloud-dns', 'cloud-status', 'cloud-stop', 'cloud-diagnostics', 'gcp-smoke', 'gcp-acceptance'],
+    'operate': ['cloud-start', 'cloud-dns', 'cloud-stop', 'cloud-status', 'cloud-boot', 'cloud-logs', 'cloud-diagnostics', 'cloud-backup', 'cloud-restore', 'cloud-rollback', 'reactivation-smoke', 'gcp-acceptance'],
     'infra': ['cloud-status', 'cloud-stop'],
 }[kind]
 folder = pathlib.Path(__file__).resolve().parents[1] / 'docs/evidencias'

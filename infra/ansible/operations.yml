@@ -1,0 +1,31 @@
+---
+- name: Refresh operational scripts without reconfiguring application credentials
+  hosts: app
+  become: true
+  tasks:
+    - name: Install transactional deploy script
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../scripts/deploy-images.sh"
+        dest: /opt/todo/bin/deploy-images.sh
+        mode: '0700'
+
+- name: Refresh backup operations on the private host
+  hosts: database
+  become: true
+  tasks:
+    - name: Install backup and isolated recovery tools
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../../scripts/{{ item }}"
+        dest: "/opt/todo/bin/{{ item }}"
+        mode: '0700'
+      loop: [backup.sh, restore-isolated.sh, verify-backup.py, gcs.py]
+    - name: Install bounded backup service
+      ansible.builtin.copy:
+        src: roles/database_host/files/todo-backup.service
+        dest: /etc/systemd/system/todo-backup.service
+        mode: '0644'
+      notify: Reload systemd units
+  handlers:
+    - name: Reload systemd units
+      ansible.builtin.systemd_service:
+        daemon_reload: true

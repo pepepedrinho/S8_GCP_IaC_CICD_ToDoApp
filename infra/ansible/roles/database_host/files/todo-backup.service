@@ -1,0 +1,8 @@
+[Unit]
+Description=Validated Mongo backup to private GCS
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+TimeoutStartSec=600
+ExecStart=/opt/todo/bin/backup.sh

@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "scope": "real HTTP with simulated Docker startup",
+  "transient_503_requests_before_success": 2,
+  "permanent_503_rejected": true,
+  "cloud_test": false
+}

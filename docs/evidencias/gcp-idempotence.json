@@ -1,0 +1,21 @@
+{
+  "passed": true,
+  "cloud_test": true,
+  "run_url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45618276777",
+  "source_commit": "0d4aa22eef6051abab8de2e9491ed49cd6d32cf0",
+  "second_run": {
+    "todo-app": {
+      "ok": 23,
+      "changed": 0,
+      "unreachable": 0,
+      "failed": 0
+    },
+    "todo-db": {
+      "ok": 24,
+      "changed": 0,
+      "unreachable": 0,
+      "failed": 0
+    }
+  },
+  "method": "Actual second full Ansible site.yml execution, without changed_when overrides added to hide changes."
+}

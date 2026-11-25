@@ -229,17 +229,9 @@
       TODO_ROOT={{ todo_root }}
 - name: Install backup service
   ansible.builtin.copy:
+    src: todo-backup.service
     dest: /etc/systemd/system/todo-backup.service
     mode: '0644'
-    content: |
-      [Unit]
-      Description=Validated Mongo backup to private GCS
-      After=docker.service
-      Requires=docker.service
-      [Service]
-      Type=oneshot
-      TimeoutStartSec=300
-      ExecStart=/opt/todo/bin/backup.sh
 - name: Install persistent backup timer
   ansible.builtin.copy:
     dest: /etc/systemd/system/todo-backup.timer

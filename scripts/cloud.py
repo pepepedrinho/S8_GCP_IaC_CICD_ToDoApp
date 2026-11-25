@@ -20,11 +20,11 @@ ZONE = 'us-central1-a'
 GCLOUD = shutil.which('gcloud') or 'gcloud'
 os.environ.update(CLOUDSDK_CORE_DISABLE_PROMPTS='1', CLOUDSDK_COMPONENT_MANAGER_DISABLE_UPDATE_CHECK='1', CLOUDSDK_CORE_DISABLE_FILE_LOGGING='1')
 
-def gcloud(*args, json_output=False):
+def gcloud(*args, json_output=False, timeout=240):
     command = [GCLOUD, *args, '--project=' + PROJECT, '--quiet']
     if json_output: command.append('--format=json')
     for attempt in range(4):
-        r = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=240)
+        r = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=timeout)
         if r.returncode and args[:2] == ('compute', 'ssh') and 'ABORTED: Multiple concurrent mutations were attempted.' in r.stderr and attempt < 3:
             time.sleep(2 ** (attempt + 1))
             continue
@@ -41,11 +41,11 @@ def instances(allow_missing=False):
             if not allow_missing or 'was not found' not in str(error): raise
     return found
 
-def ssh(name, command):
+def ssh(name, command, timeout=240):
     key = PRIVATE / 'ssh' / 'id_ed25519'
     key.parent.mkdir(parents=True, exist_ok=True)
     if not key.exists(): subprocess.run(['ssh-keygen', '-t', 'ed25519', '-f', str(key), '-N', ''], check=True, capture_output=True)
-    return gcloud('compute', 'ssh', name, '--zone=' + ZONE, '--tunnel-through-iap', '--ssh-key-file=' + str(key), '--ssh-key-expire-after=1h', '--command=' + command)
+    return gcloud('compute', 'ssh', name, '--zone=' + ZONE, '--tunnel-through-iap', '--ssh-key-file=' + str(key), '--ssh-key-expire-after=1h', '--command=' + command, timeout=timeout)
 
 def snapshot(allow_missing=False):
     data = instances(allow_missing)
@@ -181,7 +181,9 @@ def main():
         assert all(state[n]['status'] in ('TERMINATED', 'NOT_CREATED') for n in ('todo-app', 'todo-db')), failures
     elif args.operation == 'dns': update_duckdns(snapshot())
     elif args.operation == 'prepare': prepare()
-    elif args.operation == 'backup': print(ssh('todo-db', 'sudo /opt/todo/bin/backup.sh'))
+    elif args.operation == 'backup':
+        command = "sudo systemctl start todo-backup.service && sudo python3 -c \"import pathlib; print(max(pathlib.Path('/opt/todo/backups').glob('todo-*.archive.gz.json')).read_text())\""
+        print(ssh('todo-db', command, timeout=660))
     elif args.operation == 'rollback': print(ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback'))
     elif args.operation == 'logs':
         diagnostics = {}
@@ -194,7 +196,7 @@ def main():
         import re
         if not re.fullmatch(r'todo/todo-\d{8}T\d{6}Z\.archive\.gz', args.object): raise ValueError('Invalid backup object')
         command = f"sudo bash -c 'set -e; cd /opt/todo; source backup.env; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object} backups/restore.archive.gz; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object}.json backups/restore.archive.gz.json; python3 bin/verify-backup.py backups/restore.archive.gz'"
-        print(ssh('todo-db', command))
+        print(ssh('todo-db', command, timeout=660))
     state = snapshot(allow_missing=args.operation == 'stop')
     evidence = ROOT / 'docs' / 'evidencias'; evidence.mkdir(parents=True, exist_ok=True)
     (evidence / ('cloud-' + args.operation + '.json')).write_text(json.dumps(state, indent=2))

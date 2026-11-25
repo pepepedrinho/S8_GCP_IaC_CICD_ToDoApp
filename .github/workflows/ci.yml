@@ -49,10 +49,11 @@ jobs:
       - run: |
           export ANSIBLE_CONFIG="$PWD/infra/ansible/ansible.cfg"
           ansible-playbook -i infra/ansible/inventory.example.yml infra/ansible/site.yml --syntax-check
-          ansible-lint --offline infra/ansible/site.yml
+          ansible-lint --offline infra/ansible/site.yml infra/ansible/https.yml infra/ansible/operations.yml
           python -m compileall -q scripts
           python scripts/test-gcloud-ssh.py
           python scripts/test-plan-guard.py
+          python scripts/test-rollback-readiness.py
           shellcheck scripts/*.sh
   integration:
     runs-on: ubuntu-latest
@@ -70,6 +71,7 @@ jobs:
           python scripts/integration.py
           python scripts/test-release.py
           export TODO_ROOT="$PWD/.local" COMPOSE_FILE="$PWD/docker-compose.yaml" MONGO_IMAGE=todo-mongo:local
+          docker compose stop mongo
           bash scripts/backup.sh
       - if: always()
         run: docker compose stop

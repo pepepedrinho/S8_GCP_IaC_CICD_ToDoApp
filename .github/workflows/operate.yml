@@ -7,10 +7,14 @@ on:
     inputs:
       operation:
         type: choice
-        options: [start, stop, health, logs, diagnose, backup, restore, rollback]
+        options: [start, stop, health, logs, diagnose, backup, restore, rollback, acceptance]
         required: true
       backup_object:
         description: For restore only, todo/todo-YYYYMMDDTHHMMSSZ.archive.gz
+        type: string
+        required: false
+      comparison_commit:
+        description: For acceptance only, full SHA of the second already transferred image
         type: string
         required: false
 permissions:
@@ -23,10 +27,11 @@ jobs:
   operate:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: ${{ inputs.operation == 'acceptance' && 40 || 20 }}
     env:
       OPERATION: ${{ inputs.operation }}
       BACKUP_OBJECT: ${{ inputs.backup_object }}
+      COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
       ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
     steps:
       - uses: actions/checkout@v4
@@ -59,11 +64,17 @@ jobs:
           DUCKDNS_TOKEN: ${{ secrets.DUCKDNS_TOKEN }}
         run: |
           case "$OPERATION" in
-            start)
+            start|acceptance)
               test -n "$DUCKDNS_TOKEN" || { echo "::error::DUCKDNS_TOKEN is missing"; exit 1; }
+              if [[ "$OPERATION" == acceptance ]]; then
+                [[ "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+              fi
               python scripts/cloud.py start
               python scripts/cloud.py dns
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
+              if [[ "$OPERATION" == acceptance ]]; then
+                ansible-playbook -i .local/inventory.yml infra/ansible/operations.yml
+              fi
               ;;
             diagnose) python scripts/cloud.py boot; python scripts/cloud.py logs ;;
             stop|logs|backup|rollback) python scripts/cloud.py "$OPERATION" ;;
@@ -72,15 +83,21 @@ jobs:
             *) exit 2 ;;
           esac
       - name: Verify public readiness and report URL
-        if: inputs.operation == 'start' || inputs.operation == 'health' || inputs.operation == 'rollback'
+        if: inputs.operation == 'start' || inputs.operation == 'health' || inputs.operation == 'rollback' || inputs.operation == 'acceptance'
         run: |
           python scripts/cloud.py status
           url=$(python -c 'import json; print(json.load(open("docs/evidencias/cloud-status.json"))["url"])')
           python scripts/smoke.py "$url" --evidence docs/evidencias/reactivation-smoke.json
           echo "Application: $url" >> "$GITHUB_STEP_SUMMARY"
+      - name: Validate persistence rollback and isolated GCS recovery
+        if: inputs.operation == 'acceptance'
+        run: python scripts/cloud-acceptance.py --comparison-commit "$COMPARISON_COMMIT"
+      - name: Collect diagnostics after acceptance failure
+        if: failure() && inputs.operation == 'acceptance'
+        run: python scripts/cloud.py logs
       - if: failure() && inputs.operation == 'start'
         run: python scripts/cloud.py stop
-      - if: always() && inputs.operation == 'diagnose'
+      - if: always() && (inputs.operation == 'diagnose' || inputs.operation == 'acceptance')
         run: python scripts/cloud.py stop
       - if: always()
         uses: actions/upload-artifact@v4
@@ -99,4 +116,5 @@ jobs:
             docs/evidencias/cloud-restore.json
             docs/evidencias/cloud-rollback.json
             docs/evidencias/reactivation-smoke.json
+            docs/evidencias/gcp-acceptance.json
           retention-days: 14

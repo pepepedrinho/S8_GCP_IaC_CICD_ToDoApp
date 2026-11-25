@@ -1,0 +1,20 @@
+{
+  "url": "https://triodelicia.duckdns.org",
+  "https_verified": true,
+  "checks": [
+    "frontend and database readiness",
+    "create",
+    "list",
+    "complete",
+    "reopen",
+    "delete and reload"
+  ],
+  "load": {
+    "concurrency": 10,
+    "requests": 100,
+    "errors": 0,
+    "p95_seconds": 0.3812436340003842,
+    "mean_seconds": 0.23831756261004558
+  },
+  "passed": true
+}

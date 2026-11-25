@@ -1,0 +1,12 @@
+{
+  "passed": true,
+  "cloud_test": false,
+  "gcs_upload_tested": false,
+  "mongo_started_before_backup": true,
+  "production_mongo_stopped_after_test": true,
+  "restore": {
+    "event": "isolated_restore_validated",
+    "data_sha256": "edf0f15995d011f6d1866d72974ec0031d99230ab4a201c783d5eebf9624b345",
+    "production_overwritten": false
+  }
+}
