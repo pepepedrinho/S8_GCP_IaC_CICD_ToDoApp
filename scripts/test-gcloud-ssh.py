@@ -36,6 +36,16 @@ sys.stdout.buffer.write(sys.stdin.buffer.read())
     env['TODO_TEST_DENIED'] = '1'
     result = subprocess.run(command, input=payload, capture_output=True, env=env, timeout=10)
     assert result.returncode == 255 and counter.read_text() == '1'
-    evidence = {'passed': True, 'binary_pipe_bytes': len(payload), 'pre_ssh_conflict_attempts': 3, 'permission_error_attempts': 1}
+    counter.unlink()
+    env.pop('TODO_TEST_DENIED')
+    operations = [sys.executable, '-c', "import sys; sys.path.insert(0,sys.argv[1]); from cloud import gcloud; print(gcloud('compute','ssh','todo-db'))", str(root / 'scripts')]
+    result = subprocess.run(operations, input=b'ready', capture_output=True, env=env, timeout=30)
+    assert result.returncode == 0 and result.stdout.strip() == b'ready', result.stderr
+    assert counter.read_text() == '3'
+    counter.unlink()
+    env['TODO_TEST_DENIED'] = '1'
+    result = subprocess.run(operations, input=b'ready', capture_output=True, env=env, timeout=10)
+    assert result.returncode != 0 and counter.read_text() == '1'
+    evidence = {'passed': True, 'binary_pipe_bytes': len(payload), 'pre_ssh_conflict_attempts': 3, 'permission_error_attempts': 1, 'operations_helper_conflict_attempts': 3, 'operations_helper_permission_error_attempts': 1}
     (root / 'docs/evidencias/ssh-transport.json').write_text(json.dumps(evidence, indent=2), encoding='utf-8')
     print(json.dumps(evidence))

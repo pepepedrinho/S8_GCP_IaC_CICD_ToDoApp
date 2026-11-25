@@ -2,5 +2,7 @@
   "passed": true,
   "binary_pipe_bytes": 1048576,
   "pre_ssh_conflict_attempts": 3,
-  "permission_error_attempts": 1
+  "permission_error_attempts": 1,
+  "operations_helper_conflict_attempts": 3,
+  "operations_helper_permission_error_attempts": 1
 }

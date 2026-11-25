@@ -19,7 +19,12 @@ os.environ.update(CLOUDSDK_CORE_DISABLE_PROMPTS='1', CLOUDSDK_COMPONENT_MANAGER_
 def gcloud(*args, json_output=False):
     command = [GCLOUD, *args, '--project=' + PROJECT, '--quiet']
     if json_output: command.append('--format=json')
-    r = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=240)
+    for attempt in range(4):
+        r = subprocess.run(command, capture_output=True, text=True, encoding='utf-8', errors='replace', timeout=240)
+        if r.returncode and args[:2] == ('compute', 'ssh') and 'ABORTED: Multiple concurrent mutations were attempted.' in r.stderr and attempt < 3:
+            time.sleep(2 ** (attempt + 1))
+            continue
+        break
     if r.returncode: raise RuntimeError('gcloud failed: ' + ' '.join(args[:3]) + '\n' + r.stderr[:1800])
     return json.loads(r.stdout) if json_output else r.stdout.strip()
 
