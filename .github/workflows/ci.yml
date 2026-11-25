@@ -62,6 +62,7 @@ jobs:
       - run: |
           python scripts/init-local.py
           docker compose build
+          python scripts/test-mongo-bootstrap.py
           docker compose up -d --wait --wait-timeout 180
           python scripts/smoke.py http://127.0.0.1:8080 --evidence docs/evidencias/ci-smoke.json
           python scripts/integration.py

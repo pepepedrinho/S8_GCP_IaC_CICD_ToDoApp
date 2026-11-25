@@ -14,6 +14,8 @@ services:
       - /srv/todo-data/mongo:/data/db
       - ./init-mongo.js:/docker-entrypoint-initdb.d/10-todo.js:ro
       - ./healthcheck.sh:/usr/local/bin/todo-mongo-health:ro
+      - ./bootstrap-administrator.js:/run/todo/bootstrap-administrator.js:ro
+      - ./ensure-application-user.js:/run/todo/ensure-application-user.js:ro
       - ./secrets/mongo_root_password:/run/secrets/mongo_root_password:ro
       - ./secrets/mongo_app_password:/run/secrets/mongo_app_password:ro
       - ./secrets/mongo_tools_config:/run/secrets/mongo_tools_config:ro

@@ -76,9 +76,10 @@
     - {name: mongo_app_password, value: "{{ mongo_app_password }}"}
 - name: Install database initialization script
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../../banco-de-dados/init-mongo.js"
-    dest: "{{ todo_root }}/init-mongo.js"
+    src: "{{ playbook_dir }}/../../banco-de-dados/{{ item }}"
+    dest: "{{ todo_root }}/{{ item }}"
     mode: '0444'
+  loop: [init-mongo.js, bootstrap-administrator.js, ensure-application-user.js]
 - name: Configure database tools without password arguments
   ansible.builtin.copy:
     content: "{{ {'password': mongo_root_password} | to_json }}"
@@ -101,6 +102,19 @@
   ansible.builtin.command: docker compose -f /opt/todo/compose.yml up -d --wait --wait-timeout 300
   register: database_host_up
   changed_when: "'Started' in database_host_up.stderr or 'Created' in database_host_up.stderr or 'Recreated' in database_host_up.stderr"
+- name: Check configured administrator authentication
+  ansible.builtin.command:
+    argv: [docker, compose, -f, /opt/todo/compose.yml, exec, -T, mongo, mongosh, --quiet, --eval, "const fs=require('fs'); db.getSiblingDB('admin').auth('administrator',fs.readFileSync('/run/secrets/mongo_root_password','utf8').trim());"]
+  no_log: true
+  register: database_host_administrator
+  changed_when: false
+  failed_when: false
+- name: Complete interrupted first-user bootstrap through localhost exception
+  ansible.builtin.command:
+    argv: [docker, compose, -f, /opt/todo/compose.yml, exec, -T, mongo, mongosh, --quiet, /run/todo/bootstrap-administrator.js]
+  no_log: true
+  when: database_host_administrator.rc != 0
+  changed_when: true
 - name: Ensure application user after interrupted first initialization
   ansible.builtin.command:
     argv:
@@ -113,12 +127,7 @@
       - mongo
       - mongosh
       - --quiet
-      - --eval
-      - >-
-        const fs=require('fs');
-        db.getSiblingDB('admin').auth('administrator',fs.readFileSync('/run/secrets/mongo_root_password','utf8').trim());
-        const app=db.getSiblingDB('todo-app');
-        if(!app.getUser('todo')){app.createUser({user:'todo',pwd:fs.readFileSync('/run/secrets/mongo_app_password','utf8').trim(),roles:[{role:'readWrite',db:'todo-app'}]});print('created');}else{print('existing');}
+      - /run/todo/ensure-application-user.js
   no_log: true
   register: database_host_application_user
   changed_when: "'created' in database_host_application_user.stdout"
