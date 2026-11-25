@@ -9,6 +9,10 @@ on:
         description: Full commit SHA already published by Validate
         type: string
         required: true
+      comparison_commit:
+        description: Optional second published SHA for real image update and rollback acceptance
+        type: string
+        required: false
 permissions:
   contents: read
   packages: read
@@ -23,6 +27,7 @@ jobs:
     timeout-minutes: 45
     env:
       IMAGE_COMMIT: ${{ inputs.image_commit }}
+      COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
       MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
       MONGO_APP_PASSWORD: ${{ secrets.MONGO_APP_PASSWORD }}
       ANSIBLE_CONFIG: ${{ github.workspace }}/infra/ansible/ansible.cfg
@@ -46,6 +51,7 @@ jobs:
       - name: Validate inputs and prepare SSH and secrets
         run: |
           [[ "$IMAGE_COMMIT" =~ ^[a-f0-9]{40}$ ]]
+          [[ -z "$COMPARISON_COMMIT" || "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
           test ${#MONGO_ROOT_PASSWORD} -ge 24
           test ${#MONGO_APP_PASSWORD} -ge 24
           python scripts/cloud.py prepare
@@ -54,18 +60,29 @@ jobs:
           prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
           docker pull "$prefix-frontend:$IMAGE_COMMIT"
           docker pull "$prefix-backend:$IMAGE_COMMIT"
-          docker save -o .local/application.tar "$prefix-frontend:$IMAGE_COMMIT" "$prefix-backend:$IMAGE_COMMIT"
+          images=("$prefix-frontend:$IMAGE_COMMIT" "$prefix-backend:$IMAGE_COMMIT")
+          if [[ -n "$COMPARISON_COMMIT" && "$COMPARISON_COMMIT" != "$IMAGE_COMMIT" ]]; then
+            docker pull "$prefix-frontend:$COMPARISON_COMMIT"
+            docker pull "$prefix-backend:$COMPARISON_COMMIT"
+            images+=("$prefix-frontend:$COMPARISON_COMMIT" "$prefix-backend:$COMPARISON_COMMIT")
+          fi
+          docker save -o .local/application.tar "${images[@]}"
           gcloud compute scp .local/application.tar todo-app:/tmp/todo-application.tar --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --quiet
           gcloud compute ssh todo-app --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --command='sudo mkdir -p /opt/todo/artifacts && sudo mv /tmp/todo-application.tar /opt/todo/artifacts/application.tar' --quiet
       - name: Configure both hosts and deploy identified images
         run: |
           prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
           ansible-playbook -i .local/inventory.yml infra/ansible/site.yml -e @.local/cloud-secrets.json -e @.local/runtime.json -e "todo_version=$IMAGE_COMMIT" -e "todo_frontend_image=$prefix-frontend:$IMAGE_COMMIT" -e "todo_backend_image=$prefix-backend:$IMAGE_COMMIT"
+      - name: Verify Ansible idempotency
+        run: |
+          prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
+          ansible-playbook -i .local/inventory.yml infra/ansible/site.yml -e @.local/cloud-secrets.json -e @.local/runtime.json -e "todo_version=$IMAGE_COMMIT" -e "todo_frontend_image=$prefix-frontend:$IMAGE_COMMIT" -e "todo_backend_image=$prefix-backend:$IMAGE_COMMIT" | tee .local/ansible-second-run.log
+          python -c "import pathlib,re; t=pathlib.Path('.local/ansible-second-run.log').read_text(); r=re.findall(r'changed=(\d+).*unreachable=(\d+).*failed=(\d+)', t); assert len(r)==3 and all(x==('0','0','0') for x in r), r"
       - name: Validate public HTTPS and backup recovery
         run: |
           url=$(python -c 'import json; print("https://"+json.load(open(".local/runtime.json"))["todo_domain"])')
           python scripts/smoke.py "$url" --load --evidence docs/evidencias/gcp-smoke.json
-          python scripts/cloud.py backup
+          python scripts/cloud-acceptance.py --comparison-commit "$COMPARISON_COMMIT"
           python scripts/cloud.py status
       - name: Stop both VMs after the unattended deployment tests
         if: always()

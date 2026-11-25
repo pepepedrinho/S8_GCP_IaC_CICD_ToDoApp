@@ -58,6 +58,7 @@
   when: app_host_mongo_pull.changed or not app_host_mongo_artifact.stat.exists
   changed_when: true
 - name: Fetch image archive through SSH to controller
+  become: false
   ansible.builtin.fetch:
     src: "{{ todo_root }}/artifacts/mongo.tar"
     dest: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar"

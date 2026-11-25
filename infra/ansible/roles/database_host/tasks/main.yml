@@ -120,6 +120,7 @@
       Requires=docker.service
       [Service]
       Type=oneshot
+      TimeoutStartSec=300
       ExecStart=/opt/todo/bin/backup.sh
 - name: Install persistent backup timer
   ansible.builtin.copy:
