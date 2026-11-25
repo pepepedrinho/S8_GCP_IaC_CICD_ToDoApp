@@ -7,7 +7,7 @@ on:
     inputs:
       operation:
         type: choice
-        options: [start, stop, health, logs, backup, restore, rollback]
+        options: [start, stop, health, logs, diagnose, backup, restore, rollback]
         required: true
       backup_object:
         description: For restore only, todo/todo-YYYYMMDDTHHMMSSZ.archive.gz
@@ -59,6 +59,7 @@ jobs:
               python scripts/cloud.py start
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
               ;;
+            diagnose) python scripts/cloud.py boot; python scripts/cloud.py logs ;;
             stop|logs|backup|rollback) python scripts/cloud.py "$OPERATION" ;;
             restore) python scripts/cloud.py restore --object "$BACKUP_OBJECT" ;;
             health) python scripts/cloud.py status ;;
@@ -72,6 +73,8 @@ jobs:
           python scripts/smoke.py "$url" --evidence docs/evidencias/reactivation-smoke.json
           echo "Application: $url" >> "$GITHUB_STEP_SUMMARY"
       - if: failure() && inputs.operation == 'start'
+        run: python scripts/cloud.py stop
+      - if: always() && inputs.operation == 'diagnose'
         run: python scripts/cloud.py stop
       - if: always()
         uses: actions/upload-artifact@v4

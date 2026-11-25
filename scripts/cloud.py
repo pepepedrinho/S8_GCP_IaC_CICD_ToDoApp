@@ -118,7 +118,12 @@ def main():
     elif args.operation == 'backup': print(ssh('todo-db', 'sudo /opt/todo/bin/backup.sh'))
     elif args.operation == 'rollback': print(ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback'))
     elif args.operation == 'logs':
-        for name in ('todo-app', 'todo-db'): print(ssh(name, 'sudo docker ps --format "{{.Names}} {{.Status}}"; sudo journalctl -u todo-backup.service -n 10 --no-pager'))
+        diagnostics = {}
+        command = "free -m; sudo docker ps -a --format '{{.Names}} {{.Status}}'; for id in $(sudo docker ps -aq); do sudo docker inspect \"$id\" --format '{{.Name}} OOMKilled={{.State.OOMKilled}} ExitCode={{.State.ExitCode}} Restarts={{.RestartCount}}'; sudo docker logs --tail 100 \"$id\" 2>&1; done; sudo journalctl -k -b -1 --no-pager -g 'Out of memory|oom-kill|Killed process' -n 10 2>/dev/null || true"
+        for name in ('todo-app', 'todo-db'):
+            diagnostics[name] = ssh(name, command)
+            print(name, diagnostics[name])
+        (ROOT / 'docs/evidencias/cloud-diagnostics.json').write_text(json.dumps(diagnostics, indent=2), encoding='utf-8')
     elif args.operation == 'restore':
         import re
         if not re.fullmatch(r'todo/todo-\d{8}T\d{6}Z\.archive\.gz', args.object): raise ValueError('Invalid backup object')
