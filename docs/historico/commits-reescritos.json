@@ -1,0 +1,282 @@
+{
+  "base_professor": "4814004a61c9f1e05bb5102a11fda49458bf1660",
+  "quantidade_traduzida": 30,
+  "conteudo_de_cada_commit_preservado": true,
+  "commits_professor_preservados": [
+    "4814004a61c9f1e05bb5102a11fda49458bf1660",
+    "a28bb945860e578171d630270825986208cb84b1",
+    "6680551833c3fea2a0577c994255347f4d14a64a"
+  ],
+  "commits": [
+    {
+      "anterior": "ede9a98dd69f649d01dfb7a970197579ee878cda",
+      "atual": "88100d15c1ee431a64b8b31b86fd2b52970d5039",
+      "arvore": "f5bf0744744d9a083c2791c223c37d4efddba965",
+      "mensagem": "Adapta a aplicação para MongoDB privado e recuperação testada",
+      "data_autoria": "2026-11-23T13:47:04-03:00",
+      "data_commit": "2026-11-23T13:47:04-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "80331924ca7063d5d44d3e7feb535f6db47fd4a8",
+      "atual": "1842409cbe3beadddc9175b4707a0434bc907013",
+      "arvore": "0c6393934c856ba0a7271921f1a4ac0a28752d8b",
+      "mensagem": "Implementa infraestrutura GCP e pipelines com proteções de escopo",
+      "data_autoria": "2026-11-23T14:05:39-03:00",
+      "data_commit": "2026-11-23T14:05:39-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "d36d84b76f676d5f688697cb573c23a23922019f",
+      "atual": "8c15fcbc24ea34b14bb1a40f5631cf0bddb4ec13",
+      "arvore": "4fc2713fb1cdb7b235c7049f38675fd63dfa274d",
+      "mensagem": "Registra o estado verificável do bootstrap no inventário final",
+      "data_autoria": "2026-11-23T14:07:47-03:00",
+      "data_commit": "2026-11-23T14:07:47-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "d5f0c127186ac8f7e1c7bc2fe12846770812eb8e",
+      "atual": "9aab83bb1fceed37632fde1420764fce1aae30f2",
+      "arvore": "108149a873b9a66a2c9f76a2ad84cef1c7bbd709",
+      "mensagem": "Valida o workflow manual de infraestrutura sem acesso à nuvem",
+      "data_autoria": "2026-11-23T14:09:37-03:00",
+      "data_commit": "2026-11-23T14:09:37-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "fa626deacdc5d0fffab1b82cdfcbeb64d720a456",
+      "atual": "dfee924ec1b631cfda4fa6dcfae8380676cd8ed0",
+      "arvore": "2c383bbdc3865f07202bbe6583411ed3832134ba",
+      "mensagem": "Configura variáveis do fork e segredos protegidos do banco",
+      "data_autoria": "2026-11-23T14:13:02-03:00",
+      "data_commit": "2026-11-23T14:13:02-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "9a3a4bf038355bc4f9b148f04e2729906d027eca",
+      "atual": "a2a1a96b8e3fb361a024bbed4b1690bd8d186e9c",
+      "arvore": "23ae8857a531421cd41d6d4807d2d5035900c889",
+      "mensagem": "Registra CI aprovada, recuperação e bloqueio de aprovação da nuvem",
+      "data_autoria": "2026-11-23T14:17:31-03:00",
+      "data_commit": "2026-11-23T14:17:31-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "d7854c743182922e50da9e21daa47c1b47e6bf8d",
+      "atual": "07f27f6a9b9bd6103f7d4f0885647ae0fffa3d64",
+      "arvore": "73dfdd664036169a56b6afce1afa787ade8a47fc",
+      "mensagem": "Valida persistência, isolamento, recuperação e idempotência na nuvem",
+      "data_autoria": "2026-11-25T06:12:27-03:00",
+      "data_commit": "2026-11-25T06:12:27-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "9a2747cac51ca262a0fcf2557f23da78558d9d21",
+      "atual": "a6465667f91a38744c371c2b113422b5a1bb667c",
+      "arvore": "77efbf258fe5a295b307ba3198c69c0035d6e500",
+      "mensagem": "Confere o resumo de idempotência dos dois hosts na nuvem",
+      "data_autoria": "2026-11-25T06:13:22-03:00",
+      "data_commit": "2026-11-25T06:13:22-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "8f68aa3c58df44fdbb86b7c42e64e389c2ecfc25",
+      "atual": "ab60b165933711c6694d7b4128906129b90e51b0",
+      "arvore": "759d4344d05d1f8931f3aa447d251fbc7d791854",
+      "mensagem": "Usa migração do host E2 e preserva a parada após seis horas",
+      "data_autoria": "2026-11-25T06:17:31-03:00",
+      "data_commit": "2026-11-25T06:17:31-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "51021a781c3d1c9d9ad8c3c55ab31cdbf8e07e1f",
+      "atual": "cd4fd30df7dba299b10f3831925fedfb23b4cd14",
+      "arvore": "2c100cb45b8e81a4edee92f311aed2d9765dc945",
+      "mensagem": "Renova certificados federados do OS Login nas conexões Ansible",
+      "data_autoria": "2026-11-25T06:26:18-03:00",
+      "data_commit": "2026-11-25T06:26:18-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "7a073f691f7e9c36050640d2085d9f13fa7ea325",
+      "atual": "7fd67e8ebcab021eaaeb5c6d048cb01259a3372b",
+      "arvore": "a902db35a70890ee68c443939001337f76656b82",
+      "mensagem": "Inventaria recursos preservados e versões dos objetos na nuvem",
+      "data_autoria": "2026-11-25T06:35:24-03:00",
+      "data_commit": "2026-11-25T06:35:24-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "b36ff3646d1c1aa5bdff46fdf1c6b85daf9172c0",
+      "atual": "515cbcde4ee05e1cefc6a09e1a75f80b4098c695",
+      "arvore": "ddcf8939b6c28acc690978fd7f8f8fa2e18bfd41",
+      "mensagem": "Usa tokens temporários de uma hora e transferência compactada do MongoDB",
+      "data_autoria": "2026-11-25T06:44:24-03:00",
+      "data_commit": "2026-11-25T06:44:24-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "bb938373676a2732dacad8edf736470ed4275b22",
+      "atual": "f4bb839ab3e9b758acd75fbe3097061a7b573366",
+      "arvore": "4e68d006d0369622c52fd2cf7fc470f887a2e9df",
+      "mensagem": "Mantém a autenticação dos workflows durante a execução limitada",
+      "data_autoria": "2026-11-25T06:45:48-03:00",
+      "data_commit": "2026-11-25T06:45:48-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "088f76c9f0ee35de94223500b215229ef6097b65",
+      "atual": "aa9f3f12d11ddc4dd3e19f5a3ab7cadeb731efc0",
+      "arvore": "7b9dab191ea485424c3f556e201f53b1874b7ef0",
+      "mensagem": "Coleta diagnósticos limitados das VMs e desliga após a inspeção",
+      "data_autoria": "2026-11-25T07:14:27-03:00",
+      "data_commit": "2026-11-25T07:14:27-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "082440423a260ffcdb4e6a7501be795e95d3f8cc",
+      "atual": "7e2aaa8eee050d4a6383890290cfaecc05463d81",
+      "arvore": "8694b92c747a92ebe6ea55f1a4532eb952b5d88b",
+      "mensagem": "Reduz o custo das sondas MongoDB e permite a inicialização a frio",
+      "data_autoria": "2026-11-25T07:23:08-03:00",
+      "data_commit": "2026-11-25T07:23:08-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "310b5e2ae7a4d67f18c033c4dfd3b3d947cd5c02",
+      "atual": "9dd49aa5fa5eda8a2fa994a1b55d99843203f739",
+      "arvore": "c487d28f3c40c3bb28b7aea198b53bdc821d12f7",
+      "mensagem": "Recupera a inicialização interrompida do MongoDB sem apagar dados",
+      "data_autoria": "2026-11-25T07:52:58-03:00",
+      "data_commit": "2026-11-25T07:52:58-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "719939bcfaf26db49da76025312975c6ec72c0b1",
+      "atual": "3eb36e904ca0e0f7b1aba9fd4cba8d21af4c3b7b",
+      "arvore": "6168689096a7b3c15061df2dac7305db44134d40",
+      "mensagem": "Formata a sonda de autenticação administrativa para o lint Ansible",
+      "data_autoria": "2026-11-25T07:55:42-03:00",
+      "data_commit": "2026-11-25T07:55:42-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "aa728cd6c2f249a13d3d7dc2105368f85a9ea4c3",
+      "atual": "cdc10f56e7ddd1444c6adf2cc195478501e5bcf5",
+      "arvore": "0f6f7563c20468b59fb4fd97c72b9a6b051bfc14",
+      "mensagem": "Repete conflitos transitórios do OS Login antes da execução SSH",
+      "data_autoria": "2026-11-25T08:22:22-03:00",
+      "data_commit": "2026-11-25T08:22:22-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "3368becf26323a8f2355d38b88b62ef2eff78966",
+      "atual": "a92f21e440fdd818cdfd3f57b4099c0a25ab0fef",
+      "arvore": "13fe99f5123465cd9c878e656c231d681a12f203",
+      "mensagem": "Vincula as evidências dos workflows a cada execução",
+      "data_autoria": "2026-11-25T08:26:26-03:00",
+      "data_commit": "2026-11-25T08:26:26-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "ee67d77572c95a3c80263c98fedb998d8cd66d10",
+      "atual": "2af17cc5ab892679ef161b300dd7b97fad0ccacd",
+      "arvore": "7caf259f328a955e90da9cbe6fcbf6b483dc4f2b",
+      "mensagem": "Exige a topologia prevista antes do Terraform apply",
+      "data_autoria": "2026-11-25T08:35:31-03:00",
+      "data_commit": "2026-11-25T08:35:31-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "6facbd283e78a80d3f86657186ef61414c72081f",
+      "atual": "62b5a9aab118d5eea735e5cd64aebbd7de4c38d0",
+      "arvore": "11c12fb64a8baf7a596b870d99d140feeed07366",
+      "mensagem": "Trata conflitos transitórios do OS Login nos comandos operacionais",
+      "data_autoria": "2026-11-25T08:37:43-03:00",
+      "data_commit": "2026-11-25T08:37:43-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "6d68cd387eea269db23a0f1b37b133cce948c199",
+      "atual": "92467f9a45299951fc09003e25f74a4159738d78",
+      "arvore": "1e6613de843b14444e748f1917ea306cf9a70c3c",
+      "mensagem": "Distingue rejeição de autenticação e falhas transitórias do MongoDB",
+      "data_autoria": "2026-11-25T09:06:31-03:00",
+      "data_commit": "2026-11-25T09:06:31-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "79c7507e45889a6456b94d639b70a0759e59bc42",
+      "atual": "1d7a744040a1a818a7b7e25f4f5ff7ce293a91ef",
+      "arvore": "4f11d07a84b63a4fd108d8a133cebffae2a688f4",
+      "mensagem": "Automatiza a atualização do DuckDNS na implantação e reativação",
+      "data_autoria": "2026-11-25T09:14:34-03:00",
+      "data_commit": "2026-11-25T09:14:34-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "0d4aa22eef6051abab8de2e9491ed49cd6d32cf0",
+      "atual": "91b29719c33707475db128ae6c3b35798fa3821c",
+      "arvore": "31e2c38cc8010e65f53616d21f90e2afc43fbf40",
+      "mensagem": "Exige o token DuckDNS antes de iniciar as instâncias",
+      "data_autoria": "2026-11-25T09:24:12-03:00",
+      "data_commit": "2026-11-25T09:24:12-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "475c4be6d21690ab553ee7795a42a5e0070e926e",
+      "atual": "b0a880a58bf1818044596e3fae58990d5e507f19",
+      "arvore": "5741e3cac6e106df8b791cccb2eec3a57a44e132",
+      "mensagem": "Aguarda prontidão no rollback e separa os testes de aceite remoto",
+      "data_autoria": "2026-11-25T12:17:11-03:00",
+      "data_commit": "2026-11-25T12:17:11-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "02d7f1ac537778b2888e33e47de8fa5b6cddbf4a",
+      "atual": "ef1dd47a1752c07a1f59f14863c6b6f490748790",
+      "arvore": "99ef64178c53e879ba7eb8011ac6186af61b897f",
+      "mensagem": "Reserva tempo de implantação para configurar e desligar as VMs",
+      "data_autoria": "2026-11-25T12:18:38-03:00",
+      "data_commit": "2026-11-25T12:18:38-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "1c14dde2abb991595299adc564f7fcc447d47333",
+      "atual": "a78284f331ff516a73763118447e5c46a4210d99",
+      "arvore": "589d9a41f756e30772d888ac7afa634d0fd11c17",
+      "mensagem": "Limita conexões do backup MongoDB e retoma verificações de recuperação",
+      "data_autoria": "2026-11-25T12:52:17-03:00",
+      "data_commit": "2026-11-25T12:52:17-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "9aac06b27bcbf72a6e3fd182ad50988bc8c18617",
+      "atual": "f6ef32150542b77fce287fbc0d5e1e3ed1464aea",
+      "arvore": "28988a7fc5482282e98d932b8f74fc88f461106a",
+      "mensagem": "Disponibiliza uma operação específica para a recuperação pendente",
+      "data_autoria": "2026-11-25T12:57:24-03:00",
+      "data_commit": "2026-11-25T12:57:24-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "8ca67a485d37060b6b99716d86d982d1ff211095",
+      "atual": "c4bddd1b6dafc4e6ae5dfbbff18059b4b9ccb8c6",
+      "arvore": "9191432e661d74380e4bc90d748b8739d1c75458",
+      "mensagem": "Amplia o prazo limitado de negociação IAP antes do sudo no Ansible",
+      "data_autoria": "2026-11-25T13:48:08-03:00",
+      "data_commit": "2026-11-25T13:48:08-03:00",
+      "autoria_e_datas_preservadas": true
+    },
+    {
+      "anterior": "fdee678dacff61f9f2767619cea4e97e792fd593",
+      "atual": "7defe1a4197f0b8b095d25c139a31b3c310fc035",
+      "arvore": "5fab861456b8e090adc265b1fdc3443f62fa1d07",
+      "mensagem": "Consolida a entrega validada na GCP e preserva as evidências finais",
+      "data_autoria": "2026-11-25T14:00:23-03:00",
+      "data_commit": "2026-11-25T14:00:23-03:00",
+      "autoria_e_datas_preservadas": true
+    }
+  ]
+}

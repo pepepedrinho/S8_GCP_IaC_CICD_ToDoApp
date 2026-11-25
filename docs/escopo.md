@@ -1,4 +1,6 @@
-# Escopo
+# Escopo acadêmico
+
+Este documento apresenta os requisitos de referência e sua aplicação ao trabalho acadêmico. O enunciado utiliza uma Feira de Profissões como cenário; a entrega corresponde a uma demonstração de faculdade, sem evento real agendado. A descrição do ponto de partida refere-se à base original do professor, preservada em `00-base-professor`. O estado implementado está no [relatório de entrega](relatorio-entrega.md) e na [matriz de aceite](matriz-aceite.md).
 
 **ToDo App · Implantação e operação em nuvem para a Feira de Profissões**
 
@@ -135,7 +137,7 @@ Documentar como executar as rotinas, os parâmetros necessários, os resultados 
 
 O profissional escolherá provedor, região, tipos de VM e ferramentas. A justificativa deverá relacionar dimensionamento, facilidade de operação pelos alunos, limites da solução e custos à apresentação na feira.
 
-> **Premissas para a proposta:** data da feira, duração, quantidade estimada de visitantes simultâneos, conta de nuvem e disponibilidade de domínio ainda não foram informadas. Registrar hipóteses de dimensionamento e confirmar esses dados com a organização antes de definir a janela operacional.
+> **Premissas da entrega acadêmica:** sessões de até seis horas, duas e2-micro em us-central1 e domínio triodelicia.duckdns.org. Não há feira agendada ou previsão de público real. A carga 100/10 registrada é uma amostra de teste, sem garantia de capacidade sustentada. As estimativas e limitações estão em custos.md.
 
 ### 12. Conteúdo da estimativa
 

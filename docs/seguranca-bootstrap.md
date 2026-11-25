@@ -1,6 +1,6 @@
-# Bootstrap restrito — autorizado e aplicado
+# Segurança e bootstrap da infraestrutura
 
-Em **25/11/2026**, o usuário autorizou explicitamente a aplicação deste escopo e a continuidade da implantação. Exclusivamente `triodelicia-mensal4-2026`, número **271680307280**, confirmado na API antes do apply. A conta de faturamento permaneceu vinculada e não foi alterada nesta retomada.
+O bootstrap foi aplicado em **25/11/2026** no projeto `triodelicia-mensal4-2026`, número **271680307280**, conferido na API antes do apply. Os recursos, identidades e permissões ficam limitados a esse projeto; a configuração da conta de faturamento não foi alterada.
 
 O bootstrap criou 27 recursos, sem alterações/exclusões de recursos existentes: onze registros de APIs necessárias, três contas de serviço, dois buckets, IAM restrito, pool/provider OIDC e alerta de orçamento. Evidência: `evidencias/bootstrap-validation.json`. A migração do estado foi concluída após corrigir a sintaxe do arquivo HCL gerado; o modo `bootstrap.py --migrate-only` permite retomar essa fase sem reaplicar o plano.
 
@@ -12,7 +12,9 @@ O bootstrap criou 27 recursos, sem alterações/exclusões de recursos existente
 - `todo-db`: acesso `storage.objectUser` somente ao bucket de backups. `todo-app` não recebeu acesso a backups/estado.
 - Estado da automação limitado ao prefixo `todo/main/` e locks. Estado de bootstrap em `todo/bootstrap` permanece administrado pelo proprietário. A permissão de listagem no bucket pode revelar nomes, mas não concede leitura dos objetos de bootstrap por esse grant.
 - OIDC exige repository ID 1468894543 e owner ID 55161713, issuer oficial GitHub e ref `main` ou `feat/infra-terraform-ansible-actions`. O provider está ACTIVE e a autenticação/plan remotos foram verificados no [workflow](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45582818037).
-- As três contas criadas foram inspecionadas e não possuem chaves privadas permanentes de usuário. Não foram criados grants adicionais depois do bootstrap aprovado.
+- As três contas criadas foram inspecionadas e não possuem chaves privadas permanentes de usuário. Não foram criados grants adicionais depois do bootstrap inicial.
+
+A operação atual utiliza a **main**, já aceita pelo provider implantado. A condição Terraform também conserva a referência legada `feat/infra-terraform-ansible-actions` para representar exatamente a configuração aplicada. A reorganização não modificou IAM; as branches numeradas são históricas e não receberam confiança OIDC. A remoção da referência legada do provider seria uma alteração separada de infraestrutura.
 
 Quem pode escrever nas branches confiáveis pode alterar os workflows que usam a automação; controlar o acesso ao fork continua necessário. O papel permite administrar o sistema operacional das VMs previstas e seu ciclo de vida dentro deste projeto.
 
@@ -24,7 +26,7 @@ O transporte Ansible passa pelo `gcloud` e pelo IAP em cada conexão, preservand
 
 As senhas Mongo estão em GitHub Secrets e em arquivos protegidos nos hosts; valores não constam no repositório/evidências. A aplicação usa um usuário `readWrite` próprio e recebe apenas sua URI por arquivo. A senha administrativa é usada somente no host do banco e em operações protegidas de configuração/backup.
 
-A conferência final está em `evidencias/security-final.json`: três contas sem chaves de usuário e filtro do orçamento lido diretamente da Billing Budgets API. A consulta atribui a quota ao próprio projeto, sem ampliar permissões. Durante erros HTTP 500/502 do dispatch do GitHub, backup/restore foram executados pelo mesmo código versionado em controlador Linux local, com a credencial temporária já existente do proprietário. Essa etapa tem identidade/orquestração distintas do OIDC; não é apresentada como execução de workflow. Não houve criação de chaves JSON nem grants adicionais.
+A conferência final está em `evidencias/security-final.json`: três contas sem chaves de usuário e filtro do orçamento lido diretamente da Billing Budgets API. A consulta atribui a quota ao próprio projeto, sem ampliar permissões. Durante erros HTTP 500/502 do dispatch do GitHub, backup/restore foram executados pelo mesmo código versionado em controlador Linux local, com a credencial temporária da conta administradora. Essa etapa tem identidade/orquestração distintas do OIDC; não é apresentada como execução de workflow. Não houve criação de chaves JSON nem grants adicionais.
 
 ## Armazenamento e alerta
 
@@ -32,6 +34,6 @@ Os dois buckets Standard regionais têm acesso uniforme e prevenção de acesso 
 
 O alerta nominal **R$5** tem filtro exclusivo `projects/271680307280`, conferido com o número real de `triodelicia-mensal4-2026`. Limiares 50/90/100%; alerta não bloqueia cobranças nem substitui a meta operacional de US$5.
 
-As rejeições automáticas anteriores e a autorização posterior estão registradas no progresso. Nenhuma rejeição foi contornada; o apply ocorreu somente depois da autorização direta. Organizações, projetos antigos e a conta de faturamento não foram modificados nesta retomada.
+A implantação não alterou organizações, outros projetos ou a conta de faturamento. A reorganização do repositório também não executa apply/destroy nem altera credenciais.
 
-O token DuckDNS é usado somente pelo runner para o domínio autorizado `triodelicia.duckdns.org`. Sua presença é verificada antes de iniciar as VMs. Por exposição em captura informada pelo usuário, a rotação pelo titular e a atualização das integrações da conta permanecem pendentes; o manual descreve o procedimento. O valor não integra código, evidências ou relatórios.
+O token DuckDNS é usado somente pelo runner para o domínio configurado `triodelicia.duckdns.org`. Sua presença é verificada antes de iniciar as VMs. Após exposição em captura anterior, a rotação do token e a atualização das integrações da conta permanecem pendentes; o manual descreve o procedimento. O valor não integra código, evidências ou relatórios.

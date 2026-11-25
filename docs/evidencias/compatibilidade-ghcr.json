@@ -1,0 +1,31 @@
+{
+  "verificado_em_utc": "2026-11-25T19:49:29.288478+00:00",
+  "metodo": "HEAD dos manifests GHCR, somente leitura",
+  "referencias_historicas_preservadas": true,
+  "imagens": [
+    {
+      "image": "ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp-backend:9a2747cac51ca262a0fcf2557f23da78558d9d21",
+      "status": 200,
+      "digest": "sha256:6386cc366e71f758e671cab2d8560a93ffae00d81f8402bc91a2c8851ef65499",
+      "exists": true
+    },
+    {
+      "image": "ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp-backend:fa626deacdc5d0fffab1b82cdfcbeb64d720a456",
+      "status": 200,
+      "digest": "sha256:61fcf850959d668041a9d1ca1ee3f7ba3e95b96d8e62282d151b6200a51afec3",
+      "exists": true
+    },
+    {
+      "image": "ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp-frontend:9a2747cac51ca262a0fcf2557f23da78558d9d21",
+      "status": 200,
+      "digest": "sha256:5b54137b5a5a2cc062f8c1e25280e653313eb55c0fd7334f5a23b998b17c74c4",
+      "exists": true
+    },
+    {
+      "image": "ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp-frontend:fa626deacdc5d0fffab1b82cdfcbeb64d720a456",
+      "status": 200,
+      "digest": "sha256:b7a6e52b8e15a5a3c6f7b8afe8f98147cf64d70f57ab907a5a2189d009a2558b",
+      "exists": true
+    }
+  ]
+}

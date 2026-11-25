@@ -1,0 +1,21 @@
+{
+  "verificado_em_utc": "2026-11-25T19:54:42.705848+00:00",
+  "itens_locais_arquivados": 65,
+  "local_privado": ".local/arquivo-implantacao-20261125",
+  "categorias": [
+    "logs",
+    "diagnosticos",
+    "rascunhos",
+    "frontend-dist"
+  ],
+  "arquivos_funcionais_versionados_excluidos": 0,
+  "segredos_chaves_estados_planos_backups_preservados": true,
+  "dependencias_locais_instaladas_preservadas": true,
+  "diretorios_privados_ignorados": [
+    ".local/",
+    ".tools/",
+    ".ansible/",
+    "node_modules/"
+  ],
+  "relatorio_historico_preservado": "historico/relatorio-20261125-antes-reorganizacao.md"
+}

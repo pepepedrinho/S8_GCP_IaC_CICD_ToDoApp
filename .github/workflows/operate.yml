@@ -1,8 +1,5 @@
 name: Operate
 on:
-  push:
-    branches: [feat/infra-terraform-ansible-actions]
-    paths: [.github/workflows/operate.yml]
   workflow_dispatch:
     inputs:
       operation:

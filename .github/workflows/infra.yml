@@ -1,8 +1,5 @@
 name: Infrastructure
 on:
-  push:
-    branches: [feat/infra-terraform-ansible-actions]
-    paths: [.github/workflows/infra.yml]
   workflow_dispatch:
     inputs:
       action:

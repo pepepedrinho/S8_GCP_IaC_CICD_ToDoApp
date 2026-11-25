@@ -1,98 +1,139 @@
-# ToDo App — Terraform, Ansible e GitHub Actions na GCP
+# ToDo App — GCP, Terraform, Ansible e CI/CD
 
-Projeto acadêmico baseado no [código do professor](https://github.com/LaercioMLB/todo-app). Cadastrar, listar, concluir, reabrir e excluir tarefas continuam sendo as únicas funções de negócio. A lista é compartilhada, sem login. O cenário de feira está no [escopo original](docs/escopo.md); o usuário confirmou que esta entrega é um trabalho de faculdade, sem evento real.
+Projeto acadêmico de implantação e operação de uma aplicação web na Google Cloud Platform. Partimos do [ToDo App disponibilizado pelo professor](https://github.com/LaercioMLB/todo-app) e automatizamos infraestrutura, configuração, entrega e recuperação dos dados.
 
-**Estado da entrega — 25/11/2026:** bootstrap e infraestrutura aplicados no projeto autorizado. OIDC, duas VMs, proteção nativa de seis horas, Ansible completo e segunda execução sem alterações foram comprovados. O HTTPS em **https://triodelicia.duckdns.org** passou no CRUD público e em 100 leituras com 10 conexões simultâneas, sem erros. Backup GCS e restauração remota isolada passaram, com checksum e hash dos dados iguais, sem sobrescrever o banco principal. O CRUD completo também passou no navegador DuckDNS e o dry-run da renovação passou. A matriz registra **15/16 itens (93,75%)**, com o ensaio humano ACE-10 ainda pendente; consulte a [matriz](docs/matriz-aceite.md), as [evidências](docs/evidencias/README.md) e o [relatório](docs/relatorio-entrega.md) para o resultado final.
+**Endereço:** [triodelicia.duckdns.org](https://triodelicia.duckdns.org). A aplicação fica disponível quando a infraestrutura está em execução. Fora dos períodos de utilização, mantemos as duas VMs desligadas para reduzir custos; discos e backups permanecem armazenados.
 
-Para reativar, execute `gh workflow run operate.yml -R pepepedrinho/S8_GCP_IaC_CICD_ToDoApp --ref feat/infra-terraform-ansible-actions -f operation=start`, aguarde o job e acesse o domínio. Ao terminar, use o mesmo comando com `-f operation=stop`. A atualização DuckDNS acompanha o IP efêmero; a URL permanece a mesma. As duas VMs foram confirmadas **TERMINATED** ao final, com discos e backups preservados. Estimativa incremental consolidada: **US$1,6259**, com reservas, sem valor de fatura apurado. Antes da apresentação, conclua a [rotação do token DuckDNS](docs/manual-operacao.md#rotação-do-token-duckdns) informada no manual.
+## Aplicação e requisitos
+
+O sistema permite cadastrar, listar, concluir, reabrir e excluir tarefas. A lista é compartilhada e usa apenas dados de demonstração, sem login ou separação por pessoa. Frontend e API são publicados na mesma origem HTTPS.
+
+O [escopo acadêmico](docs/escopo.md) exige aplicação e MongoDB em servidores distintos, banco acessível somente pela rede privada, administração restrita, persistência, backup com restauração testada e operação por pipelines. A feira descrita no enunciado é o cenário de referência; não há evento real agendado.
+
+| Camada | Tecnologias |
+| --- | --- |
+| Aplicação | React, Vite, Nginx, Node.js e Express |
+| Banco e execução | MongoDB, Docker e Docker Compose |
+| Infraestrutura | Compute Engine, VPC, IAP, OS Login, IAM e Cloud Storage |
+| Automação | Terraform, Ansible, GitHub Actions e GHCR |
+| Publicação e operação | DuckDNS, Let's Encrypt/Certbot, systemd, Bash e Python |
 
 ## Arquitetura
 
 ```mermaid
 flowchart LR
-    Browser[Navegador] -->|HTTPS 443| App[VM todo-app: Nginx TLS + React + Express]
-    App -->|10.42.0.20:27017 privado| DB[VM todo-db: MongoDB autenticado]
-    DB --> Disk[Disco persistente 10 GiB]
-    DB -->|Backup validado| GCS[Bucket privado: retenção 7 dias]
-    GH[GitHub Actions / OIDC] -->|IAP SSH 22| App
-    GH -->|IAP SSH 22| DB
-    GH --> State[GCS: estado Terraform versionado]
-    DB -->|Proxy apt restrito 3128| App
+    Browser[Navegador] -->|HTTPS: triodelicia.duckdns.org| App[VM todo-app: Nginx + React + Express]
+    App -->|Rede privada: 27017| DB[VM todo-db: MongoDB autenticado]
+    DB --> Disk[Disco de dados persistente]
+    DB -->|Backup validado| Backups[GCS: bucket privado de backups]
+    Actions[GitHub Actions] -->|OIDC + IAP / OS Login| App
+    Actions -->|OIDC + IAP / OS Login| DB
+    Actions --> State[GCS: estado Terraform versionado]
+    Actions -->|Atualiza o IP efêmero| DNS[DuckDNS]
+    DB -->|Proxy de pacotes restrito| App
 ```
 
-Provisionadas duas `e2-micro`, `us-central1-a`, discos `pd-standard` totalizando 30 GiB. A aplicação tem IPv4 efêmero; o banco não tem IP público. SSH somente por IAP/OS Login. Não há NAT gerenciado, balanceador ou Kubernetes. O host público baixa imagens; Ansible transfere o Mongo por SSH ao host privado. O proxy Squid só permite ao banco acessar repositórios Ubuntu/Canonical.
+O ambiente utiliza duas **e2-micro em us-central1-a**: `todo-app` (10.42.0.10) e `todo-db` (10.42.0.20). Apenas a aplicação recebe IPv4 público efêmero. São três discos `pd-standard` de 10 GiB, incluindo um disco exclusivo para os dados do MongoDB. Não há balanceador, Cloud NAT gerenciado, Cloud SQL ou GKE.
 
-Cada VM tem `max_run_duration = 21600`, ação `STOP` e reinício automático desabilitado. Esse limite recomeça a cada inicialização. O deploy autônomo também desliga ambas explicitamente ao terminar. A [estimativa de custos](docs/custos.md) usa tarifas brutas sem presumir franquia disponível e inclui armazenamento que permanece após desligar.
+A administração usa IAP e OS Login. O firewall aceita MongoDB somente a partir da aplicação e o proxy de pacotes somente a partir do banco. Cada VM possui limite nativo de **seis horas por inicialização**, ação `STOP` e reinício automático desabilitado.
 
-## Executar localmente
+## Evolução e branches
 
-Pré-requisitos: Docker Desktop com contêineres Linux e Compose v2, Python 3 e Git. Node 24 é necessário para testes fora do Docker. `scripts/install-tools.ps1` instala Node e Terraform portáteis em `.tools/`, com hashes oficiais, sem alterar o PATH global.
+As branches numeradas são marcos cumulativos do histórico real. Terraform, Ansible e os workflows foram introduzidos juntos e compõem um único marco.
 
-```powershell
+| Branch | Marco |
+| --- | --- |
+| `00-base-professor` | Código e histórico originais do professor, sem adaptações |
+| `01-aplicacao-containers` | Aplicação adaptada, Compose privado, persistência e testes locais |
+| `02-infraestrutura-e-cicd` | Terraform, Ansible, pipelines, GHCR e preparação da integração |
+| `03-implantacao-gcp` | Provisionamento real, transporte IAP, MongoDB e integração DuckDNS |
+| `04-operacao-e-recuperacao` | Correções operacionais de backup, rollback, recuperação e reativação |
+| `05-entrega-final` | Evidências consolidadas, organização e documentação da entrega |
+| `main` | Versão consolidada, com o mesmo conteúdo de `05-entrega-final` |
+
+As mensagens dos 30 commits da implementação foram traduzidas para português, preservando conteúdo, autoria e datas. Os commits originais do professor permanecem intactos. O [registro da reorganização](docs/reorganizacao-repositorio.md) documenta os marcos e a correspondência entre hashes antigos e novos. Tags GHCR e evidências de testes anteriores mantêm seus identificadores originais.
+
+## Organização do repositório
+
+```text
+backend/                  API Express e testes
+frontend/                 Interface React, Nginx e testes
+banco-de-dados/            Imagem, inicialização e sondas MongoDB
+infra/terraform/           Bootstrap e infraestrutura principal
+infra/ansible/             Playbooks, roles e transporte IAP
+infra/controller/          Controlador Linux para automação
+.github/workflows/         CI, imagens, infraestrutura, deploy e operação
+scripts/                   Operação, validação, backup e recuperação
+docs/                      Manual, arquitetura, custos e matriz de aceite
+docs/evidencias/            Resultados sanitizados e registros históricos
+docs/historico/             Correspondência do histórico Git reescrito
+docker-compose.yaml        Ambiente local
+```
+
+## Infraestrutura e entrega
+
+O módulo Terraform `bootstrap` define APIs, IAM limitado, OIDC, buckets privados e alerta de orçamento. O módulo `main` define rede, firewalls, discos e duas VMs. O estado remoto separa `todo/bootstrap` de `todo/main`; a automação acessa somente o prefixo principal. Os planos passam por uma allowlist antes de aplicar alterações.
+
+Ansible prepara os dois hosts, monta o disco de dados, configura os serviços e publica o HTTPS. A segunda execução completa foi validada sem alterações nos dois hosts. O [manual](docs/manual-operacao.md) detalha parâmetros, dependências e recuperação de falhas.
+
+| Workflow | Acionamento e função |
+| --- | --- |
+| **Validate** | Push na `main` e pull requests: testes, auditoria, build, validações estáticas e integração local |
+| **Publish images** | Após CI aprovada na `main` ou execução manual: frontend/backend no GHCR, identificados pelo SHA |
+| **Infrastructure** | Manual: validar, planejar e provisionar a topologia prevista |
+| **Configure and deploy** | Manual: selecionar imagens existentes, configurar os hosts, testar HTTPS e desligar ao terminar |
+| **Operate** | Manual: start, stop, saúde, logs, diagnóstico, backup, restore, rollback e aceite |
+| **Decommission infrastructure** | Manual: backup final validado antes da remoção da infraestrutura principal |
+
+**Publicar branches não implanta na GCP.** Os workflows de infraestrutura e operação aceitam apenas `workflow_dispatch` e compartilham controle de concorrência. OIDC usa credenciais temporárias; não são necessárias chaves JSON de conta de serviço.
+
+Imagens já utilizadas nos testes continuam disponíveis sob os SHAs originais. A [compatibilidade GHCR](docs/evidencias/compatibilidade-ghcr.json) registra os quatro manifests verificados. A tradução do histórico não renomeia imagens nem transforma um novo hash em uma versão já testada na nuvem.
+
+## Banco, segurança e recuperação
+
+O MongoDB é autenticado, não possui IP público e armazena dados no disco dedicado. A API usa credencial própria, limitada a `readWrite` em `todo-app`. Senhas e tokens ficam em GitHub Secrets e arquivos protegidos, fora do código e das evidências.
+
+O DuckDNS mantém a URL fixa quando o IPv4 muda. A automação atualiza e verifica o DNS antes de configurar o HTTPS; Certbot reaproveita o certificado válido e oferece renovação automática. O dry-run do domínio definitivo foi aprovado.
+
+`/health/live` verifica o processo da API; `/health/ready` exige conexão autenticada ao banco. O fluxo de diagnóstico reúne logs limitados, estado dos contêineres e memória. A indisponibilidade do MongoDB foi testada com readiness503, liveness200 e recuperação posterior.
+
+O backup diário usa serviço/timer systemd e GCS privado com retenção mínima de sete dias. Antes do upload, a cópia é restaurada em outro volume, sem rede, e validada por hash. O restore manual baixa archive e manifest, confere checksum e executa uma nova restauração isolada. Essas operações interrompem temporariamente o banco para caber na memória da e2-micro; não sobrescrevem a produção. VMs desligadas não produzem novos backups.
+
+Deploy e rollback usam versões identificáveis e verificam a prontidão da aplicação. As tarefas foram preservadas durante atualização e retorno à imagem anterior. Os testes usaram imagens distintas da mesma fonte funcional, com versões/configurações diferentes; não validam migração de schema.
+
+## Execução local
+
+Pré-requisitos: Git, Python 3 e Docker com contêineres Linux/Compose v2. Para testes fora do Docker, utilizar Node.js 24.
+
+```bash
+git clone https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp.git
+cd S8_GCP_IaC_CICD_ToDoApp
 python scripts/init-local.py
 docker compose -p todo-implementation up --build -d --wait --wait-timeout 180
 python scripts/smoke.py http://127.0.0.1:8080
 ```
 
-Abra **http://127.0.0.1:8080**. Somente essa porta é publicada, restrita ao computador local. Frontend e API usam a mesma origem; Mongo e API não publicam portas locais. Senhas aleatórias são geradas uma única vez em `.local/secrets/`, ignorada pelo Git. O volume nomeado preserva tarefas; os dados iniciais entram somente na primeira inicialização do volume.
+Abra **http://127.0.0.1:8080**. Somente essa porta é publicada, restrita ao computador local. Segredos são gerados em `.local/`, ignorada pelo Git; o volume nomeado preserva os dados. Ao terminar: `docker compose -p todo-implementation stop`. A opção `down -v` apaga o volume e não faz parte do desligamento normal.
 
-```powershell
-docker compose -p todo-implementation ps
-docker compose -p todo-implementation logs --tail 100 backend
-docker compose -p todo-implementation stop
-```
+## Operação na GCP
 
-Use sempre o mesmo nome de projeto Compose para reencontrar seu volume. `down` preserva o volume; **`down -v` apaga os dados**. Não use a remoção de volumes como rotina de desligamento.
-
-## Testes
-
-```powershell
-cd backend
-npm ci
-npm test
-cd ../frontend
-npm ci
-npm test
-npm run build
-cd ..
-python scripts/integration.py
-python scripts/test-release.py
-```
-
-Os dois scripts de integração usam o projeto `todo-implementation` por padrão; defina `COMPOSE_PROJECT_NAME` se usar outro. Exercitam Mongo real, persistência, indisponibilidade do banco, atualização, rollback manual e recuperação de imagem defeituosa. Os testes de release usam a mesma fonte da aplicação em duas imagens com configurações/versionamento distintos; não testam migração de schema.
-
-Backup local com Bash, mantendo o Compose em execução:
+Os workflows manuais são executados na `main`. Para reativar o ambiente existente:
 
 ```bash
-export COMPOSE_PROJECT_NAME=todo-implementation
-export TODO_ROOT="$PWD/.local" COMPOSE_FILE="$PWD/docker-compose.yaml" MONGO_IMAGE=todo-mongo:local
-bash scripts/backup.sh
+gh workflow run operate.yml -R pepepedrinho/S8_GCP_IaC_CICD_ToDoApp --ref main -f operation=start
 ```
 
-No Git Bash do Windows, use `COMPOSE_FILE="$(pwd -W)/docker-compose.yaml"` e `MSYS_NO_PATHCONV=1`. O backup é validado automaticamente em outro volume e contêiner **sem rede**. O Mongo principal é parado temporariamente para caber na memória de uma `e2-micro`, e reiniciado por `trap`, inclusive em falha. A restauração nunca monta o volume principal. Arquivos ficam em `.local/backups/`; não os publique.
+Acompanhe o run até sucesso antes de abrir a URL. Ao terminar, execute o mesmo comando com `-f operation=stop` e confirme ambas `TERMINATED`. Não é necessário reprovisionar ou repetir o deploy para apresentar a versão já instalada. As demais operações e os SHAs de imagem disponíveis estão no [manual de operação](docs/manual-operacao.md).
 
-## Infraestrutura e pipelines
+## Validações e custos
 
-`infra/terraform/bootstrap/` define APIs, dois buckets protegidos, IAM restrito, três contas de serviço, OIDC e alerta de orçamento. `infra/terraform/main/` define apenas rede, firewalls, discos e duas VMs. A separação permite criar o bucket antes de migrar o estado. `infra/ansible/` configura os hosts; não formata discos que já contenham filesystem inesperado.
+Foram comprovados **15 dos 16 itens da matriz (93,75%)**. Passaram CRUD HTTPS e navegador, isolamento, persistência, rollback, idempotência, carga curta100/10, backup GCS, restauração isolada, reativação e renovação do certificado. O [relatório](docs/relatorio-entrega.md) distingue testes locais, CI e GCP e preserva as falhas relevantes. O ACE-10 permanece pendente do [ensaio dos alunos](docs/ensaio-alunos.md); a rotação do token DuckDNS exposto em captura também continua pendente.
 
-O bootstrap foi autorizado e aplicado em 25/11/2026: 27 recursos, sem alteração/exclusão de recursos existentes. O número do projeto foi confirmado antes de criar o alerta. O estado foi migrado para `todo/bootstrap`; os pipelines acessam somente `todo/main`. Os [planos revisados e a validação real](docs/evidencias/README.md) foram preservados. Para uma instalação nova, os scripts `terraform-plan.py` e `bootstrap.py` devem ser usados pelo proprietário após revisão do escopo; não reaplique estados locais antigos sobre o backend já existente.
+Ao encerrar os testes de implantação, ambas as VMs foram confirmadas `TERMINATED`. A estimativa acumulada registrada foi de **US$1,63**, incluindo reservas, sem valor de fatura apurado. Com as VMs desligadas, os discos ainda representam cerca de **US$1,20/730h**, além dos objetos/versionamentos e operações GCS. O alerta de orçamento não bloqueia cobranças. Consulte [custos e recursos preservados](docs/custos.md) para premissas e preços.
 
-| Workflow | Acionamento | Resultado |
-| --- | --- | --- |
-| Validate (`ci.yml`) | Push/PR | Testes, auditoria npm, Terraform, Ansible, integração e backup reais |
-| Publish images (`images.yml`) | CI aprovada em push ou manual | Frontend/backend GHCR identificados pelo SHA do commit |
-| Infrastructure (`infra.yml`) | Manual; `apply` exige `PROVISION` | Plano com allowlist e provisionamento explícito |
-| Configure and deploy (`deploy.yml`) | Manual; SHA completo | Imagens, Ansible, idempotência, HTTPS, CRUD/carga e desligamento final |
-| Operate (`operate.yml`) | Manual | Iniciar, parar, saúde, logs, diagnóstico, backup, restore, rollback e aceitação extensa |
-| Decommission (`destroy.yml`) | Manual; `DESTROY-TODO` | Backup final validado antes de remover a infraestrutura principal |
+## Documentação complementar
 
-Push comum **não cria VMs**. Os workflows de nuvem compartilham um grupo de concorrência. O [manual de operação](docs/manual-operacao.md) explica pré-requisitos, variáveis/secrets, parâmetros, resultados esperados e recuperação. Publicar a branch não equivale a validar provisionamento, OIDC ou execução remota.
-
-## Documentação e evidências
-
-- [Escopo do professor](escopo.pdf) e [versão textual](docs/escopo.md).
-- [Matriz REQ/ACE](docs/matriz-aceite.md), [evidências](docs/evidencias/) e [progresso](docs/progresso-implementacao.md).
-- [Manual de operação](docs/manual-operacao.md), [custos](docs/custos.md) e [permissões do bootstrap](docs/seguranca-bootstrap.md).
-- [Relatório da entrega e pendências](docs/relatorio-entrega.md) e [registro do ensaio pelos alunos](docs/ensaio-alunos.md).
-
-Limitações: a carga curta mede somente uma amostra de 100 leituras/10 conexões; não garante capacidade para uso contínuo. DNS gratuito depende do DuckDNS e de seu token; a URL permanece fixa com atualização automática do IP. O relatório distingue renovação configurada de dry-run efetivamente aprovado. Não há autenticação de usuários, alta disponibilidade ou sincronização automática entre navegadores. A demonstração pelos alunos continua sendo uma etapa humana de aceite.
+- [Escopo acadêmico](docs/escopo.md) e [PDF de referência](escopo.pdf).
+- [Manual de operação](docs/manual-operacao.md) e [segurança do bootstrap](docs/seguranca-bootstrap.md).
+- [Matriz de aceite](docs/matriz-aceite.md), [relatório de entrega](docs/relatorio-entrega.md) e [evolução técnica](docs/progresso-implementacao.md).
+- [Índice de evidências](docs/evidencias/README.md), [reorganização do repositório](docs/reorganizacao-repositorio.md) e [ensaio dos alunos](docs/ensaio-alunos.md).

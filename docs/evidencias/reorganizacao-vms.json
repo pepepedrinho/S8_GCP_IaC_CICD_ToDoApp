@@ -1,0 +1,30 @@
+{
+  "projeto": "triodelicia-mensal4-2026",
+  "metodo": "gcloud compute instances describe, somente leitura",
+  "verificacoes": [
+    {
+      "fase": "antes-da-publicacao",
+      "verificado_em_utc": "2026-11-25T19:52:03.365202+00:00",
+      "estado": {
+        "todo-app": {
+          "status": "TERMINATED",
+          "machine_type": "e2-micro",
+          "max_run_seconds": 21600,
+          "termination_action": "STOP",
+          "termination_timestamp": null,
+          "public_ip": null
+        },
+        "todo-db": {
+          "status": "TERMINATED",
+          "machine_type": "e2-micro",
+          "max_run_seconds": 21600,
+          "termination_action": "STOP",
+          "termination_timestamp": null,
+          "public_ip": null
+        },
+        "url": null
+      },
+      "ambas_desligadas": true
+    }
+  ]
+}

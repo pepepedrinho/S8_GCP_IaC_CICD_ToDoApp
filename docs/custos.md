@@ -14,7 +14,7 @@ Preços públicos revisados em **25/11/2026**, USD, us-central1, sem impostos ne
 
 Envelope de referência inferior a US$2 para uma sessão de seis horas; **meta operacional de US$5 para a implantação e os testes**, sem teto rígido garantido. A estimativa final baseada nos ciclos reais fica em `evidencias/cost-estimate.json`. Usa janelas de início/parada das operações da GCP como aproximação conservadora, soma discos desde sua criação e mantém reservas separadas para tráfego/operações. Não é uma leitura da fatura; o custo efetivamente faturado ainda pode ter atraso, créditos, impostos e conversão.
 
-Consolidação após a última parada: **US$1,6259 estimados**, 6,8403 VM-h e 3,1918 IPv4-h. Inclui todas as tentativas/correções registradas e reservas de US$1,54; não é custo de fatura. GCS totaliza 100.375 bytes em todas as versões, com referência bruta de US$0,00000187/mês nesse tamanho, mais operações. CPU/RAM e IPv4 deixam de consumir com ambas TERMINATED. Coleta: 2026-11-25T16:57:35.046142+00:00.
+Consolidação histórica da implantação, em 25/11/2026 às 13:57UTC−3: **US$1,6259 estimados**, 6,8403 VM-h e 3,1918 IPv4-h. Inclui todas as tentativas/correções registradas e reservas de US$1,54; não é custo de fatura. GCS totaliza 100.375 bytes em todas as versões, com referência bruta de US$0,00000187/mês nesse tamanho, mais operações. CPU/RAM e IPv4 deixam de consumir com ambas TERMINATED. Coleta: 2026-11-25T16:57:35.046142+00:00.
 
 Fontes das tarifas: [Compute E2](https://cloud.google.com/products/compute/pricing/general-purpose), [discos](https://cloud.google.com/compute/disks-image-pricing), [IPv4 e tráfego](https://cloud.google.com/vpc/network-pricing) e [Cloud Storage](https://cloud.google.com/storage/pricing).
 
@@ -33,9 +33,9 @@ O inventário exato e o tamanho dos objetos/versionamentos estão em `evidencias
 
 ## Franquias e comparação mensal
 
-O [Free Tier](https://docs.cloud.google.com/free/docs/free-cloud-features) oferece uso equivalente a uma e2-micro elegível/mês e30 GiB de disco Standard, compartilhados por conta, além de faixas de GCS. Não há uma VM gratuita por instância. Não foi presumido saldo de franquia disponível em outros projetos da conta; os números acima são brutos. As cotas regionais foram consultadas: E2_CPUS24, instâncias24 e discos4096GiB, inicialmente sem uso.
+O [Free Tier](https://docs.cloud.google.com/free/docs/free-cloud-features) oferece uso equivalente a uma e2-micro elegível/mês e 30 GiB de disco Standard, compartilhados por conta, além de faixas de GCS. Não há uma VM gratuita por instância. Não foi presumido saldo de franquia disponível em outros projetos da conta; os números acima são brutos. As cotas regionais foram consultadas: E2_CPUS24, instâncias24 e discos4096GiB, inicialmente sem uso.
 
-Referência comparativa de 730h contínuas: duas VMs US$12,23 + um IPv4 US$3,65 + discos US$1,20 ≈ **US$17,08/mês**, mais GCS/operações/tráfego. Com a franquia Compute de uma VM e30 GiB de disco integralmente disponíveis, o subtotal cairia para aproximadamente US$9,76. O ambiente real está limitado a seis horas por inicialização; não foi configurado para execução mensal contínua.
+Referência comparativa de 730h contínuas: duas VMs US$12,23 + um IPv4 US$3,65 + discos US$1,20 ≈ **US$17,08/mês**, mais GCS/operações/tráfego. Com a franquia Compute de uma VM e 30 GiB de disco integralmente disponíveis, o subtotal cairia para aproximadamente US$9,76. O ambiente real está limitado a seis horas por inicialização; não foi configurado para execução mensal contínua.
 
 ## Controles aplicados
 
@@ -43,8 +43,10 @@ O orçamento de alerta **R$5**, com limiares 50/90/100%, foi criado com filtro e
 
 As proteções efetivas são topologia limitada, allowlist antes de apply, duas e2-micro, três discos pequenos, IP efêmero, ausência de serviços caros, `maxRunDuration=21600`, `instanceTerminationAction=STOP`, `automaticRestart=false` e parada explícita ao concluir. O [limite nativo](https://docs.cloud.google.com/compute/docs/instances/limit-vm-runtime) foi confirmado na API Compute das duas VMs. Recomeça a cada start; não há reinício periódico.
 
-O faturamento já estava vinculado e não foi alterado nesta retomada. Não foram fechadas contas, excluídos projetos/organizações nem executado Terraform destroy. Os discos, backups e estados são preservados para reativação e continuam exigindo acompanhamento de custo.
+O faturamento já estava vinculado e não foi alterado durante a implantação. Não foram fechadas contas, excluídos projetos/organizações nem executado Terraform destroy. Os discos, backups e estados são preservados para reativação e continuam exigindo acompanhamento de custo.
 
 ## Pipelines e imagens
 
 O fork é público e usa runners padrão hospedados pelo GitHub, contemplados pela [gratuidade do Actions para repositórios públicos](https://docs.github.com/en/actions/concepts/billing-and-usage). O [armazenamento e a transferência do GHCR são atualmente gratuitos](https://docs.github.com/en/billing/concepts/product-billing/github-packages). Não foram contratados runners maiores, planos adicionais ou um domínio pago. As imagens e os artifacts permanecem sujeitos às políticas de uso e retenção desses serviços.
+
+A reorganização de branches e documentação não incluiu inicialização de VMs ou nova implantação. O valor acumulado acima corresponde ao horário da coleta original; o armazenamento continua sujeito à cobrança ao longo do tempo.

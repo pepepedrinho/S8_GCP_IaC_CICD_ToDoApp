@@ -6,3 +6,6 @@
 *.j2 text eol=lf
 *.tf text eol=lf
 *.hcl text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.cfg text eol=lf

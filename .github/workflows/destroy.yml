@@ -1,8 +1,5 @@
 name: Decommission infrastructure
 on:
-  push:
-    branches: [feat/infra-terraform-ansible-actions]
-    paths: [.github/workflows/destroy.yml]
   workflow_dispatch:
     inputs:
       confirmation:

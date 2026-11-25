@@ -4,7 +4,7 @@
 
 Participantes: ____________________  Data/hora: ____________________
 
-Repositório: `pepepedrinho/S8_GCP_IaC_CICD_ToDoApp`, branch `feat/infra-terraform-ansible-actions`. Somente o projeto GCP `triodelicia-mensal4-2026`.
+Repositório: `pepepedrinho/S8_GCP_IaC_CICD_ToDoApp`, branch `main`. Somente o projeto GCP `triodelicia-mensal4-2026`.
 
 | Etapa conduzida pelos alunos | Resultado / evidência |
 | --- | --- |
@@ -18,7 +18,7 @@ Repositório: `pepepedrinho/S8_GCP_IaC_CICD_ToDoApp`, branch `feat/infra-terrafo
 | Explicar versão por SHA, rollback e ausência de teste de migração de schema | A preencher |
 | Executar Operate → stop, confirmar ambas TERMINATED e explicar custos residuais | A preencher |
 
-Para acionar pela CLI, use `gh workflow run operate.yml -R pepepedrinho/S8_GCP_IaC_CICD_ToDoApp --ref feat/infra-terraform-ansible-actions -f operation=start`. Troque a operação conforme a etapa. Para restore acrescente `-f backup_object=todo/todo-YYYYMMDDTHHMMSSZ.archive.gz` com o nome real emitido pelo backup, nunca o exemplo literal. Acompanhe o run até terminar.
+Para acionar pela CLI, use `gh workflow run operate.yml -R pepepedrinho/S8_GCP_IaC_CICD_ToDoApp --ref main -f operation=start`. Troque a operação conforme a etapa. Para restore acrescente `-f backup_object=todo/todo-YYYYMMDDTHHMMSSZ.archive.gz` com o nome real emitido pelo backup, nunca o exemplo literal. Acompanhe o run até terminar.
 
 As rotinas backup/restore interrompem o Mongo principal temporariamente para caber na e2-micro; a API pode ficar indisponível durante a manutenção. O restore usa outro volume e não promove a cópia à produção. Evite executar outra operação simultânea. O manual contém diagnóstico, recuperação e comandos completos.
 
@@ -26,4 +26,4 @@ Dúvidas e correções necessárias: ________________________________________
 
 Conclusão dos participantes / professor: ________________________________
 
-Nunca incluir senhas, token DuckDNS, chave SSH ou estado Terraform neste registro. Ao terminar, preservar discos e backups; não executar destroy nesta entrega.
+Nunca incluir senhas, token DuckDNS, chave SSH ou estado Terraform neste registro. Ao terminar, preservar discos e backups; não utilizar destroy como rotina de encerramento da apresentação.

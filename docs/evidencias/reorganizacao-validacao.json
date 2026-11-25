@@ -1,0 +1,37 @@
+{
+  "verificado_em_utc": "2026-11-25T19:57:13.787938+00:00",
+  "commits_traduzidos": 30,
+  "arvores_autoria_datas_preservadas": true,
+  "commits_professor_intactos": 3,
+  "branches_cumulativas": [
+    "00-base-professor",
+    "01-aplicacao-containers",
+    "02-infraestrutura-e-cicd",
+    "03-implantacao-gcp",
+    "04-operacao-e-recuperacao",
+    "05-entrega-final"
+  ],
+  "codigo_funcional_preservado": [
+    "backend",
+    "frontend",
+    "banco-de-dados",
+    "scripts",
+    "infra",
+    "docker-compose.yaml",
+    "escopo.pdf",
+    "docs/assets",
+    "LICENSE"
+  ],
+  "json_historicos_preservados": 62,
+  "json_validos": 66,
+  "links_internos_quebrados": 0,
+  "workflows_nuvem_somente_manuais": true,
+  "ci_push_somente_main": true,
+  "valores_privados_conhecidos_verificados": 6,
+  "ocorrencias_de_segredos": 0,
+  "padroes_de_segredos_verificados": 5,
+  "provas_gitignore": 12,
+  "ci_pos_reorganizacao": "aguardando publicacao na main",
+  "nova_implantacao_gcp": false,
+  "actionlint": "1.7.12: aprovado; shellcheck dos scripts será executado pela CI Linux"
+}

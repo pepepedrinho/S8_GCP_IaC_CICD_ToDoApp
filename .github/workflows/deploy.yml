@@ -1,8 +1,5 @@
 name: Configure and deploy
 on:
-  push:
-    branches: [feat/infra-terraform-ansible-actions]
-    paths: [.github/workflows/deploy.yml]
   workflow_dispatch:
     inputs:
       image_commit:
