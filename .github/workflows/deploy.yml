@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 50
     env:
+      CERTIFICATE_EMAIL: ${{ secrets.CERTIFICATE_EMAIL }}
       IMAGE_COMMIT: ${{ inputs.image_commit }}
       COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
       MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
@@ -69,6 +70,7 @@ jobs:
           test ${#MONGO_ROOT_PASSWORD} -ge 24
           test ${#MONGO_APP_PASSWORD} -ge 24
           test -n "$DUCKDNS_TOKEN" || { echo "::error::DUCKDNS_TOKEN is missing"; exit 1; }
+          test -n "$CERTIFICATE_EMAIL" || { echo "::error::CERTIFICATE_EMAIL is missing"; exit 1; }
           python scripts/cloud.py boot
           python scripts/cloud.py dns
       - name: Transfer images; registry credentials stay only on runner

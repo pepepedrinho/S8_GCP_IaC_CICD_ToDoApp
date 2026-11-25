@@ -91,7 +91,7 @@ Imagens já utilizadas nos testes continuam disponíveis sob os SHAs originais. 
 
 ## Banco, segurança e recuperação
 
-O MongoDB é autenticado, não possui IP público e armazena dados no disco dedicado. A API usa credencial própria, limitada a `readWrite` em `todo-app`. Senhas e tokens ficam em GitHub Secrets e arquivos protegidos, fora do código e das evidências.
+O MongoDB é autenticado, não possui IP público e armazena dados no disco dedicado. A API usa credencial própria, limitada a `readWrite` em `todo-app`. Senhas e tokens ficam em GitHub Secrets e arquivos protegidos, fora do código e das evidências. O contato ACME também é fornecido por configuração protegida, sem endereço pessoal fixo no código.
 
 O DuckDNS mantém a URL fixa quando o IPv4 muda. A automação atualiza e verifica o DNS antes de configurar o HTTPS; Certbot reaproveita o certificado válido e oferece renovação automática. O dry-run do domínio definitivo foi aprovado.
 
@@ -127,7 +127,7 @@ Acompanhe o run até sucesso antes de abrir a URL. Ao terminar, execute o mesmo 
 
 ## Validações e custos
 
-Foram comprovados **15 dos 16 itens da matriz (93,75%)**. Passaram CRUD HTTPS e navegador, isolamento, persistência, rollback, idempotência, carga curta100/10, backup GCS, restauração isolada, reativação e renovação do certificado. O [relatório](docs/relatorio-entrega.md) distingue testes locais, CI e GCP e preserva as falhas relevantes. O ACE-10 permanece pendente do [ensaio dos alunos](docs/ensaio-alunos.md); a rotação do token DuckDNS exposto em captura também continua pendente.
+Foram comprovados **15 dos 16 itens da matriz (93,75%)**. Passaram CRUD HTTPS e navegador, isolamento, persistência, rollback, idempotência, carga curta 100/10, backup GCS, restauração isolada, reativação e renovação do certificado. O [relatório](docs/relatorio-entrega.md) distingue testes locais, CI e GCP e preserva as falhas relevantes. O ACE-10 permanece pendente do [ensaio dos alunos](docs/ensaio-alunos.md); a rotação do token DuckDNS exposto em captura também continua pendente.
 
 Ao encerrar os testes de implantação, ambas as VMs foram confirmadas `TERMINATED`. A estimativa acumulada registrada foi de **US$1,63**, incluindo reservas, sem valor de fatura apurado. Com as VMs desligadas, os discos ainda representam cerca de **US$1,20/730h**, além dos objetos/versionamentos e operações GCS. O alerta de orçamento não bloqueia cobranças. Consulte [custos e recursos preservados](docs/custos.md) para premissas e preços.
 

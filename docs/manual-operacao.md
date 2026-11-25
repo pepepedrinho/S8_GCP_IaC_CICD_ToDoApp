@@ -13,8 +13,9 @@ Para acionar os workflows, utilizar GitHub CLI autenticada ou **Actions → work
 | GCP_WIF_PROVIDER | MONGO_ROOT_PASSWORD |
 | GCP_SERVICE_ACCOUNT | MONGO_APP_PASSWORD |
 | DUCKDNS_DOMAIN=triodelicia.duckdns.org | DUCKDNS_TOKEN |
+| — | CERTIFICATE_EMAIL |
 
-Esses parâmetros já existem no repositório. Valores de secrets não devem ser copiados para código, relatórios ou logs. O script `scripts/configure-github.py` permite preparar uma instalação nova sem sobrescrever secrets existentes. As senhas MongoDB precisam permanecer compatíveis com os usuários persistidos; alterar apenas o arquivo de senha não atualiza a credencial no banco.
+Esses parâmetros já existem no repositório. CERTIFICATE_EMAIL guarda o contato ACME como configuração protegida, sem endereço pessoal fixo no código. Ansible lê esse valor do ambiente; na execução direta fora do Actions, fornecer a mesma variável de forma privada. O contato não é uma credencial de autenticação. Valores de secrets não devem ser copiados para código, relatórios ou logs. O script `scripts/configure-github.py` permite preparar uma instalação nova sem sobrescrever secrets existentes. As senhas MongoDB precisam permanecer compatíveis com os usuários persistidos; alterar apenas o arquivo de senha não atualiza a credencial no banco.
 
 OIDC emite credenciais temporárias para a conta de automação. A configuração e os limites de acesso estão em [segurança do bootstrap](seguranca-bootstrap.md). Não são necessárias chaves JSON de conta de serviço.
 

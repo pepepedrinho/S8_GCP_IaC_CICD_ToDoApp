@@ -11,5 +11,5 @@ todo_mongo_memory: 448m
 todo_backend_image: todo-backend:local
 todo_frontend_image: todo-frontend:local
 todo_version: local
-todo_certificate_email: pedrohalvesdosantos@gmail.com
+todo_certificate_email: "{{ lookup('ansible.builtin.env', 'CERTIFICATE_EMAIL') }}"
 todo_enable_https: true

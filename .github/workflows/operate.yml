@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: ${{ (inputs.operation == 'acceptance' || inputs.operation == 'recovery') && 40 || 20 }}
     env:
+      CERTIFICATE_EMAIL: ${{ secrets.CERTIFICATE_EMAIL }}
       OPERATION: ${{ inputs.operation }}
       BACKUP_OBJECT: ${{ inputs.backup_object }}
       COMPARISON_COMMIT: ${{ inputs.comparison_commit }}
@@ -66,6 +67,7 @@ jobs:
               if [[ "$OPERATION" == acceptance ]]; then
                 [[ "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
               fi
+              test -n "$CERTIFICATE_EMAIL" || { echo "::error::CERTIFICATE_EMAIL is missing"; exit 1; }
               python scripts/cloud.py start
               python scripts/cloud.py dns
               ansible-playbook -i .local/inventory.yml infra/ansible/https.yml -e @.local/runtime.json
