@@ -94,7 +94,7 @@ resource "google_compute_instance" "vm" {
   }
   scheduling {
     automatic_restart           = false
-    on_host_maintenance         = "TERMINATE"
+    on_host_maintenance         = "MIGRATE"
     provisioning_model          = "STANDARD"
     instance_termination_action = "STOP"
     max_run_duration { seconds = var.max_run_seconds }

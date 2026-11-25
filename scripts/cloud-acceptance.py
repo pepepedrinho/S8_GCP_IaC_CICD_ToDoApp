@@ -4,6 +4,7 @@ Only the task created by this test is removed. Database volumes are preserved.
 """
 import json
 import argparse
+import hashlib
 import pathlib
 import re
 import socket
@@ -104,6 +105,8 @@ try:
     preserved(); checks.append('GCS copy downloaded and restored in isolated volume without overwriting production')
     for name in ('todo-app', 'todo-db'):
         measurements[name] = ssh(name, "free -b; sudo docker stats --no-stream --format '{{json .}}'; sudo docker inspect $(sudo docker ps -aq) --format '{{.Name}} OOMKilled={{.State.OOMKilled}}'")
+    renewal = ssh('todo-app', 'sudo certbot renew --dry-run --no-random-sleep-on-renew')
+    checks.append('certificate renewal dry-run succeeded')
     result = {'passed': True, 'cloud_test': True, 'url': base, 'checks': checks, 'backup_manifest': manifest, 'runtime_measurements': measurements, 'state': state}
     target.write_text(json.dumps(result, indent=2), encoding='utf-8')
     print(json.dumps(result, indent=2))
@@ -112,3 +115,8 @@ finally:
     ssh('todo-db', 'sudo systemctl start todo-backup.timer')
     wait()
     call(base, task_path, 'DELETE')
+    if target.exists():
+        completed = json.loads(target.read_text())
+        documents = sorted(call(base, '/todos')[1], key=lambda item: item['_id'])
+        completed['post_cleanup_document_sha256'] = hashlib.sha256(json.dumps(documents, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+        target.write_text(json.dumps(completed, indent=2), encoding='utf-8')

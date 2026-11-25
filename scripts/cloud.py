@@ -23,8 +23,14 @@ def gcloud(*args, json_output=False):
     if r.returncode: raise RuntimeError('gcloud failed: ' + ' '.join(args[:3]) + '\n' + r.stderr[:1800])
     return json.loads(r.stdout) if json_output else r.stdout.strip()
 
-def instances():
-    return {name: gcloud('compute', 'instances', 'describe', name, '--zone=' + ZONE, json_output=True) for name in ('todo-app', 'todo-db')}
+def instances(allow_missing=False):
+    found = {}
+    for name in ('todo-app', 'todo-db'):
+        try:
+            found[name] = gcloud('compute', 'instances', 'describe', name, '--zone=' + ZONE, json_output=True)
+        except RuntimeError as error:
+            if not allow_missing or 'was not found' not in str(error): raise
+    return found
 
 def ssh(name, command):
     key = PRIVATE / 'ssh' / 'id_ed25519'
@@ -32,9 +38,11 @@ def ssh(name, command):
     if not key.exists(): subprocess.run(['ssh-keygen', '-t', 'ed25519', '-f', str(key), '-N', ''], check=True, capture_output=True)
     return gcloud('compute', 'ssh', name, '--zone=' + ZONE, '--tunnel-through-iap', '--ssh-key-file=' + str(key), '--ssh-key-expire-after=1h', '--command=' + command)
 
-def snapshot():
-    data = instances()
+def snapshot(allow_missing=False):
+    data = instances(allow_missing)
     summary = {}
+    for name in ('todo-app', 'todo-db'):
+        if name not in data: summary[name] = {'status': 'NOT_CREATED', 'public_ip': None}
     for name, vm in data.items():
         scheduling = vm['scheduling']
         assert vm['machineType'].endswith('/e2-micro')
@@ -91,17 +99,19 @@ def main():
         ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
         ssh('todo-app', 'sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
     elif args.operation == 'stop':
-        try: ssh('todo-app', 'sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml stop')
-        except RuntimeError: pass
-        try: ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml stop')
-        except RuntimeError: pass
+        existing = instances(allow_missing=True)
+        for name, vm in existing.items():
+            if vm['status'] != 'RUNNING': continue
+            release = '--env-file /opt/todo/release.env ' if name == 'todo-app' else ''
+            try: ssh(name, f'sudo docker compose {release}-f /opt/todo/compose.yml stop')
+            except RuntimeError: pass
         # Attempt both stops even if graceful shutdown failed.
         failures = []
-        for name in ('todo-app', 'todo-db'):
+        for name in existing:
             try: gcloud('compute', 'instances', 'stop', name, '--zone=' + ZONE)
             except RuntimeError as error: failures.append(str(error))
-        state = snapshot()
-        assert all(state[n]['status'] == 'TERMINATED' for n in ('todo-app', 'todo-db')), failures
+        state = snapshot(allow_missing=True)
+        assert all(state[n]['status'] in ('TERMINATED', 'NOT_CREATED') for n in ('todo-app', 'todo-db')), failures
     elif args.operation == 'prepare': prepare()
     elif args.operation == 'backup': print(ssh('todo-db', 'sudo /opt/todo/bin/backup.sh'))
     elif args.operation == 'rollback': print(ssh('todo-app', 'sudo /opt/todo/bin/deploy-images.sh rollback'))
@@ -112,7 +122,7 @@ def main():
         if not re.fullmatch(r'todo/todo-\d{8}T\d{6}Z\.archive\.gz', args.object): raise ValueError('Invalid backup object')
         command = f"sudo bash -c 'set -e; cd /opt/todo; source backup.env; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object} backups/restore.archive.gz; python3 bin/gcs.py download \"$BACKUP_BUCKET\" {args.object}.json backups/restore.archive.gz.json; python3 bin/verify-backup.py backups/restore.archive.gz'"
         print(ssh('todo-db', command))
-    state = snapshot()
+    state = snapshot(allow_missing=args.operation == 'stop')
     evidence = ROOT / 'docs' / 'evidencias'; evidence.mkdir(parents=True, exist_ok=True)
     (evidence / ('cloud-' + args.operation + '.json')).write_text(json.dumps(state, indent=2))
     print(json.dumps(state, indent=2))
