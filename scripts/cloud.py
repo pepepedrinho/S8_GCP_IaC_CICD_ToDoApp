@@ -71,7 +71,8 @@ def prepare():
         hosts[name] = {
             'ansible_user': user, 'ansible_host': name,
             'ansible_ssh_private_key_file': str(PRIVATE / 'ssh' / 'id_ed25519'),
-            'ansible_ssh_common_args': f'-o StrictHostKeyChecking=accept-new -o UserKnownHostsFile={PRIVATE / "ssh" / "known_hosts"} -o ProxyCommand="gcloud compute start-iap-tunnel %h 22 --listen-on-stdin --zone={ZONE} --project={PROJECT} --verbosity=error"',
+            'ansible_ssh_executable': str(ROOT / 'infra/ansible/gcloud-ssh.py'),
+            'ansible_ssh_transfer_method': 'piped',
         }
     inventory = {'all': {'children': {'app': {'hosts': {'todo-app': hosts['todo-app']}}, 'database': {'hosts': {'todo-db': hosts['todo-db']}}}}}
     (PRIVATE / 'inventory.yml').write_text(json.dumps(inventory, indent=2))
@@ -86,18 +87,19 @@ def prepare():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('operation', choices=['status', 'prepare', 'start', 'stop', 'backup', 'restore', 'rollback', 'logs'])
+    parser.add_argument('operation', choices=['status', 'prepare', 'boot', 'start', 'stop', 'backup', 'restore', 'rollback', 'logs'])
     parser.add_argument('--object', default='')
     args = parser.parse_args()
-    if args.operation == 'start':
+    if args.operation in ('boot', 'start'):
         for name in ('todo-db', 'todo-app'):
             if gcloud('compute', 'instances', 'describe', name, '--zone=' + ZONE, json_output=True)['status'] != 'RUNNING':
                 gcloud('compute', 'instances', 'start', name, '--zone=' + ZONE)
         prepare()
         # A graceful stop deliberately stops containers; unless-stopped does not
         # bring those containers back after a VM reboot.
-        ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
-        ssh('todo-app', 'sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
+        if args.operation == 'start':
+            ssh('todo-db', 'sudo docker compose -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
+            ssh('todo-app', 'sudo docker compose --env-file /opt/todo/release.env -f /opt/todo/compose.yml up -d --pull never --wait --wait-timeout 120')
     elif args.operation == 'stop':
         existing = instances(allow_missing=True)
         for name, vm in existing.items():

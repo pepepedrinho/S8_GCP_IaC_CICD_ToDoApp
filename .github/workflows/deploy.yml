@@ -54,7 +54,7 @@ jobs:
           [[ -z "$COMPARISON_COMMIT" || "$COMPARISON_COMMIT" =~ ^[a-f0-9]{40}$ ]]
           test ${#MONGO_ROOT_PASSWORD} -ge 24
           test ${#MONGO_APP_PASSWORD} -ge 24
-          python scripts/cloud.py prepare
+          python scripts/cloud.py boot
       - name: Transfer images; registry credentials stay only on runner
         run: |
           prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
@@ -67,8 +67,8 @@ jobs:
             images+=("$prefix-frontend:$COMPARISON_COMMIT" "$prefix-backend:$COMPARISON_COMMIT")
           fi
           docker save -o .local/application.tar "${images[@]}"
-          gcloud compute scp .local/application.tar todo-app:/tmp/todo-application.tar --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --quiet
-          gcloud compute ssh todo-app --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --command='sudo mkdir -p /opt/todo/artifacts && sudo mv /tmp/todo-application.tar /opt/todo/artifacts/application.tar' --quiet
+          gcloud compute scp .local/application.tar todo-app:/tmp/todo-application.tar --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --ssh-key-expire-after=1h --quiet
+          gcloud compute ssh todo-app --zone=us-central1-a --project=triodelicia-mensal4-2026 --tunnel-through-iap --ssh-key-file=.local/ssh/id_ed25519 --ssh-key-expire-after=1h --command='sudo mkdir -p /opt/todo/artifacts && sudo mv /tmp/todo-application.tar /opt/todo/artifacts/application.tar' --quiet
       - name: Configure both hosts and deploy identified images
         run: |
           prefix=ghcr.io/pepepedrinho/s8_gcp_iac_cicd_todoapp
