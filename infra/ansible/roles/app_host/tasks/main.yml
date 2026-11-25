@@ -51,15 +51,25 @@
   changed_when: "'Downloaded newer image' in app_host_mongo_pull.stdout"
 - name: Inspect existing image artifact
   ansible.builtin.stat:
-    path: "{{ todo_root }}/artifacts/mongo.tar"
+    path: "{{ todo_root }}/artifacts/mongo.tar.gz"
   register: app_host_mongo_artifact
 - name: Export image for the private host
   ansible.builtin.command: "docker save -o {{ todo_root }}/artifacts/mongo.tar {{ todo_mongo_image }}"
   when: app_host_mongo_pull.changed or not app_host_mongo_artifact.stat.exists
+  register: app_host_mongo_export
   changed_when: true
+- name: Compress image before both IAP transfers # noqa: no-handler
+  ansible.builtin.command:
+    argv: [gzip, -n, '-1', -f, "{{ todo_root }}/artifacts/mongo.tar"]
+  when: app_host_mongo_export.changed
+  changed_when: true
+- name: Allow unprivileged streaming of public image artifact
+  ansible.builtin.file:
+    path: "{{ todo_root }}/artifacts/mongo.tar.gz"
+    mode: '0644'
 - name: Fetch image archive through SSH to controller
   become: false
   ansible.builtin.fetch:
-    src: "{{ todo_root }}/artifacts/mongo.tar"
-    dest: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar"
+    src: "{{ todo_root }}/artifacts/mongo.tar.gz"
+    dest: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar.gz"
     flat: true

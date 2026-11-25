@@ -55,12 +55,12 @@
     mode: '0700'
 - name: Transfer Mongo image over SSH
   ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar"
-    dest: "{{ todo_root }}/mongo.tar"
+    src: "{{ playbook_dir }}/../../.local/artifacts/mongo.tar.gz"
+    dest: "{{ todo_root }}/mongo.tar.gz"
     mode: '0600'
   register: database_host_mongo_archive
 - name: Import Mongo image without registry access # noqa: no-handler
-  ansible.builtin.command: "docker load -i {{ todo_root }}/mongo.tar"
+  ansible.builtin.command: "docker load -i {{ todo_root }}/mongo.tar.gz"
   when: database_host_mongo_archive.changed
   changed_when: true
 - name: Install protected Mongo credentials
