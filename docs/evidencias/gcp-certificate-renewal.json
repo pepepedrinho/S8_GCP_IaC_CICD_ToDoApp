@@ -1,0 +1,11 @@
+{
+  "cloud_test": true,
+  "orchestrator": "local Linux controller with temporary owner credentials after GitHub Operate start",
+  "source_commit": "8ca67a485d37060b6b99716d86d982d1ff211095",
+  "run_id": "20261125T165143Z-6260d2d8",
+  "started_at_utc": "2026-11-25T16:51:47.829181+00:00",
+  "start_workflow_run": "45657904915",
+  "passed": true,
+  "url": "https://triodelicia.duckdns.org",
+  "dry_run_output": "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\nProcessing /etc/letsencrypt/renewal/triodelicia.duckdns.org.conf\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\nAccount registered.\nSimulating renewal of an existing certificate for triodelicia.duckdns.org\n\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -\nCongratulations, all simulated renewals succeeded: \n  /etc/letsencrypt/live/triodelicia.duckdns.org/fullchain.pem (success)\n- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+}

@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "source_environment": "GCP",
+  "verification_environment": "local isolated MongoDB, network none",
+  "method": "Compared full task documents restored from a GCS backup created after VM stop/start with the preceding external API hash",
+  "reference_run": "45644032806",
+  "reference_data_sha256": "53592e65627a97acdefd3547c032eda4f1cc59450d894cb32620253bad620121",
+  "after_vm_start_data_sha256": "53592e65627a97acdefd3547c032eda4f1cc59450d894cb32620253bad620121",
+  "documents_count": 4,
+  "source_backup_object": "todo/todo-20261125T162134Z.archive.gz",
+  "source_backup_created_utc": "20261125T162134Z",
+  "source_archive_sha256": "509b77c99fabca01fac7a3bc287a871783b94ae64421d4b1c8d33e7a10108eb9",
+  "original_vms_modified_by_this_check": false
+}

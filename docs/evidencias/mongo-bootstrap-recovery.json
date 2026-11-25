@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "cloud_test": false,
+  "database": "real isolated MongoDB with authentication enabled",
+  "checks": [
+    "missing initial administrator recovered through localhost exception",
+    "application user created with readWrite only",
+    "second execution unchanged",
+    "existing administrator reset refused",
+    "three demo documents preserved",
+    "application user cannot administer users"
+  ],
+  "production_volume_mounted": false
+}

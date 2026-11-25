@@ -1,0 +1,27 @@
+{
+  "run_id": "20261125T160747Z-232e62d2",
+  "cloud_test": true,
+  "controller_exit_code": 1,
+  "stop_failures": [],
+  "state": {
+    "todo-app": {
+      "status": "TERMINATED",
+      "machine_type": "e2-micro",
+      "max_run_seconds": 21600,
+      "termination_action": "STOP",
+      "termination_timestamp": null,
+      "public_ip": null
+    },
+    "todo-db": {
+      "status": "TERMINATED",
+      "machine_type": "e2-micro",
+      "max_run_seconds": 21600,
+      "termination_action": "STOP",
+      "termination_timestamp": null,
+      "public_ip": null
+    },
+    "url": null
+  },
+  "all_vms_terminated": true,
+  "checked_at_utc": "2026-11-25T16:27:55.212856+00:00"
+}

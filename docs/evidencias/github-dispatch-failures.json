@@ -1,0 +1,22 @@
+{
+  "observed_at_utc": "2026-11-25T15:53:00+00:00",
+  "repository": "pepepedrinho/S8_GCP_IaC_CICD_ToDoApp",
+  "observed_statuses": [
+    500,
+    502
+  ],
+  "affected_dispatches": [
+    "Operate recovery",
+    "Operate stop",
+    "Infrastructure validate"
+  ],
+  "created_runs_during_errors": 0,
+  "cause_proven": false,
+  "official_incident_claimed": false,
+  "later_recovery": {
+    "validate_run": 45656491227,
+    "start_run": 45656567842,
+    "dispatch_accepted": true
+  },
+  "note": "Dispatch errors prevented automatic DuckDNS while the owner controller validated backup and restore. A later dispatch was accepted; its job result is recorded separately."
+}

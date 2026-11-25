@@ -1,0 +1,140 @@
+{
+  "project_id": "triodelicia-mensal4-2026",
+  "project_number": "271680307280",
+  "budget_project_filter": [
+    "projects/271680307280"
+  ],
+  "budget_currency": "BRL",
+  "budget_amount": "5",
+  "service_accounts": [
+    {
+      "email": "todo-app@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+      "disabled": false,
+      "user_managed_keys": 0
+    },
+    {
+      "email": "todo-db@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+      "disabled": false,
+      "user_managed_keys": 0
+    },
+    {
+      "email": "todo-automation@triodelicia-mensal4-2026.iam.gserviceaccount.com",
+      "disabled": false,
+      "user_managed_keys": 0
+    }
+  ],
+  "buckets": [
+    {
+      "creation_time": "2026-11-25T09:08:29+0000",
+      "default_storage_class": "STANDARD",
+      "generation": 1795597709390727102,
+      "labels": {
+        "goog-terraform-provisioned": "true"
+      },
+      "lifecycle_config": {
+        "rule": [
+          {
+            "action": {
+              "type": "Delete"
+            },
+            "condition": {
+              "age": 30,
+              "isLive": false
+            }
+          }
+        ]
+      },
+      "location": "US-CENTRAL1",
+      "location_type": "region",
+      "metageneration": 2,
+      "name": "triodelicia-mensal4-2026-todo-state",
+      "public_access_prevention": "enforced",
+      "soft_delete_policy": {
+        "retentionDurationSeconds": "0"
+      },
+      "storage_url": "gs://triodelicia-mensal4-2026-todo-state/",
+      "uniform_bucket_level_access": true,
+      "update_time": "2026-11-25T09:08:42+0000",
+      "versioning_enabled": true
+    },
+    {
+      "creation_time": "2026-11-25T09:08:29+0000",
+      "default_storage_class": "STANDARD",
+      "generation": 1795597709473846802,
+      "labels": {
+        "goog-terraform-provisioned": "true"
+      },
+      "lifecycle_config": {
+        "rule": [
+          {
+            "action": {
+              "type": "Delete"
+            },
+            "condition": {
+              "age": 7
+            }
+          }
+        ]
+      },
+      "location": "US-CENTRAL1",
+      "location_type": "region",
+      "metageneration": 2,
+      "name": "triodelicia-mensal4-2026-todo-backups",
+      "public_access_prevention": "enforced",
+      "retention_policy": {
+        "effectiveTime": "2026-11-25T09:08:29.634000+00:00",
+        "retentionPeriod": "604800"
+      },
+      "soft_delete_policy": {
+        "retentionDurationSeconds": "0"
+      },
+      "storage_url": "gs://triodelicia-mensal4-2026-todo-backups/",
+      "uniform_bucket_level_access": true,
+      "update_time": "2026-11-25T09:08:42+0000",
+      "versioning_enabled": false
+    }
+  ],
+  "oidc_provider": {
+    "attributeCondition": "assertion.repository_id == '1468894543' && assertion.repository_owner_id == '55161713' && (assertion.ref == 'refs/heads/main' || assertion.ref == 'refs/heads/feat/infra-terraform-ansible-actions')",
+    "attributeMapping": {
+      "attribute.repository_id": "assertion.repository_id",
+      "attribute.repository_owner_id": "assertion.repository_owner_id",
+      "google.subject": "assertion.sub"
+    },
+    "name": "projects/271680307280/locations/global/workloadIdentityPools/todo-github/providers/github",
+    "oidc": {
+      "issuerUri": "https://token.actions.githubusercontent.com"
+    },
+    "state": "ACTIVE"
+  },
+  "regional_quotas": [
+    {
+      "limit": 4096.0,
+      "metric": "DISKS_TOTAL_GB",
+      "usage": 0.0
+    },
+    {
+      "limit": 8.0,
+      "metric": "IN_USE_ADDRESSES",
+      "usage": 0.0
+    },
+    {
+      "limit": 24.0,
+      "metric": "INSTANCES",
+      "usage": 0.0
+    },
+    {
+      "limit": 24.0,
+      "metric": "E2_CPUS",
+      "usage": 0.0
+    }
+  ],
+  "oidc_plan_run": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45582818037",
+  "bootstrap_apply": {
+    "added": 27,
+    "changed": 0,
+    "destroyed": 0
+  },
+  "state_remote_prefix": "todo/bootstrap",
+  "main_state_prefix": "todo/main"
+}

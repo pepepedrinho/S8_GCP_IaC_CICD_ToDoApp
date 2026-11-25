@@ -1,0 +1,17 @@
+{
+  "cloud_test": true,
+  "orchestrator": "local Linux controller with temporary owner credentials after GitHub Operate start",
+  "source_commit": "8ca67a485d37060b6b99716d86d982d1ff211095",
+  "run_id": "20261125T165143Z-6260d2d8",
+  "started_at_utc": "2026-11-25T16:51:47.829181+00:00",
+  "start_workflow_run": "45657904915",
+  "passed": true,
+  "object": "todo/todo-20261125T165326Z.archive.gz",
+  "manifest": {
+    "validated": true,
+    "archive_sha256": "3d4ed631783b1a008ae97734301e4f7f00a1f30107cc0fd31ee8750891702515",
+    "data_sha256": "b041da9a71b3d4eb0630c84ce71fc39002dbe9dd1f51a16ef1470b7a174aa585",
+    "created_utc": "20261125T165326Z"
+  },
+  "method": "Systemd service after browser test cleanup; isolated restore validation before upload"
+}

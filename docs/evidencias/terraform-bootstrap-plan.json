@@ -3124,25 +3124,13 @@
   },
   "relevant_attributes": [
     {
-      "resource": "google_iam_workload_identity_pool.github",
-      "attribute": [
-        "name"
-      ]
-    },
-    {
       "resource": "google_project_iam_custom_role.automation",
       "attribute": [
         "name"
       ]
     },
     {
-      "resource": "google_service_account.automation",
-      "attribute": [
-        "email"
-      ]
-    },
-    {
-      "resource": "google_service_account.automation",
+      "resource": "google_storage_bucket.protected[\"backups\"]",
       "attribute": [
         "name"
       ]
@@ -3160,14 +3148,28 @@
       ]
     },
     {
-      "resource": "google_iam_workload_identity_pool_provider.github",
+      "resource": "google_service_account.automation",
+      "attribute": [
+        "email"
+      ]
+    },
+    {
+      "resource": "google_iam_workload_identity_pool.github",
       "attribute": [
         "name"
       ]
     },
     {
-      "resource": "google_service_account.runtime",
-      "attribute": []
+      "resource": "google_service_account.automation",
+      "attribute": [
+        "name"
+      ]
+    },
+    {
+      "resource": "google_iam_workload_identity_pool_provider.github",
+      "attribute": [
+        "name"
+      ]
     },
     {
       "resource": "google_service_account.runtime[\"db\"]",
@@ -3176,10 +3178,8 @@
       ]
     },
     {
-      "resource": "google_storage_bucket.protected[\"backups\"]",
-      "attribute": [
-        "name"
-      ]
+      "resource": "google_service_account.runtime",
+      "attribute": []
     }
   ],
   "checks": [
@@ -3200,7 +3200,7 @@
       ]
     }
   ],
-  "timestamp": "2026-11-23T16:49:42Z",
+  "timestamp": "2026-11-25T09:07:04Z",
   "applyable": true,
   "complete": true,
   "errored": false

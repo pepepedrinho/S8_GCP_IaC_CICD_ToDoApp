@@ -1,0 +1,17 @@
+{
+  "cloud_test": true,
+  "orchestrator": "local controller with temporary gcloud credentials",
+  "source_commit": "9aac06b27bcbf72a6e3fd182ad50988bc8c18617",
+  "run_id": "20261125T160747Z-232e62d2",
+  "started_at_utc": "2026-11-25T16:08:01.559361+00:00",
+  "passed": true,
+  "bucket": "triodelicia-mensal4-2026-todo-backups",
+  "object": "todo/todo-20261125T162134Z.archive.gz",
+  "manifest": {
+    "validated": true,
+    "archive_sha256": "509b77c99fabca01fac7a3bc287a871783b94ae64421d4b1c8d33e7a10108eb9",
+    "data_sha256": "6d9f442711af160ddc514efcf98653d98684eabec62f1839982325976aba767c",
+    "created_utc": "20261125T162134Z"
+  },
+  "method": "Completed systemd service; uploads occur only after isolated restore validation"
+}

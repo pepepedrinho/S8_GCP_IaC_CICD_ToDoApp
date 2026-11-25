@@ -1,0 +1,14 @@
+{
+  "url": "https://triodelicia.duckdns.org",
+  "https_verified": true,
+  "checks": [
+    "frontend and database readiness",
+    "create",
+    "list",
+    "complete",
+    "reopen",
+    "delete and reload"
+  ],
+  "passed": true,
+  "source_context": "reactivation-context.json"
+}

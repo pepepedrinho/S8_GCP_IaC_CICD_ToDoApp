@@ -1,0 +1,33 @@
+{
+  "passed": true,
+  "cloud_test": true,
+  "url": "https://triodelicia.duckdns.org",
+  "browser": "ChatGPT in-app browser, real UI controls",
+  "checked_at_utc": "2026-11-25T16:53:17.052355+00:00",
+  "source_commit": "8ca67a485d37060b6b99716d86d982d1ff211095",
+  "start_workflow_run": "45657904915",
+  "owner_run_id": "20261125T165143Z-6260d2d8",
+  "https_navigation_succeeded_without_warning_bypass": true,
+  "checks": [
+    "create through textbox and Add button",
+    "list after page reload",
+    "complete through task button",
+    "completed state survives page reload",
+    "reopen through task button",
+    "reopened state survives page reload",
+    "delete test task and reload to confirm absence"
+  ],
+  "test_task": "ACE-04 — navegador DuckDNS — 25/11/2026",
+  "cleanup_removed_only_own_test_tasks": [
+    "ACE-04 — navegador DuckDNS — 25/11/2026",
+    "Validação acadêmica HTTPS — teste descartável 25/11"
+  ],
+  "preexisting_tasks_preserved": [
+    "Estudar Cloud",
+    "Validar infraestrutura",
+    "Testar backup e restauracao"
+  ],
+  "remaining_tasks": 3,
+  "screenshot": "gcp-interface.jpg",
+  "screenshot_stage": "completed test task after reload, before cleanup"
+}

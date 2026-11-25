@@ -1,0 +1,19 @@
+{
+  "todo-app": {
+    "status": "TERMINATED",
+    "machine_type": "e2-micro",
+    "max_run_seconds": 21600,
+    "termination_action": "STOP",
+    "termination_timestamp": null,
+    "public_ip": null
+  },
+  "todo-db": {
+    "status": "TERMINATED",
+    "machine_type": "e2-micro",
+    "max_run_seconds": 21600,
+    "termination_action": "STOP",
+    "termination_timestamp": null,
+    "public_ip": null
+  },
+  "url": null
+}

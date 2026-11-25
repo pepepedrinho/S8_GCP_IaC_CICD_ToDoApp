@@ -1,0 +1,527 @@
+{
+  "checked_at_utc": "2026-11-25T10:23:44.284241+00:00",
+  "project_id": "triodelicia-mensal4-2026",
+  "project_state": "ACTIVE",
+  "billing_enabled": true,
+  "enabled_apis": [
+    "backupdr.googleapis.com",
+    "billingbudgets.googleapis.com",
+    "cloudbilling.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "iap.googleapis.com",
+    "oslogin.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "storage.googleapis.com",
+    "sts.googleapis.com"
+  ],
+  "bootstrap_apply_record_present": true,
+  "compute_inventory": [
+    {
+      "name": "todo-app",
+      "status": "TERMINATED",
+      "machine_type": "e2-micro",
+      "zone": "us-central1-a",
+      "created": "2026-11-25T01:18:42.865-08:00",
+      "last_start": "2026-11-25T02:15:11.456-08:00",
+      "last_stop": "2026-11-25T02:17:40.896-08:00",
+      "scheduling": {
+        "automaticRestart": false,
+        "instanceTerminationAction": "STOP",
+        "maxRunDuration": {
+          "nanos": 0,
+          "seconds": "21600"
+        },
+        "onHostMaintenance": "MIGRATE",
+        "preemptible": false,
+        "provisioningModel": "STANDARD"
+      },
+      "private_ip": "10.42.0.10",
+      "public_ips": []
+    },
+    {
+      "name": "todo-db",
+      "status": "TERMINATED",
+      "machine_type": "e2-micro",
+      "zone": "us-central1-a",
+      "created": "2026-11-25T01:18:42.618-08:00",
+      "last_start": "2026-11-25T02:15:01.055-08:00",
+      "last_stop": "2026-11-25T02:18:59.083-08:00",
+      "scheduling": {
+        "automaticRestart": false,
+        "instanceTerminationAction": "STOP",
+        "maxRunDuration": {
+          "nanos": 0,
+          "seconds": "21600"
+        },
+        "onHostMaintenance": "MIGRATE",
+        "preemptible": false,
+        "provisioningModel": "STANDARD"
+      },
+      "private_ip": "10.42.0.20",
+      "public_ips": []
+    }
+  ],
+  "disks": [
+    {
+      "name": "todo-app",
+      "size_gb": "10",
+      "type": "pd-standard",
+      "zone": "us-central1-a",
+      "status": "READY",
+      "created": "2026-11-25T01:18:42.875-08:00"
+    },
+    {
+      "name": "todo-db",
+      "size_gb": "10",
+      "type": "pd-standard",
+      "zone": "us-central1-a",
+      "status": "READY",
+      "created": "2026-11-25T01:18:42.627-08:00"
+    },
+    {
+      "name": "todo-mongo-data",
+      "size_gb": "10",
+      "type": "pd-standard",
+      "zone": "us-central1-a",
+      "status": "READY",
+      "created": "2026-11-25T01:15:31.358-08:00"
+    }
+  ],
+  "reserved_addresses": [],
+  "buckets": [
+    {
+      "name": "triodelicia-mensal4-2026-todo-backups",
+      "location": "US-CENTRAL1",
+      "storage_class": "STANDARD",
+      "public_access_prevention": "enforced",
+      "uniform_access": true,
+      "versioning_enabled": false,
+      "retention_policy": {
+        "effectiveTime": "2026-11-25T09:08:29.634000+00:00",
+        "retentionPeriod": "604800"
+      },
+      "lifecycle": {
+        "rule": [
+          {
+            "action": {
+              "type": "Delete"
+            },
+            "condition": {
+              "age": 7
+            }
+          }
+        ]
+      },
+      "total_version_bytes": 0,
+      "objects_all_versions": []
+    },
+    {
+      "name": "triodelicia-mensal4-2026-todo-state",
+      "location": "US-CENTRAL1",
+      "storage_class": "STANDARD",
+      "public_access_prevention": "enforced",
+      "uniform_access": true,
+      "versioning_enabled": true,
+      "retention_policy": null,
+      "lifecycle": {
+        "rule": [
+          {
+            "action": {
+              "type": "Delete"
+            },
+            "condition": {
+              "age": 30,
+              "isLive": false
+            }
+          }
+        ]
+      },
+      "total_version_bytes": 98738,
+      "objects_all_versions": [
+        {
+          "name": "todo/bootstrap/default.tflock",
+          "size_bytes": 261,
+          "generation": "1795597789843097",
+          "created": "2026-11-25T09:09:49.855Z"
+        },
+        {
+          "name": "todo/bootstrap/default.tflock",
+          "size_bytes": 284,
+          "generation": "1795597792643398",
+          "created": "2026-11-25T09:09:52.648Z"
+        },
+        {
+          "name": "todo/bootstrap/default.tfstate",
+          "size_bytes": 181,
+          "generation": "1795597790796575",
+          "created": "2026-11-25T09:09:50.804Z"
+        },
+        {
+          "name": "todo/bootstrap/default.tfstate",
+          "size_bytes": 43345,
+          "generation": "1795597794291012",
+          "created": "2026-11-25T09:09:54.310Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 256,
+          "generation": "1795597800964175",
+          "created": "2026-11-25T09:10:00.970Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 253,
+          "generation": "1795597825860236",
+          "created": "2026-11-25T09:10:25.867Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 269,
+          "generation": "1795597981574139",
+          "created": "2026-11-25T09:13:01.579Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 255,
+          "generation": "1795598126199339",
+          "created": "2026-11-25T09:15:26.206Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 256,
+          "generation": "1795598128929877",
+          "created": "2026-11-25T09:15:28.937Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 269,
+          "generation": "1795598257323167",
+          "created": "2026-11-25T09:17:37.330Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 255,
+          "generation": "1795598318141551",
+          "created": "2026-11-25T09:18:38.147Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 256,
+          "generation": "1795598320846381",
+          "created": "2026-11-25T09:18:40.852Z"
+        },
+        {
+          "name": "todo/main/default.tflock",
+          "size_bytes": 269,
+          "generation": "1795599619557498",
+          "created": "2026-11-25T09:40:19.563Z"
+        },
+        {
+          "name": "todo/main/default.tfstate",
+          "size_bytes": 181,
+          "generation": "1795597801882350",
+          "created": "2026-11-25T09:10:01.888Z"
+        },
+        {
+          "name": "todo/main/default.tfstate",
+          "size_bytes": 17072,
+          "generation": "1795598154343232",
+          "created": "2026-11-25T09:15:54.357Z"
+        },
+        {
+          "name": "todo/main/default.tfstate",
+          "size_bytes": 35076,
+          "generation": "1795598349181407",
+          "created": "2026-11-25T09:19:09.195Z"
+        }
+      ]
+    }
+  ],
+  "all_vms_terminated": true,
+  "routers": [],
+  "forwarding_rules": [],
+  "networks": [
+    "default",
+    "todo-vpc"
+  ],
+  "firewalls": [
+    {
+      "name": "default-allow-icmp",
+      "network": "default",
+      "source_ranges": [
+        "0.0.0.0/0"
+      ],
+      "target_tags": null,
+      "allowed": [
+        {
+          "IPProtocol": "icmp"
+        }
+      ]
+    },
+    {
+      "name": "default-allow-internal",
+      "network": "default",
+      "source_ranges": [
+        "10.128.0.0/9"
+      ],
+      "target_tags": null,
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "0-65535"
+          ]
+        },
+        {
+          "IPProtocol": "udp",
+          "ports": [
+            "0-65535"
+          ]
+        },
+        {
+          "IPProtocol": "icmp"
+        }
+      ]
+    },
+    {
+      "name": "default-allow-rdp",
+      "network": "default",
+      "source_ranges": [
+        "0.0.0.0/0"
+      ],
+      "target_tags": null,
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "3389"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "default-allow-ssh",
+      "network": "default",
+      "source_ranges": [
+        "0.0.0.0/0"
+      ],
+      "target_tags": null,
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "22"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "todo-iap-ssh",
+      "network": "todo-vpc",
+      "source_ranges": [
+        "35.235.240.0/20"
+      ],
+      "target_tags": [
+        "todo-app",
+        "todo-db"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "22"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "todo-private-mongo",
+      "network": "todo-vpc",
+      "source_ranges": [
+        "10.42.0.10/32"
+      ],
+      "target_tags": [
+        "todo-db"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "27017"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "todo-private-packages",
+      "network": "todo-vpc",
+      "source_ranges": [
+        "10.42.0.20/32"
+      ],
+      "target_tags": [
+        "todo-app"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "3128"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "todo-web",
+      "network": "todo-vpc",
+      "source_ranges": [
+        "0.0.0.0/0"
+      ],
+      "target_tags": [
+        "todo-app"
+      ],
+      "allowed": [
+        {
+          "IPProtocol": "tcp",
+          "ports": [
+            "80",
+            "443"
+          ]
+        }
+      ]
+    }
+  ],
+  "instance_operations": [
+    {
+      "instance": "todo-db",
+      "operation": "insert",
+      "started": "2026-11-25T01:18:42.711-08:00",
+      "finished": "2026-11-25T01:18:58.325-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "insert",
+      "started": "2026-11-25T01:18:42.958-08:00",
+      "finished": "2026-11-25T01:18:59.323-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "stop",
+      "started": "2026-11-25T01:20:46.100-08:00",
+      "finished": "2026-11-25T01:21:37.788-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "stop",
+      "started": "2026-11-25T01:21:38.870-08:00",
+      "finished": "2026-11-25T01:22:29.798-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "start",
+      "started": "2026-11-25T01:26:55.969-08:00",
+      "finished": "2026-11-25T01:27:08.165-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "start",
+      "started": "2026-11-25T01:27:11.365-08:00",
+      "finished": "2026-11-25T01:27:22.447-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "stop",
+      "started": "2026-11-25T01:36:24.506-08:00",
+      "finished": "2026-11-25T01:37:46.795-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "stop",
+      "started": "2026-11-25T01:37:48.030-08:00",
+      "finished": "2026-11-25T01:39:06.683-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "start",
+      "started": "2026-11-25T01:44:57.837-08:00",
+      "finished": "2026-11-25T01:45:08.443-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "start",
+      "started": "2026-11-25T01:45:10.890-08:00",
+      "finished": "2026-11-25T01:45:21.528-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "stop",
+      "started": "2026-11-25T02:08:04.890-08:00",
+      "finished": "2026-11-25T02:09:22.311-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "stop",
+      "started": "2026-11-25T02:09:23.276-08:00",
+      "finished": "2026-11-25T02:11:36.517-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "start",
+      "started": "2026-11-25T02:14:50.690-08:00",
+      "finished": "2026-11-25T02:15:01.126-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "start",
+      "started": "2026-11-25T02:15:03.351-08:00",
+      "finished": "2026-11-25T02:15:11.511-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-app",
+      "operation": "stop",
+      "started": "2026-11-25T02:16:23.690-08:00",
+      "finished": "2026-11-25T02:17:42.651-08:00",
+      "status": "DONE",
+      "failed": false
+    },
+    {
+      "instance": "todo-db",
+      "operation": "stop",
+      "started": "2026-11-25T02:17:43.652-08:00",
+      "finished": "2026-11-25T02:18:59.468-08:00",
+      "status": "DONE",
+      "failed": false
+    }
+  ]
+}

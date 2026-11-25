@@ -1,0 +1,34 @@
+{
+  "run_url": "https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45656567842",
+  "source_commit": "9aac06b27bcbf72a6e3fd182ad50988bc8c18617",
+  "started_at_utc": "2026-11-25T16:41:15.869014+00:00",
+  "kind": "operate",
+  "operation": "start",
+  "image_commit": null,
+  "comparison_commit": "",
+  "recovery_only": false,
+  "passed": false,
+  "error": "Ansible Gathering Facts failed: Timeout (12s) waiting for privilege escalation prompt",
+  "dns_update_succeeded": true,
+  "shutdown_verified_in_artifact": {
+    "todo-app": {
+      "status": "TERMINATED",
+      "machine_type": "e2-micro",
+      "max_run_seconds": 21600,
+      "termination_action": "STOP",
+      "termination_timestamp": null,
+      "public_ip": null
+    },
+    "todo-db": {
+      "status": "TERMINATED",
+      "machine_type": "e2-micro",
+      "max_run_seconds": 21600,
+      "termination_action": "STOP",
+      "termination_timestamp": null,
+      "public_ip": null
+    },
+    "url": null
+  },
+  "fix_commit": "8ca67a4",
+  "fix": "Ansible DEFAULT_TIMEOUT=60; no permission changes"
+}

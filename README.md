@@ -2,7 +2,9 @@
 
 Projeto acadêmico baseado no [código do professor](https://github.com/LaercioMLB/todo-app). Cadastrar, listar, concluir, reabrir e excluir tarefas continuam sendo as únicas funções de negócio. A lista é compartilhada, sem login. O cenário de feira está no [escopo original](docs/escopo.md); o usuário confirmou que esta entrega é um trabalho de faculdade, sem evento real.
 
-**Estado da entrega:** aplicação, persistência, backup, restauração isolada e rollback testados localmente e pela [CI real](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45225218488), com imagens publicadas no GHCR. Infraestrutura e playbooks implementados; implantação GCP depende da aprovação adicional descrita em [segurança do bootstrap](docs/seguranca-bootstrap.md). Nenhuma URL pública foi emitida. Consulte a [matriz de aceite](docs/matriz-aceite.md), o [progresso](docs/progresso-implementacao.md) e o [relatório](docs/relatorio-entrega.md) para distinguir código implementado de operação comprovada.
+**Estado da entrega — 25/11/2026:** bootstrap e infraestrutura aplicados no projeto autorizado. OIDC, duas VMs, proteção nativa de seis horas, Ansible completo e segunda execução sem alterações foram comprovados. O HTTPS em **https://triodelicia.duckdns.org** passou no CRUD público e em 100 leituras com 10 conexões simultâneas, sem erros. Backup GCS e restauração remota isolada passaram, com checksum e hash dos dados iguais, sem sobrescrever o banco principal. O CRUD completo também passou no navegador DuckDNS e o dry-run da renovação passou. A matriz registra **15/16 itens (93,75%)**, com o ensaio humano ACE-10 ainda pendente; consulte a [matriz](docs/matriz-aceite.md), as [evidências](docs/evidencias/README.md) e o [relatório](docs/relatorio-entrega.md) para o resultado final.
+
+Para reativar, execute `gh workflow run operate.yml -R pepepedrinho/S8_GCP_IaC_CICD_ToDoApp --ref feat/infra-terraform-ansible-actions -f operation=start`, aguarde o job e acesse o domínio. Ao terminar, use o mesmo comando com `-f operation=stop`. A atualização DuckDNS acompanha o IP efêmero; a URL permanece a mesma. As duas VMs foram confirmadas **TERMINATED** ao final, com discos e backups preservados. Estimativa incremental consolidada: **US$1,6259**, com reservas, sem valor de fatura apurado. Antes da apresentação, conclua a [rotação do token DuckDNS](docs/manual-operacao.md#rotação-do-token-duckdns) informada no manual.
 
 ## Arquitetura
 
@@ -18,9 +20,9 @@ flowchart LR
     DB -->|Proxy apt restrito 3128| App
 ```
 
-Planejadas duas `e2-micro`, `us-central1-a`, discos `pd-standard` totalizando 30 GiB. A aplicação tem IPv4 efêmero; o banco não tem IP público. SSH somente por IAP/OS Login. Não há NAT gerenciado, balanceador ou Kubernetes. O host público baixa imagens; Ansible transfere o Mongo por SSH ao host privado. O proxy Squid só permite ao banco acessar repositórios Ubuntu/Canonical.
+Provisionadas duas `e2-micro`, `us-central1-a`, discos `pd-standard` totalizando 30 GiB. A aplicação tem IPv4 efêmero; o banco não tem IP público. SSH somente por IAP/OS Login. Não há NAT gerenciado, balanceador ou Kubernetes. O host público baixa imagens; Ansible transfere o Mongo por SSH ao host privado. O proxy Squid só permite ao banco acessar repositórios Ubuntu/Canonical.
 
-Cada VM tem `max_run_duration = 21600`, ação `STOP` e reinício automático desabilitado. Esse limite recomeça a cada inicialização. O deploy autônomo também desliga ambas explicitamente ao terminar. A [estimativa de custos](docs/custos.md) considera franquias compartilhadas e armazenamento que permanece após desligar.
+Cada VM tem `max_run_duration = 21600`, ação `STOP` e reinício automático desabilitado. Esse limite recomeça a cada inicialização. O deploy autônomo também desliga ambas explicitamente ao terminar. A [estimativa de custos](docs/custos.md) usa tarifas brutas sem presumir franquia disponível e inclui armazenamento que permanece após desligar.
 
 ## Executar localmente
 
@@ -73,15 +75,15 @@ No Git Bash do Windows, use `COMPOSE_FILE="$(pwd -W)/docker-compose.yaml"` e `MS
 
 `infra/terraform/bootstrap/` define APIs, dois buckets protegidos, IAM restrito, três contas de serviço, OIDC e alerta de orçamento. `infra/terraform/main/` define apenas rede, firewalls, discos e duas VMs. A separação permite criar o bucket antes de migrar o estado. `infra/ansible/` configura os hosts; não formata discos que já contenham filesystem inesperado.
 
-O bootstrap ainda **não foi aplicado**. O faturamento foi vinculado ao projeto novo; a aprovação automática bloqueou as alterações persistentes de IAM/OIDC. Não execute o bootstrap antes da autorização adicional. Após aprovação, `python scripts/terraform-plan.py bootstrap` produz o plano revisável e `python scripts/bootstrap.py` aplica o plano e migra o estado. Esses scripts usam a sessão do proprietário, sem salvar token. O estado de bootstrap fica em `todo/bootstrap`; os pipelines só acessam `todo/main`.
+O bootstrap foi autorizado e aplicado em 25/11/2026: 27 recursos, sem alteração/exclusão de recursos existentes. O número do projeto foi confirmado antes de criar o alerta. O estado foi migrado para `todo/bootstrap`; os pipelines acessam somente `todo/main`. Os [planos revisados e a validação real](docs/evidencias/README.md) foram preservados. Para uma instalação nova, os scripts `terraform-plan.py` e `bootstrap.py` devem ser usados pelo proprietário após revisão do escopo; não reaplique estados locais antigos sobre o backend já existente.
 
 | Workflow | Acionamento | Resultado |
 | --- | --- | --- |
 | Validate (`ci.yml`) | Push/PR | Testes, auditoria npm, Terraform, Ansible, integração e backup reais |
 | Publish images (`images.yml`) | CI aprovada em push ou manual | Frontend/backend GHCR identificados pelo SHA do commit |
 | Infrastructure (`infra.yml`) | Manual; `apply` exige `PROVISION` | Plano com allowlist e provisionamento explícito |
-| Configure and deploy (`deploy.yml`) | Manual; SHA completo | Imagens no host, Ansible, HTTPS, CRUD/carga/backup e desligamento final |
-| Operate (`operate.yml`) | Manual | Iniciar, parar, saúde, logs, backup, restore isolado e rollback |
+| Configure and deploy (`deploy.yml`) | Manual; SHA completo | Imagens, Ansible, idempotência, HTTPS, CRUD/carga e desligamento final |
+| Operate (`operate.yml`) | Manual | Iniciar, parar, saúde, logs, diagnóstico, backup, restore, rollback e aceitação extensa |
 | Decommission (`destroy.yml`) | Manual; `DESTROY-TODO` | Backup final validado antes de remover a infraestrutura principal |
 
 Push comum **não cria VMs**. Os workflows de nuvem compartilham um grupo de concorrência. O [manual de operação](docs/manual-operacao.md) explica pré-requisitos, variáveis/secrets, parâmetros, resultados esperados e recuperação. Publicar a branch não equivale a validar provisionamento, OIDC ou execução remota.
@@ -91,6 +93,6 @@ Push comum **não cria VMs**. Os workflows de nuvem compartilham um grupo de con
 - [Escopo do professor](escopo.pdf) e [versão textual](docs/escopo.md).
 - [Matriz REQ/ACE](docs/matriz-aceite.md), [evidências](docs/evidencias/) e [progresso](docs/progresso-implementacao.md).
 - [Manual de operação](docs/manual-operacao.md), [custos](docs/custos.md) e [permissões do bootstrap](docs/seguranca-bootstrap.md).
-- [Relatório da entrega e pendências](docs/relatorio-entrega.md).
+- [Relatório da entrega e pendências](docs/relatorio-entrega.md) e [registro do ensaio pelos alunos](docs/ensaio-alunos.md).
 
-Limitações: capacidade das VMs ainda não medida; HTTPS/renovação e idempotência remota ainda não executados; DNS gratuito depende de terceiros e a URL muda com o IPv4 efêmero. Não há autenticação de usuários, alta disponibilidade ou sincronização automática entre navegadores. A demonstração pelos alunos continua sendo uma etapa humana de aceite.
+Limitações: a carga curta mede somente uma amostra de 100 leituras/10 conexões; não garante capacidade para uso contínuo. DNS gratuito depende do DuckDNS e de seu token; a URL permanece fixa com atualização automática do IP. O relatório distingue renovação configurada de dry-run efetivamente aprovado. Não há autenticação de usuários, alta disponibilidade ou sincronização automática entre navegadores. A demonstração pelos alunos continua sendo uma etapa humana de aceite.

@@ -1,0 +1,39 @@
+{
+  "checked_at_utc": "2026-11-25T16:58:21.928214+00:00",
+  "project_id": "triodelicia-mensal4-2026",
+  "criteria_total": 16,
+  "criteria_validated": 15,
+  "equal_weight_percentage": 93.75,
+  "requirements_validated": [
+    "REQ-01",
+    "REQ-02",
+    "REQ-03",
+    "REQ-04",
+    "REQ-05",
+    "REQ-06"
+  ],
+  "acceptance_validated": [
+    "ACE-01",
+    "ACE-02",
+    "ACE-03",
+    "ACE-04",
+    "ACE-05",
+    "ACE-06",
+    "ACE-07",
+    "ACE-08",
+    "ACE-09"
+  ],
+  "acceptance_pending": [
+    "ACE-10 human student demonstration"
+  ],
+  "security_action_pending": "Owner must rotate potentially exposed DuckDNS token and update authorized integrations; no token included",
+  "vms": {
+    "todo-app": "TERMINATED",
+    "todo-db": "TERMINATED"
+  },
+  "incremental_estimate_usd": 1.6258574143067097,
+  "billing_actual": null,
+  "destroy_executed": false,
+  "final_source_commit": "8ca67a485d37060b6b99716d86d982d1ff211095",
+  "historical_failed_runs_preserved": true
+}

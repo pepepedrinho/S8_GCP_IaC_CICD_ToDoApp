@@ -1,0 +1,76 @@
+{
+  "project_id": "triodelicia-mensal4-2026",
+  "price_date": "2026-11-25",
+  "currency": "USD",
+  "billing_actual": null,
+  "billing_note": "Estimate from project operation windows, not a posted invoice; excludes tax/currency conversion and does not assume Free Tier credits.",
+  "all_vms_terminated": true,
+  "runtime_windows": {
+    "todo-app": [
+      {
+        "start": "2026-11-25T01:18:42.958000-08:00",
+        "end": "2026-11-25T01:21:37.788000-08:00",
+        "hours": 0.04856388888888889
+      },
+      {
+        "start": "2026-11-25T01:27:11.365000-08:00",
+        "end": "2026-11-25T01:37:46.795000-08:00",
+        "hours": 0.17650833333333332
+      },
+      {
+        "start": "2026-11-25T01:45:10.890000-08:00",
+        "end": "2026-11-25T02:09:22.311000-08:00",
+        "hours": 0.4031725
+      },
+      {
+        "start": "2026-11-25T02:15:03.351000-08:00",
+        "end": "2026-11-25T02:17:42.651000-08:00",
+        "hours": 0.044250000000000005
+      }
+    ],
+    "todo-db": [
+      {
+        "start": "2026-11-25T01:18:42.711000-08:00",
+        "end": "2026-11-25T01:22:29.798000-08:00",
+        "hours": 0.06307972222222222
+      },
+      {
+        "start": "2026-11-25T01:26:55.969000-08:00",
+        "end": "2026-11-25T01:39:06.683000-08:00",
+        "hours": 0.20297611111111113
+      },
+      {
+        "start": "2026-11-25T01:44:57.837000-08:00",
+        "end": "2026-11-25T02:11:36.517000-08:00",
+        "hours": 0.4440777777777778
+      },
+      {
+        "start": "2026-11-25T02:14:50.690000-08:00",
+        "end": "2026-11-25T02:18:59.468000-08:00",
+        "hours": 0.069105
+      }
+    ]
+  },
+  "vm_hours_upper_estimate": 1.4517333333333333,
+  "ipv4_hours_upper_estimate": 0.6724947222222222,
+  "disk_gib_hours": 33.044424230555556,
+  "incremental_estimate_components": {
+    "compute": 0.012160339741866666,
+    "ipv4": 0.003362473611111111,
+    "disks_elapsed": 0.0018106692257132918,
+    "network_reserve_unmeasured": 0.38,
+    "storage_operations_reserve": 0.02
+  },
+  "incremental_estimate_with_reserves": 0.4173334825786911,
+  "target_usd": 5,
+  "retained_disks_gib": 30,
+  "retained_disks_gross_usd_730_hours": 1.2000105,
+  "retained_storage_version_bytes": 98738,
+  "retained_storage_gross_usd_month_at_current_size": 1.8391385674476623e-06,
+  "sources": [
+    "https://cloud.google.com/products/compute/pricing/general-purpose",
+    "https://cloud.google.com/compute/disks-image-pricing",
+    "https://cloud.google.com/vpc/network-pricing",
+    "https://cloud.google.com/storage/pricing"
+  ]
+}

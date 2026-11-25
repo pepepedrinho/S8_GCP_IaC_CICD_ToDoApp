@@ -1,0 +1,10 @@
+{
+  "cloud_test": true,
+  "orchestrator": "local controller with temporary gcloud credentials",
+  "source_commit": "9aac06b27bcbf72a6e3fd182ad50988bc8c18617",
+  "run_id": "20261125T160747Z-232e62d2",
+  "started_at_utc": "2026-11-25T16:08:01.559361+00:00",
+  "passed": true,
+  "state": "NextElapseUSecRealtime=Thu 2026-11-26 03:00:53 UTC\nLastTriggerUSec=Wed 2026-11-25 11:12:04 UTC\nPersistent=yes\nActiveState=active\nResult=success\nExecMainStatus=0",
+  "scheduled_calendar_trigger_awaited": false
+}
