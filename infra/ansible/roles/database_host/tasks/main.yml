@@ -103,6 +103,74 @@
   register: database_host_up
   changed_when: "'Started' in database_host_up.stderr or 'Created' in database_host_up.stderr or 'Recreated' in database_host_up.stderr"
 - name: Check configured administrator authentication
+  block:
+    - name: Verify administrator with bounded authentication probe
+      ansible.builtin.command:
+        argv:
+          - docker
+          - compose
+          - -f
+          - /opt/todo/compose.yml
+          - exec
+          - -T
+          - mongo
+          - timeout
+          - --kill-after=10s
+          - 120s
+          - mongosh
+          - mongodb://127.0.0.1:27017/admin?serverSelectionTimeoutMS=10000
+          - --quiet
+          - --norc
+          - --eval
+          - |
+            try {
+              const fs = require('fs');
+              const password = fs.readFileSync(
+                '/run/secrets/mongo_root_password', 'utf8'
+              ).trim();
+              db.auth('administrator', password);
+              const status = db.runCommand({connectionStatus: 1});
+              const authenticated = status.authInfo.authenticatedUsers.some(
+                u => u.user === 'administrator' && u.db === 'admin'
+              );
+              if (!authenticated) quit(43);
+              print('ADMIN_AUTH_OK');
+              quit(0);
+            } catch (e) {
+              if (e.code === 18 || e.codeName === 'AuthenticationFailed') {
+                print('ADMIN_AUTH_REJECTED');
+                quit(42);
+              }
+              print('ADMIN_PROBE_ERROR');
+              quit(43);
+            }
+      no_log: true
+      register: database_host_administrator
+      changed_when: false
+      failed_when: >-
+        not (
+          (database_host_administrator.rc == 0 and
+           'ADMIN_AUTH_OK' in database_host_administrator.stdout)
+          or
+          (database_host_administrator.rc == 42 and
+           'ADMIN_AUTH_REJECTED' in database_host_administrator.stdout)
+        )
+      until: >-
+        (database_host_administrator.rc == 0 and
+         'ADMIN_AUTH_OK' in database_host_administrator.stdout)
+        or
+        (database_host_administrator.rc == 42 and
+         'ADMIN_AUTH_REJECTED' in database_host_administrator.stdout)
+      retries: 2
+      delay: 10
+  rescue:
+    - name: Abort on unexpected administrator probe failure
+      ansible.builtin.fail:
+        msg: >-
+          Mongo administrator probe failed with exit code
+          {{ database_host_administrator.rc | default('unknown') }}.
+          Bootstrap refused because authentication rejection was not confirmed.
+- name: Complete interrupted first-user bootstrap through localhost exception
   ansible.builtin.command:
     argv:
       - docker
@@ -112,21 +180,18 @@
       - exec
       - -T
       - mongo
+      - timeout
+      - --kill-after=10s
+      - 120s
       - mongosh
+      - mongodb://127.0.0.1:27017/admin?serverSelectionTimeoutMS=10000
       - --quiet
-      - --eval
-      - >-
-        const fs=require('fs');
-        db.getSiblingDB('admin').auth('administrator',fs.readFileSync('/run/secrets/mongo_root_password','utf8').trim());
+      - --norc
+      - /run/todo/bootstrap-administrator.js
   no_log: true
-  register: database_host_administrator
-  changed_when: false
-  failed_when: false
-- name: Complete interrupted first-user bootstrap through localhost exception
-  ansible.builtin.command:
-    argv: [docker, compose, -f, /opt/todo/compose.yml, exec, -T, mongo, mongosh, --quiet, /run/todo/bootstrap-administrator.js]
-  no_log: true
-  when: database_host_administrator.rc != 0
+  when: >-
+    database_host_administrator.rc == 42 and
+    'ADMIN_AUTH_REJECTED' in database_host_administrator.stdout
   changed_when: true
 - name: Ensure application user after interrupted first initialization
   ansible.builtin.command:
@@ -138,8 +203,13 @@
       - exec
       - -T
       - mongo
+      - timeout
+      - --kill-after=10s
+      - 120s
       - mongosh
+      - mongodb://127.0.0.1:27017/admin?serverSelectionTimeoutMS=10000
       - --quiet
+      - --norc
       - /run/todo/ensure-application-user.js
   no_log: true
   register: database_host_application_user
