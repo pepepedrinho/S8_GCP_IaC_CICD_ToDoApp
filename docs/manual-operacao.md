@@ -68,7 +68,7 @@ Uma primeira inicialização interrompida pode ser recuperada pela [exceção lo
 
 O runner autentica no GHCR e transfere as imagens por IAP. A credencial de registry permanece no runner. Uma implantação sem prontidão restaura a versão anterior e retorna erro. O rollback manual usa `release.previous.env` no host e também aguarda prontidão; manter duas versões e evitar prune indiscriminado.
 
-**A tradução do histórico Git não renomeia as imagens.** Usar os SHAs originais acima, cuja existência foi reconferida em [compatibilidade GHCR](evidencias/compatibilidade-ghcr.json). A correspondência com os novos commits está em [histórico reescrito](historico/commits-reescritos.json). Não substituir um SHA de imagem pelo novo hash traduzido sem publicação comprovada.
+**Seleção de imagens:** Usar os SHAs originais acima, cuja existência foi reconferida em [compatibilidade GHCR](evidencias/compatibilidade-ghcr.json). Não presumir que existe uma imagem para qualquer commit sem publicação comprovada.
 
 ## Backup e restauração isolada
 
@@ -115,9 +115,9 @@ A lista é pública e compartilhada. Preparar intencionalmente dados fictícios 
 
 O ambiente atual está preservado. **Decommission infrastructure** exige `DESTROY-TODO`, liga as VMs se necessário e valida backup final antes de remover VMs/discos/rede. Se o backup falhar, não deve destruir. Buckets/IAM/OIDC do bootstrap permanecem em módulo separado e podem manter cobrança de armazenamento/operações. A remoção desses dados exige planejamento próprio; não apagar estado para resolver lock.
 
-## Rotação do token DuckDNS
+## Recomendação de rotação do token DuckDNS
 
-**Pendente:** substituir a credencial potencialmente exposta em uma captura anterior e atualizar todas as integrações da mesma conta. A rotação não foi executada durante a reorganização.
+Recomenda-se substituir a credencial potencialmente exposta em uma captura anterior e atualizar as integrações da mesma conta em uma janela de manutenção. Essa recomendação não representa funcionalidade pendente e não será executada nesta finalização.
 
 1. Identificar os clientes que usam o token atual e reservar uma janela de atualização.
 2. Rotacionar a credencial na conta oficial DuckDNS.

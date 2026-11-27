@@ -12,7 +12,7 @@ Preços públicos revisados em **25/11/2026**, USD, us-central1, sem impostos ne
 | Reserva de tráfego não medido | 8 GiB × US$0,19 = US$1,52; não presume gratuidade de IAP; reserva ampliada para as transferências repetidas durante as correções |
 | Storage/operações pequenas | Reserva adicional US$0,02 |
 
-Envelope de referência inferior a US$2 para uma sessão de seis horas; **meta operacional de US$5 para a implantação e os testes**, sem teto rígido garantido. A estimativa final baseada nos ciclos reais fica em `evidencias/cost-estimate.json`. Usa janelas de início/parada das operações da GCP como aproximação conservadora, soma discos desde sua criação e mantém reservas separadas para tráfego/operações. Não é uma leitura da fatura; o custo efetivamente faturado ainda pode ter atraso, créditos, impostos e conversão.
+Envelope de referência inferior a US$2 para uma sessão de seis horas; **meta operacional de US$5 para a implantação e os testes**, sem teto rígido garantido. A estimativa final baseada nos ciclos reais fica em [cálculo versionado](evidencias/cost-estimate.json). Usa janelas de início/parada das operações da GCP como aproximação conservadora, soma discos desde sua criação e mantém reservas separadas para tráfego/operações. Não é uma leitura da fatura; o custo efetivamente faturado ainda pode ter atraso, créditos, impostos e conversão.
 
 Consolidação histórica da implantação, em 25/11/2026 às 13:57UTC−3: **US$1,6259 estimados**, 6,8403 VM-h e 3,1918 IPv4-h. Inclui todas as tentativas/correções registradas e reservas de US$1,54; não é custo de fatura. GCS totaliza 100.375 bytes em todas as versões, com referência bruta de US$0,00000187/mês nesse tamanho, mais operações. CPU/RAM e IPv4 deixam de consumir com ambas TERMINATED. Coleta: 2026-11-25T16:57:35.046142+00:00.
 
@@ -29,7 +29,7 @@ Fontes das tarifas: [Compute E2](https://cloud.google.com/products/compute/prici
 | IPv4 da aplicação | Efêmero, não reservado | Liberado quando a VM para; o endereço pode mudar na reativação |
 | VPC/sub-rede/firewalls, IAM, três contas de serviço, OIDC e alerta | Preservados | Sem tarifa fixa nessa configuração; tráfego/operações dos serviços seguem suas tabelas |
 
-O inventário exato e o tamanho dos objetos/versionamentos estão em `evidencias/cloud-final.json`. A rede `default` gerada pela plataforma também permanece sem VMs conectadas a ela. Não há IP estático reservado, roteador/NAT gerenciado, forwarding rule de balanceador, Cloud SQL, GKE ou terceira VM criada pelo projeto.
+O inventário exato e o tamanho dos objetos/versionamentos estão em [inventário versionado](evidencias/cloud-final.json). A rede `default` gerada pela plataforma também permanece sem VMs conectadas a ela. Não há IP estático reservado, roteador/NAT gerenciado, forwarding rule de balanceador, Cloud SQL, GKE ou terceira VM criada pelo projeto.
 
 ## Franquias e comparação mensal
 
@@ -49,4 +49,4 @@ O faturamento já estava vinculado e não foi alterado durante a implantação. 
 
 O fork é público e usa runners padrão hospedados pelo GitHub, contemplados pela [gratuidade do Actions para repositórios públicos](https://docs.github.com/en/actions/concepts/billing-and-usage). O [armazenamento e a transferência do GHCR são atualmente gratuitos](https://docs.github.com/en/billing/concepts/product-billing/github-packages). Não foram contratados runners maiores, planos adicionais ou um domínio pago. As imagens e os artifacts permanecem sujeitos às políticas de uso e retenção desses serviços.
 
-A reorganização de branches e documentação não incluiu inicialização de VMs ou nova implantação. O valor acumulado acima corresponde ao horário da coleta original; o armazenamento continua sujeito à cobrança ao longo do tempo.
+O valor acumulado acima corresponde ao horário da coleta original da implantação. A entrega acadêmica não pressupõe uma feira, data de evento ou quantidade de visitantes; o armazenamento preservado continua sujeito à cobrança ao longo do tempo.

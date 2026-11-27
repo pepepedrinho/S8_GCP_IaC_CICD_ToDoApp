@@ -2,9 +2,21 @@
 
 ## Resultado e aceite
 
-A aplicação foi implantada na Google Cloud Platform e os fluxos técnicos foram validados. A matriz registra **15 de 16 itens comprovados (93,75%)**, considerando seis requisitos e dez critérios com pesos iguais, sem crédito parcial. O ACE-10 permanece pendente do ensaio humano dos alunos. A rotação do token DuckDNS potencialmente exposto em captura também está pendente.
+A aplicação foi implantada na Google Cloud Platform e os fluxos técnicos foram validados. A matriz registra **15 de 16 itens comprovados (93,75%)**, considerando seis requisitos e dez critérios com pesos iguais, sem crédito parcial. O ACE-10 permanece pendente do ensaio humano dos alunos. A rotação preventiva do token DuckDNS é uma recomendação de segurança para manutenção, separada do aceite funcional.
 
 A URL definitiva é **https://triodelicia.duckdns.org**. As VMs permanecem desligadas fora dos períodos de utilização para reduzir custos; o acesso depende de reativação por **Operate → start**, na main. O [manual](manual-operacao.md) contém comandos e procedimentos completos.
+
+## Responsáveis pelos acessos
+
+A administração operacional dos três serviços é de **Pedro Henrique Alves dos Santos ([@pepepedrinho](https://github.com/pepepedrinho))**, conforme confirmação da equipe Triodelicia na preparação da entrega.
+
+| Serviço | Responsável e acesso |
+| --- | --- |
+| GitHub | Pedro Henrique: proprietário do repositório e responsável pelas permissões, Actions Variables e Secrets; propriedade e acesso administrativo conferidos pela API do GitHub |
+| GCP | Pedro Henrique: responsável pela conta administrativa do projeto triodelicia-mensal4-2026 e pela gestão dos acessos; os pipelines utilizam a conta de serviço limitada por OIDC |
+| DuckDNS | Pedro Henrique: responsável pelo domínio triodelicia.duckdns.org e pelo acesso à conta; o token de atualização permanece protegido em GitHub Secrets |
+
+Os demais integrantes são Lipe ([@G4rb1n](https://github.com/G4rb1n)) e Eduardo ([@Eduol4](https://github.com/Eduol4)). A participação no grupo não implica concessão automática de permissões administrativas. Senhas, tokens e chaves não integram esta documentação ou o pacote de entrega.
 
 ## Arquitetura entregue
 
@@ -40,7 +52,7 @@ A carga pública de 100 GET com dez conexões simultâneas teve zero erros e p95
 
 A espera de prontidão corrigiu o rollback. A conexão explícita por loopback, os prazos limitados e o lock de manutenção corrigiram o backup. Durante erros 500/502 no dispatch, backup/restore foram executados nas VMs pelo mesmo código versionado, a partir de controlador Linux externo ao GitHub e com credencial temporária da conta administradora. Essa execução é identificada separadamente e não representa um workflow GitHub aprovado. O dispatch voltou a funcionar posteriormente.
 
-As imagens efetivamente testadas mantêm os SHAs originais `9a2747cac51ca262a0fcf2557f23da78558d9d21` e `fa626deacdc5d0fffab1b82cdfcbeb64d720a456`. A reescrita das mensagens Git não altera as tags GHCR nem os hashes registrados em evidências. A [correspondência dos commits](historico/commits-reescritos.json) permite acompanhar os novos identificadores sem atribuir testes antigos a novos hashes.
+As imagens efetivamente testadas mantêm os SHAs originais `9a2747cac51ca262a0fcf2557f23da78558d9d21` e `fa626deacdc5d0fffab1b82cdfcbeb64d720a456`. A [verificação das imagens](evidencias/compatibilidade-ghcr.json) registra os manifests e digests. Os identificadores das imagens e os hashes das execuções históricas foram mantidos para rastreabilidade.
 
 ## Backup, persistência e dados preservados
 
@@ -50,16 +62,30 @@ O hash completo dos quatro documentos antes do ciclo foi `53592e65627a97acdefd35
 
 ## Estado final e custos
 
-Ao encerrar a validação técnica, **todo-app e todo-db foram confirmadas TERMINATED** pelo CLI em 25/11/2026 às 13:57:36 (Brasília, UTC−3). A [conferência da reorganização](evidencias/reorganizacao-vms.json) registra leituras posteriores, sem inicialização ou novo deploy.
+Ao encerrar a validação técnica, **todo-app e todo-db foram confirmadas TERMINATED** pelo CLI em 25/11/2026 às 13:57:36 (Brasília, UTC−3). As [conferências posteriores por CLI](evidencias/reorganizacao-vms.json) registram o estado desligado, sem inicialização ou novo deploy. Na conferência de entrega em 27/11/2026 às 19:49:36 (Brasília, UTC−3), ambas continuavam TERMINATED. Essa conferência foi somente de leitura.
 
 Permanecem provisionados: duas VMs, três discos (30 GiB), dois buckets privados, VPC/sub-rede, quatro firewalls próprios, três contas de serviço, papel customizado/IAM limitado, WIF, alerta de orçamento e APIs necessárias. A rede default e suas quatro regras automáticas também permanecem, sem VMs conectadas. O inventário não identificou IP reservado, router/NAT, forwarding rule, snapshot, imagem customizada ou machine image.
 
 A estimativa registrada ao fim da implantação é **US$1,6259 (aproximadamente US$1,63)**, incluindo reservas de tráfego/operações, sem valor de fatura apurado. Discos preservados representam cerca de US$1,20/730h, além de armazenamento/versionamentos e operações GCS. O alerta BRL5 não bloqueia gastos e não equivale à meta operacional US$5. Valores, data da coleta e fontes estão em [custos](custos.md); não são atualizados como se fossem uma fatura em tempo real.
 
+## Evidências sanitizadas preservadas
+
+Os registros abaixo estão versionados no GitHub e continuam disponíveis independentemente da expiração dos artifacts. As execuções do Actions complementam essas evidências.
+
+| Verificação | Registro versionado |
+| --- | --- |
+| Configuração completa e idempotência | [Segunda execução Ansible](evidencias/gcp-idempotence.json) |
+| HTTPS, CRUD e carga curta | [Smoke público e carga](evidencias/gcp-smoke.json) |
+| Interface no navegador | [CRUD no navegador](evidencias/gcp-browser.json) e [captura da interface](evidencias/gcp-interface.jpg) |
+| Isolamento, persistência, atualização e rollback | [Checkpoints remotos](evidencias/gcp-runtime-45644032806.json), preservando a falha global posterior do backup |
+| Backup GCS e restore manual isolado | [Backup validado](evidencias/gcp-owner-backup.json) e [restauração real](evidencias/gcp-manual-restore.json) |
+| Certificado e ciclo das VMs | [Renovação simulada](evidencias/gcp-certificate-renewal.json) e [hash após reativação](evidencias/gcp-vm-cycle.json) |
+| Recursos preservados e estimativa | [Inventário](evidencias/cloud-final.json) e [cálculo de custos](evidencias/cost-estimate.json) |
+
 ## Limites e pendências
 
 - Ensaio humano ACE-10 ainda não realizado; utilizar o [formulário dos alunos](ensaio-alunos.md).
-- Rotação do token DuckDNS e atualização das demais integrações da conta ainda pendentes.
+- Recomenda-se programar a rotação preventiva do token DuckDNS e a atualização das integrações da conta em uma janela de manutenção. Trata-se de recomendação de segurança, não de funcionalidade pendente; a rotação não integra esta finalização.
 - Imagens distintas usadas no rollback derivam da mesma fonte funcional, com metadados/configurações diferentes; migração de schema não foi testada.
 - Sem alta disponibilidade; backup/restore interrompem temporariamente o banco para caber na memória disponível.
 - Lista compartilhada sem login e sem sincronização automática entre navegadores; usar apenas dados fictícios.

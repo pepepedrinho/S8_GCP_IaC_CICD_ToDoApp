@@ -14,7 +14,7 @@ O bootstrap criou 27 recursos, sem alterações/exclusões de recursos existente
 - OIDC exige repository ID 1468894543 e owner ID 55161713, issuer oficial GitHub e ref `main` ou `feat/infra-terraform-ansible-actions`. O provider está ACTIVE e a autenticação/plan remotos foram verificados no [workflow](https://github.com/pepepedrinho/S8_GCP_IaC_CICD_ToDoApp/actions/runs/45582818037).
 - As três contas criadas foram inspecionadas e não possuem chaves privadas permanentes de usuário. Não foram criados grants adicionais depois do bootstrap inicial.
 
-A operação atual utiliza a **main**, já aceita pelo provider implantado. A condição Terraform também conserva a referência legada `feat/infra-terraform-ansible-actions` para representar exatamente a configuração aplicada. A reorganização não modificou IAM; as branches numeradas são históricas e não receberam confiança OIDC. A remoção da referência legada do provider seria uma alteração separada de infraestrutura.
+A operação atual utiliza a **main**, já aceita pelo provider implantado. A condição Terraform também conserva a referência legada `feat/infra-terraform-ansible-actions` para representar exatamente a configuração aplicada. A configuração aplicada mantém os limites de IAM; as branches numeradas são históricas e não receberam confiança OIDC. A remoção da referência legada do provider seria uma alteração separada de infraestrutura.
 
 Quem pode escrever nas branches confiáveis pode alterar os workflows que usam a automação; controlar o acesso ao fork continua necessário. O papel permite administrar o sistema operacional das VMs previstas e seu ciclo de vida dentro deste projeto.
 
@@ -34,6 +34,6 @@ Os dois buckets Standard regionais têm acesso uniforme e prevenção de acesso 
 
 O alerta nominal **R$5** tem filtro exclusivo `projects/271680307280`, conferido com o número real de `triodelicia-mensal4-2026`. Limiares 50/90/100%; alerta não bloqueia cobranças nem substitui a meta operacional de US$5.
 
-A implantação não alterou organizações, outros projetos ou a conta de faturamento. A reorganização do repositório também não executa apply/destroy nem altera credenciais.
+A implantação não alterou organizações, outros projetos ou a conta de faturamento. A preparação da entrega não executa apply/destroy nem altera credenciais.
 
-O token DuckDNS é usado somente pelo runner para o domínio configurado `triodelicia.duckdns.org`. Sua presença é verificada antes de iniciar as VMs. Após exposição em captura anterior, a rotação do token e a atualização das integrações da conta permanecem pendentes; o manual descreve o procedimento. O valor não integra código, evidências ou relatórios.
+O token DuckDNS é usado somente pelo runner para o domínio configurado `triodelicia.duckdns.org`. Sua presença é verificada antes de iniciar as VMs. Após exposição em captura anterior, recomenda-se a rotação preventiva do token e a atualização das integrações da conta em uma janela de manutenção; o manual descreve o procedimento. Essa é uma recomendação de segurança, separada das funcionalidades e dos critérios de aceite. O valor não integra código, evidências ou relatórios.
